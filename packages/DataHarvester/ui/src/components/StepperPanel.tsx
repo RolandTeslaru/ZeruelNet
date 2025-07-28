@@ -1,6 +1,7 @@
 import React from 'react'
 import { BracketsWindowStyling } from '../ui/components/VXWindow'
 import StepperVerticalMap from '../ui/components/StepperVerticalMap'
+import { useSystemStatus } from '../stores/useSystemStatus'
 
 const steps = [
     {
@@ -36,9 +37,10 @@ const steps = [
   ]
 
 const StepperPanel = () => {
+    const steps = useSystemStatus(state => state.steps);
     return (
         <BracketsWindowStyling className='mr-auto w-full relative py-0'>
-            <StepperVerticalMap initialSteps={steps} maxHeight='max-h-[100px]' />
+            <StepperVerticalMap steps={steps} maxHeight='max-h-[100px]' />
         </BracketsWindowStyling>
     )
 }

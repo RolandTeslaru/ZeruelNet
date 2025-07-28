@@ -4,7 +4,7 @@ import { CommentLayout, commentLayouts } from './layouts';
 import { v4 as uuidv4 } from 'uuid';
 import chalk from 'chalk';
 import path from 'path';
-import { ScrapeJob, Video, Comment } from '@zeruel/harvester-types';
+import { ScrapeJob, ScrapedVideo, ScrapedComment } from '@zeruel/harvester-types';
 import { Logger } from '../../lib/logger';
 
 const USER_DATA_DIR = path.join(__dirname, '..', '..', '..', 'tiktok_user_data');
@@ -42,7 +42,7 @@ async function detectCommentLayout(page: Page): Promise<CommentLayout | null> {
     return null;
 }
 
-async function scrapeCommentData(element: any, layout: CommentLayout, parentId: string | null = null): Promise<Comment | null> {
+async function scrapeCommentData(element: any, layout: CommentLayout, parentId: string | null = null): Promise<ScrapedComment | null> {
     try {
         const author = await element.locator(layout.commentAuthor).first().innerText({ timeout: 200 });
         const textElement = parentId ? element.locator(layout.replyText).first() : element.locator(layout.commentText).first();
@@ -71,8 +71,8 @@ async function scrapeCommentData(element: any, layout: CommentLayout, parentId: 
     }
 }
 
-async function scrapeComments(page: Page, maxComments: number = 200): Promise<Comment[]> {
-    const comments: Comment[] = [];
+export async function scrapeComments(page: Page, maxComments: number = 200): Promise<ScrapedComment[]> {
+    const comments: ScrapedComment[] = [];
     const processedIds = new Set<string>();
 
     const layout = await detectCommentLayout(page);
@@ -139,48 +139,3 @@ async function scrapeComments(page: Page, maxComments: number = 200): Promise<Co
     
     return comments;
 }
-
-export async function scrapeVideo(job: ScrapeJob, page: Page): Promise<Video> {
-    try {
-        await page.goto(job.url, { waitUntil: 'domcontentloaded' });
-        await page.waitForSelector('script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]', { state: 'attached', timeout: 30000 });
-
-        const sigiState = await page.locator('script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]').innerText();
-        const videoJson = JSON.parse(sigiState);
-        const videoInfo = videoJson["__DEFAULT_SCOPE__"]["webapp.video-detail"]["itemInfo"]["itemStruct"];
-
-        const description = videoInfo.desc;
-        const hashtagRegex = /#(\p{L}+)/gu;
-        const extracted_hashtags = Array.from(description.matchAll(hashtagRegex), match => match[1]);
-
-        let comments: Comment[] = [];
-        // Only do a full comment scrape if the policy is 'full' and there are comments to scrape
-        if (job.scrape_policy === 'full' && videoInfo.stats.commentCount > 0) {
-            Logger.info(`[Policy: Full] Scraping comments for video ${videoInfo.id}`);
-            comments = await scrapeComments(page, 200);
-        } else if (videoInfo.stats.commentCount > 0) {
-            Logger.warn(`[Policy: Metadata-Only] Skipping comments for video ${videoInfo.id}`);
-        }
-
-        const videoData: Video = {
-            video_id: videoInfo.id,
-            thumbnail_url: videoInfo.video.cover,
-            searched_hashtag: job.parent_task.identifier,
-            video_url: job.url,
-            author_username: videoInfo.author.uniqueId,
-            video_description: description,
-            extracted_hashtags,
-            platform: "tiktok",
-            stats: {
-                likes_count: videoInfo.stats.diggCount,
-                share_count: videoInfo.stats.shareCount,
-                comment_count: videoInfo.stats.commentCount,
-                play_count: videoInfo.stats.playCount,
-            },
-            comments,
-        };
-        return videoData;
-    } finally {
-        await page.close(); // Ensure the page is closed after scraping
-    }
-} 

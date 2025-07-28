@@ -1,27 +1,19 @@
 import React, { useRef, useState } from 'react'
-import { Check, Circle, Minus } from '../icons';
-
-
-interface StepProps {
-    id: string;
-    label: string
-    description: string;
-    status: "completed" | "active" | "inactive"
-    timestamp?: string
-}
+import { Check, Circle, Minus, X } from '../icons';
+import { SystemStep } from '@zeruel/harvester-types';
+import classNames from 'classnames';
 
 interface StepperVerticalMapProps {
-    initialSteps?: StepProps[]
+    steps?: Map<string, SystemStep>
     className?: string
     maxHeight?: string
 }
 
 const StepperVerticalMap: React.FC<StepperVerticalMapProps> = ({
-    initialSteps = [],
+    steps = new Map(),
     className = "!w-full",
     maxHeight = "max-h-[300px]",
 }) => {
-    const [steps, setSteps] = useState<StepProps[]>(initialSteps);
     const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
     return (
@@ -29,16 +21,16 @@ const StepperVerticalMap: React.FC<StepperVerticalMapProps> = ({
             <div
                 ref={scrollContainerRef}
                 className={`${maxHeight} !w-full overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 ${
-                    steps.length > 2 ? "[mask-image:linear-gradient(to_bottom,transparent,black_28px)]" : ""
+                    steps.size > 2 ? "[mask-image:linear-gradient(to_bottom,transparent,black_28px)]" : ""
                 }`}
             >
                 <div className='space-y-1'>
-                    {steps.length === 0 ? (
+                    {steps.size === 0? (
                         <div className="text-center text-white/40 font-mono text-sm">
                             NO_PROCESSES_ACTIVE
                         </div>
                     ) : (
-                        steps.map((step, index) => <Step {...step} index={index} mapLength={steps.length} />)
+                        Array.from(steps).map(([stepId, step], index) => <Step {...step} index={index} mapLength={step.size} />)
                     )}
                 </div>
             </div>
@@ -48,10 +40,9 @@ const StepperVerticalMap: React.FC<StepperVerticalMapProps> = ({
 
 export default StepperVerticalMap
 
-const Step: React.FC<StepProps & { index: number, mapLength }> = (props) => {
+const Step: React.FC<SystemStep & { index: number, mapLength }> = (props) => {
     return (
         <div
-            id={props.id}
             className={`relative flex items-start transition-all duration-300 ease-out animate-in slide-in-from-bottom-4 fade-in`}
         >
             {props.index < props.mapLength - 1 && (
@@ -62,16 +53,17 @@ const Step: React.FC<StepProps & { index: number, mapLength }> = (props) => {
             {/* Step Circle */}
             <div className="relative z-10 flex-shrink-0">
                 <div
-                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center font-mono text-sm font-bold transition-all duration-300 ${props.status === "completed"
-                        ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20"
-                        : props.status === "active"
-                            ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20 animate-pulse"
-                            : "bg-black border-white/40 text-white/60"
-                        }`}
+                    className={classNames(
+                        `w-4 h-4 rounded-full border-2 flex items-center justify-center font-mono text-sm font-bold transition-all duration-300`,
+                        {"bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20": props.status === "completed"},
+                        {"bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20 animate-pulse": props.status === "active"},
+                        {"bg-black border-white/40 text-white/60": props.status === "pending"} 
+                    )}
                 >
                     {props.status === "completed" && <Check className="w-4 h-4" />}
                     {props.status === "active" && <Circle className="w-2 h-2 fill-current" />}
-                    {props.status === "inactive" && <Minus className="w-4 h-4" />}
+                    {props.status === "pending" && <Minus className="w-4 h-4" />}
+                    {props.status === "failed" && <X className="w-4 h-4" />}
                 </div>
             </div>
 

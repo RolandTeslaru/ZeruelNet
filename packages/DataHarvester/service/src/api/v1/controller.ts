@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { TiktokHarvester } from '../../harvesters/tiktok';
 import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
 import { DiscoveryTask } from '@zeruel/harvester-types';
 import { statusManager } from '../../lib/statusManager';
+import { TiktokScraper } from "../../scrapers/tiktok"
 
 let isHarvesterRunning = false;
 
@@ -19,43 +19,36 @@ export const startHarvest = async (req: Request, res: Response) => {
     }
 
     isHarvesterRunning = true;
+
     Logger.info(`Received harvest request for ${source}: ${identifier}`);
     res.status(202).send({ message: 'Harvesting process initiated. See WebSocket stream for live updates.' });
-
     statusManager.setStage('initialization');
     statusManager.updateStep('api_request_received', 'active');
 
+
     const browserManager = new BrowserManager();
-    const harvester = new TiktokHarvester(browserManager);
+    const scraper = new TiktokScraper(browserManager);
 
     try {
         statusManager.updateStep('api_request_received', 'completed');
-        statusManager.updateStep('browser_manager_init', "pending", "Starting browser with persistent ctxt.");
+        statusManager.updateStep('browser_manager_init', "active");
+
+
         await browserManager
-                .init()
-                .then(() => {
-                    statusManager.updateStep('browser_manager_init', 'completed', "Browsers ready");
-                    Logger.info(`Browser Manager Succesfully initializd`)
-                })
-                .catch(() => {
-                    statusManager.updateStep('browser_manager_init', "failed", "Failed to retrieve persistent context")
-                    Logger.error("BrowserManager failed to retrieve persistent context");
-                })
+            .init()
+            .then(() => {
+                statusManager.updateStep('browser_manager_init', 'completed');
+                Logger.info(`Browser Manager Succesfully initializd`)
+            })
+            .catch(() => {
+                statusManager.updateStep('browser_manager_init', "failed", "Failed to retrieve persistent ctxt")
+                Logger.error("BrowserManager failed to retrieve persistent context");
+            })
 
         const task: DiscoveryTask = { source, identifier, limit };
-   
-        const jobs = await harvester.discover(task);
-        
-        statusManager.setStage('analysis');
-        // This stage is simplified for now, as the logic is inside the harvester.
-        // We'll advance the steps programmatically there.
-        statusManager.updateStep('db_query', 'completed');
-        statusManager.updateStep('job_classification', 'completed');
-        statusManager.updateStep('workload_ready', 'completed');
+        const jobs = await scraper.discover(task);
 
-
-        statusManager.setStage('harvesting');
-        await harvester.work(jobs);
+        await scraper.work(jobs);
 
         statusManager.setStage('finalizing');
         statusManager.updateStep('report_generation', 'active');

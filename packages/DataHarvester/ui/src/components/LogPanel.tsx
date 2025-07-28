@@ -1,5 +1,5 @@
-import { useHarvesterStore } from "../../stores/useHarvesterStore";
-import { Server } from "../icons";
+import { useLogMessages } from "../stores/useLogMessages";
+import { Server } from "../ui/icons";
 
 type LogLevel = 'info' | 'error' | 'warn' | 'success' | 'debug';
 
@@ -18,7 +18,7 @@ const levelColorMap: Record<LogLevel, string> = {
 };
 
 export const LogPanel = () => {
-    const logMessages = useHarvesterStore((state) => state.logMessages);
+    const messages = useLogMessages(state => state.messages);
 
     return (
         <div className=" h-[100px] rounded-lg shadow-inner overflow-hidden">
@@ -27,7 +27,7 @@ export const LogPanel = () => {
             <h3 className="text-md font-medium text-white/70 mb-2 font-roboto-mono">Server Log</h3>
             </div>
             <div className="h-full overflow-y-auto">
-                {logMessages.map((log: LogMessage, index: number) => (
+                {messages.map((log: LogMessage, index: number) => (
                     <p key={index} className={`!text-xs font-mono ${levelColorMap[log.level] || 'text-gray-400'}`}>
                         <span className="text-gray-600 mr-2">{new Date(log.timestamp).toLocaleTimeString()}</span>
                         {log.message}

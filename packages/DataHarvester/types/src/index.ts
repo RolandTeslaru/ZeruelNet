@@ -1,5 +1,5 @@
 // Domain-specific types for TikTok
-export interface Video {
+export interface ScrapedVideo {
     video_id: string;
     thumbnail_url: string;
     searched_hashtag: string;
@@ -14,10 +14,10 @@ export interface Video {
         comment_count: number;
         play_count: number;
     };
-    comments: Comment[];
+    comments: ScrapedComment[];
 }
 
-export interface Comment {
+export interface ScrapedComment {
     comment_id: string;
     parent_comment_id: string | null;
     author: string;
@@ -33,21 +33,20 @@ export type TPlatforms = "tiktok" | "facebook" | "x";
 export type StageType = 'INFO' | 'TASK' | 'SUCCESS' | 'FAILURE';
 export type StepStatus = 'pending' | 'active' | 'completed' | 'failed';
 
-export interface Step {
-    id: string;
+export interface SystemStep {
     label: string;
     description: string;
     status: StepStatus;
 }
 
-export interface Stage {
+export interface SystemStage {
     title: string;
     type: StageType;
 }
 
 export interface SystemStatusUpdate {
-    stage: Stage;
-    steps: Map<string, Step>;
+    stage: SystemStage;
+    steps: Record<string, SystemStep>;
 }
 
 // Harvester-specific job and task types
@@ -65,10 +64,3 @@ export interface ScrapeJob {
   parent_task: DiscoveryTask;
   scrape_policy: TScrapePolicy;
 }
-
-// The contract that every harvester must implement
-export interface IHarvester {
-  platform: 'tiktok' | 'facebook' | 'x';
-  discover(task: DiscoveryTask): Promise<ScrapeJob[]>;
-  work(jobs: ScrapeJob[]): Promise<void>;
-} 

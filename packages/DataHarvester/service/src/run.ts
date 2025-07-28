@@ -1,13 +1,13 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: __dirname+'/../.env' });
 
-import { TiktokHarvester } from './harvesters/tiktok';
+import { TiktokScraper } from './scrapers/tiktok';
 import { DiscoveryTask } from '@zeruel/harvester-types';
 import { BrowserManager } from './lib/browserManager';
 
 async function main() {
     const browserManager = new BrowserManager();
-    const harvester = new TiktokHarvester(browserManager);
+    const harvester = new TiktokScraper(browserManager);
 
     // This is a sample task. In the future, this will come from the API/UI.
     const task: DiscoveryTask = {

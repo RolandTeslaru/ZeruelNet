@@ -14,6 +14,7 @@ const handleSubscription = (ws: WebSocket, topic: string) => {
         topics.set(topic, new Set());
     }
     topics.get(topic)!.add(ws);
+    
     Logger.debug(`Client subscribed to topic: ${topic}`);
 };
 
@@ -52,7 +53,10 @@ const publishToTopic = ({ topic, payload }: { topic: string, payload: any }) => 
 
     const subscribers = topics.get(topic);
     if (subscribers) {
-        const data = JSON.stringify(payload);
+        const data = JSON.stringify({
+            topic,
+            ...payload
+        });
         subscribers.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(data);

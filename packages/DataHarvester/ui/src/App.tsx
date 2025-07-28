@@ -1,15 +1,15 @@
-import { useHarvesterStore } from './stores/useHarvesterStore';
 import Layout from './components/Layout';
 import { BracketsWindowStyling, CrossesWindowStyling, StandardWindowStyling, VXWindow } from './ui/components/VXWindow';
-import { LogPanel } from './ui/components/LogPanel';
+import { LogPanel } from './components/LogPanel';
 import { WindowControlDots } from './ui/components/VXWindow/WindowControlDots';
 
 import StagePanel from './components/StagePanel';
 import ScrapingDashboardPanel from './components/ScrapingDashboardPanel';
 import CommandPanel from './components/CommandPanel';
 import StepperPanel from './components/StepperPanel';
+import { useWebSocket } from './stores/useWebSocket';
 
-useHarvesterStore.getState().connect()
+useWebSocket.getState().connect();
 
 function App() {
   return (
