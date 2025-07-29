@@ -27,6 +27,7 @@ export const useLogMessages = create<State & Actions>()(
 )
 
 useWebSocket.getState().subscribeToTopic("scraper_logs", (data: LogMessage) => {
+    console.log("RECEIVED DATA FROM SCRAPER LOGS ", data)
     useLogMessages.setState(state => {
         state.messages.push(data);
     })

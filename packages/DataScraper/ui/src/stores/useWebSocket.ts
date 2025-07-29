@@ -39,6 +39,8 @@ export const useWebSocket = create<State & Actions>()(
                     state.socket = ws
                 });
 
+                console.log("WEB SOCKET CONNECTED ")
+
                 // Process any queued subscriptions
                 get().subscriptionQueue.forEach(sub => {
                     get().subscribeToTopic(sub.topic, sub.callback);
@@ -58,25 +60,35 @@ export const useWebSocket = create<State & Actions>()(
             });
 
             ws.onmessage = (event: MessageEvent<any>) => {
-                const data = JSON.parse(event.data);
-                const topic = data.topic;
+                const outerPayload = JSON.parse(event.data);
+                const channel = outerPayload.channel;
+                
+                console.log("RECEIVED MESSAGE" , channel, outerPayload.message)
+                // The actual message from the service is a stringified JSON object
+                const innerPayload = JSON.parse(outerPayload.message);
 
-                const callback = SOCKET_ON_MESSAGE_CALLBACK_REGISTRY[topic];
-                if (callback)
-                    callback(data);
+                // The channel from Redis will be something like 'harvester_logs' or 'harvester_live_feed'.
+                // We can use this to route the message to the correct handler.
+                const callback = SOCKET_ON_MESSAGE_CALLBACK_REGISTRY[channel];
+                if (callback) {
+                    callback(innerPayload);
+                }
             }
         },
         disconnect: () => {
             get().socket?.close();
         },
         subscribeToTopic: (topic, callback) => {
-            if(get().socket === null){
-                // Queue subscription if socket isnt ready, which is likely
+            const socket = get().socket;
+            if (socket === null || socket.readyState !== WebSocket.OPEN) {
+                // Queue subscription if socket isnt ready
                 set(state => {
                     state.subscriptionQueue.push({ topic, callback });
                 });
                 return;
             }
+            
+            console.log("SUBSCRIBED TO TOPIC ", topic, callback)
             get().socket.send(JSON.stringify({
                 action: 'subscribe', topic
             }))

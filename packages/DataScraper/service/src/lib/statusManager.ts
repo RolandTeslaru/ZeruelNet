@@ -1,96 +1,6 @@
 import { SystemStatusUpdate, SystemStage, SystemStep, StepStatus, T_SystemStatusAction, T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { eventBus } from './eventBus';
 
-class StatusManager {
-    private currentStatus: SystemStatusUpdate;
-    private static instance: StatusManager;
-
-    private stages: Record<string, { stage: SystemStage; steps: Record<string, SystemStep> }> = {
-        idle: {
-            stage: { title: 'IDLE: AWAITING TASK', type: 'INFO' },
-            steps: DEFAULT_STEPS["idle"]
-        },
-        initialization: {
-            stage: { title: 'INITIALIZING...', type: 'TASK' },
-            steps: DEFAULT_STEPS["initialization"]
-        },
-        discovery: {
-            stage: { title: 'STAGE 1: DISCOVERING VIDEOS', type: 'TASK' },
-            steps: DEFAULT_STEPS["discovery"]
-        },
-        analysis: {
-            stage: { title: 'STAGE 2: ANALYZING WORKLOAD', type: 'TASK' },
-            steps: DEFAULT_STEPS["analysis"]
-        },
-        harvesting: {
-            stage: { title: 'STAGE 3: HARVESTING DATA', type: 'TASK' },
-            steps: DEFAULT_STEPS["scraping"]
-        },
-        finalizing: {
-            stage: { title: 'STAGE 4: FINALIZING', type: 'TASK' },
-            steps: DEFAULT_STEPS["finalizing"]
-        },
-        success: {
-            stage: { title: 'COMPLETE: HARVEST SUCCESSFUL', type: 'SUCCESS' },
-            steps: DEFAULT_STEPS["success"]
-        },
-        error: {
-            stage: { title: 'ERROR: HARVEST FAILED', type: 'FAILURE' },
-            steps: DEFAULT_STEPS["error"]
-        }
-    };
-
-    private constructor() {
-        this.currentStatus = this.stages.idle;
-    }
-
-    public static getInstance(): StatusManager {
-        if (!StatusManager.instance) {
-            StatusManager.instance = new StatusManager();
-        }
-        return StatusManager.instance;
-    }
-
-    private broadcast(payload: T_SystemStatusPayload) {
-        eventBus.broadcast('scraper_system_status', payload)
-    }
-
-    public setStage(stageKey: keyof typeof this.stages) {
-        if (this.stages[stageKey]) {
-            this.currentStatus = JSON.parse(JSON.stringify(this.stages[stageKey])); // Deep copy to prevent mutation
-            this.broadcast({
-                action: "SET_STAGE",
-                stage: this.stages[stageKey].stage,
-                steps: this.stages[stageKey].steps
-            });
-        }
-    }
-
-    public updateStep(stepId: string, status: StepStatus, description?: string) {
-        const step = this.currentStatus.steps[stepId];
-        if (step) {
-            step.status = status;
-            if (description) {
-                step.description = description;
-            }
-            this.broadcast({
-                action: "UPDATE_STEP",
-                stepId,
-                step: {
-                    ...step,
-                    status,
-                    description
-                }
-            });
-        }
-        else {
-            console.error("Could not update step", stepId, ". No such step exists");
-        }
-    }
-}
-
-export const statusManager = StatusManager.getInstance();
-
 
 const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
     idle: {},
@@ -194,3 +104,94 @@ const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
         }
     }
 }
+
+class StatusManager {
+    private currentStatus: SystemStatusUpdate;
+    private static instance: StatusManager;
+
+    private stages: Record<string, { stage: SystemStage; steps: Record<string, SystemStep> }> = {
+        idle: {
+            stage: { title: 'IDLE: AWAITING TASK', type: 'INFO' },
+            steps: DEFAULT_STEPS["idle"]
+        },
+        initialization: {
+            stage: { title: 'INITIALIZING...', type: 'TASK' },
+            steps: DEFAULT_STEPS["initialization"]
+        },
+        discovery: {
+            stage: { title: 'STAGE 1: DISCOVERING VIDEOS', type: 'TASK' },
+            steps: DEFAULT_STEPS["discovery"]
+        },
+        analysis: {
+            stage: { title: 'STAGE 2: ANALYZING WORKLOAD', type: 'TASK' },
+            steps: DEFAULT_STEPS["analysis"]
+        },
+        harvesting: {
+            stage: { title: 'STAGE 3: HARVESTING DATA', type: 'TASK' },
+            steps: DEFAULT_STEPS["scraping"]
+        },
+        finalizing: {
+            stage: { title: 'STAGE 4: FINALIZING', type: 'TASK' },
+            steps: DEFAULT_STEPS["finalizing"]
+        },
+        success: {
+            stage: { title: 'COMPLETE: HARVEST SUCCESSFUL', type: 'SUCCESS' },
+            steps: DEFAULT_STEPS["success"]
+        },
+        error: {
+            stage: { title: 'ERROR: HARVEST FAILED', type: 'FAILURE' },
+            steps: DEFAULT_STEPS["error"]
+        }
+    };
+
+    private constructor() {
+        this.currentStatus = this.stages.idle;
+    }
+
+    public static getInstance(): StatusManager {
+        if (!StatusManager.instance) {
+            StatusManager.instance = new StatusManager();
+        }
+        return StatusManager.instance;
+    }
+
+    private broadcast(payload: T_SystemStatusPayload) {
+        eventBus.broadcast("system_status", payload)
+    }
+
+    public setStage(stageKey: keyof typeof this.stages) {
+        if (this.stages[stageKey]) {
+            this.currentStatus = JSON.parse(JSON.stringify(this.stages[stageKey])); // Deep copy to prevent mutation
+            this.broadcast({
+                action: "SET_STAGE",
+                stage: this.stages[stageKey].stage,
+                steps: this.stages[stageKey].steps
+            });
+        }
+    }
+
+    public updateStep(stepId: string, status: StepStatus, description?: string) {
+        const step = this.currentStatus.steps[stepId];
+        if (step) {
+            step.status = status;
+            if (description) {
+                step.description = description;
+            }
+            this.broadcast({
+                action: "UPDATE_STEP",
+                stepId,
+                step: {
+                    ...step,
+                    status,
+                    description
+                }
+            });
+        }
+        else {
+            console.error("Could not update step", stepId, ". No such step exists");
+        }
+    }
+}
+
+export const statusManager = StatusManager.getInstance();
+

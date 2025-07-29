@@ -3,13 +3,11 @@ dotenv.config({ path: __dirname+'/../.env' });
 
 import express from 'express';
 import cors from 'cors';
-import { initWebSocket } from './api/v1/websocket';
-import http from 'http';
 import { Logger } from './lib/logger';
+import { messageBroker } from './lib/messageBroker';
 
 const app = express();
-const server = http.createServer(app); // Create an HTTP server
-const PORT = process.env.HARVESTER_PORT || 4000;
+const PORT = process.env.HARVESTER_PORT || 3001;
 
 // Middleware
 app.use(cors()); // Allow requests from our frontend
@@ -20,13 +18,16 @@ import v1Routes from './api/v1/routes';
 app.use('/api/v1', v1Routes);
 
 app.get('/', (req, res) => {
-    res.send('Harvester Service is running!');
+    res.send('Scraper Service is running!');
 });
 
-// Initialize WebSocket server
-initWebSocket(server);
 
 // Start the server
-server.listen(PORT, () => {
-    Logger.info(`Harvester service listening on http://localhost:${PORT}`);
-}); 
+async function startServer() {
+    await messageBroker.connect();
+    app.listen(PORT, () => {
+        Logger.info(`Scraoer service listening on http://localhost:${PORT}`);
+    });
+}
+
+startServer(); 

@@ -54,6 +54,7 @@ class StatusManager {
     }
 
     private broadcast() {
+        
         eventBus.emit('publish', {
             topic: 'scraper_system_status',
             payload: this.currentStatus

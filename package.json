@@ -4,12 +4,15 @@
   "private": true,
   "workspaces": [
     "packages/DataScraper/*",
-    "packages/analysis"
+    "packages/GatewayService"
   ],
   "scripts": {
-    "service:start": "npm run start --workspace=@zeruel/scraper-service",
-    "service:dev": "npm run dev --workspace=@zeruel/scraper-service",
-    "ui:dev": "npm run dev --workspace=@zeruel/scraper-ui",
-    "types:build": "npm run build --workspace=@zeruel/scraper-types"
+    "types:build": "npm run build --workspace=@zeruel/scraper-types",
+    "scraper-service:start": "npm run start --workspace=@zeruel/scraper-service",
+    "scraper-ui:dev": "npm run dev --workspace=@zeruel/scraper-ui",
+    "gateway:dev": "npm run dev --workspace=@zeruel/gateway-service"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.2"
   }
 } 

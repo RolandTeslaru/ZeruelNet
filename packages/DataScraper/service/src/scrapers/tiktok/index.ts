@@ -61,7 +61,7 @@ export class TiktokScraper extends AbstractScraper {
 
 
     private broadcast(payload: T_ScraperJobPayload) {
-        eventBus.broadcast("scraper_active_job_feed", payload)
+        eventBus.broadcast("active_job_feed", payload)
     }
 
 
@@ -208,7 +208,10 @@ export class TiktokScraper extends AbstractScraper {
         }
 
         // Publish the final report as a rich event
-        eventBus.emit('publish', { topic: 'harvester_summary', payload: { type: 'run_complete', report } });
+        eventBus.broadcast("summary", {
+            type: "run_complete",
+            report
+        })
         Logger.success("----------------- HARVEST COMPLETE -----------------");
     }
 

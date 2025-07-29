@@ -7,7 +7,7 @@ import { BrowserManager } from './lib/browserManager';
 
 async function main() {
     const browserManager = new BrowserManager();
-    const harvester = new TiktokScraper(browserManager);
+    const scraper = new TiktokScraper(browserManager);
 
     // This is a sample task. In the future, this will come from the API/UI.
     const task: DiscoveryTask = {
@@ -20,9 +20,9 @@ async function main() {
         console.log("Starting harvester...");
         await browserManager.init();
         
-        const jobs = await harvester.discover(task);
+        const jobs = await scraper.discover(task);
         if (jobs.length > 0) {
-            await harvester.work(jobs);
+            await scraper.work(jobs);
         } else {
             console.log("No new videos found to process.");
         }

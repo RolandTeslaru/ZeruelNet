@@ -13,15 +13,13 @@ const levelColors: { [key in LogLevel]: chalk.Chalk } = {
 
 const emitLog = (level: LogLevel, message: string, data?: any) => {
     // 1. Emit the structured log event for WebSocket clients
-    eventBus.emit('publish', {
-        topic: 'scraper_logs',
-        payload: {
-            level,
-            message,
-            timestamp: new Date().toISOString(),
-            data: data || null,
-        }
-    });
+    console.log("EMIT LOGS ", message)
+    eventBus.broadcast("logs", {
+        level,
+        message,
+        timestamp: new Date().toISOString(),
+        data: data || null,
+    })
 
     // 2. Print the colorful log to the server console
     const color = levelColors[level] || chalk.white;
