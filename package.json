@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "packages/DataHarvester/*"
+    "packages/DataScraper/*",
+    "packages/analysis"
   ],
   "scripts": {
-    "service:start": "npm run start --workspace=@zeruel/harvester-service",
-    "service:dev": "npm run dev --workspace=@zeruel/harvester-service",
-    "ui:dev": "npm run dev --workspace=@zeruel/harvester-ui",
-    "types:build": "npm run build --workspace=@zeruel/harvester-types"
+    "service:start": "npm run start --workspace=@zeruel/scraper-service",
+    "service:dev": "npm run dev --workspace=@zeruel/scraper-service",
+    "ui:dev": "npm run dev --workspace=@zeruel/scraper-ui",
+    "types:build": "npm run build --workspace=@zeruel/scraper-types"
   }
 } 
