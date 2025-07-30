@@ -9,6 +9,7 @@
   "scripts": {
     "types:build": "npm run build --workspace=@zeruel/scraper-types",
     "scraper-service:start": "npm run start --workspace=@zeruel/scraper-service",
+    "scraper-service:dev": "npm run dev:server --workspace=@zeruel/scraper-service",
     "scraper-ui:dev": "npm run dev --workspace=@zeruel/scraper-ui",
     "gateway:dev": "npm run dev --workspace=@zeruel/gateway-service"
   },

@@ -40,7 +40,7 @@ const StepperPanel = () => {
     const steps = useSystemStatus(state => state.steps);
     return (
         <BracketsWindowStyling className='mr-auto w-full relative py-0'>
-            <StepperVerticalMap steps={steps} maxHeight='max-h-[100px]' />
+            <StepperVerticalMap steps={steps} maxHeight='max-h-[300px]' />
         </BracketsWindowStyling>
     )
 }

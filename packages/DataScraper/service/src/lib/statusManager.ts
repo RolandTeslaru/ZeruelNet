@@ -111,7 +111,7 @@ class StatusManager {
 
     private stages: Record<string, { stage: SystemStage; steps: Record<string, SystemStep> }> = {
         idle: {
-            stage: { title: 'IDLE: AWAITING TASK', type: 'INFO' },
+            stage: { title: 'IDLE:  AWAITING  TASK  WORK', type: 'INFO' },
             steps: DEFAULT_STEPS["idle"]
         },
         initialization: {
@@ -119,27 +119,27 @@ class StatusManager {
             steps: DEFAULT_STEPS["initialization"]
         },
         discovery: {
-            stage: { title: 'STAGE 1: DISCOVERING VIDEOS', type: 'TASK' },
+            stage: { title: 'STAGE 1:  DISCOVERING  VIDEOS', type: 'TASK' },
             steps: DEFAULT_STEPS["discovery"]
         },
         analysis: {
-            stage: { title: 'STAGE 2: ANALYZING WORKLOAD', type: 'TASK' },
+            stage: { title: 'STAGE 2:  ANALYZING  WORKLOAD', type: 'TASK' },
             steps: DEFAULT_STEPS["analysis"]
         },
         harvesting: {
-            stage: { title: 'STAGE 3: HARVESTING DATA', type: 'TASK' },
+            stage: { title: 'STAGE 3:  SRAPING  DATA', type: 'TASK' },
             steps: DEFAULT_STEPS["scraping"]
         },
         finalizing: {
-            stage: { title: 'STAGE 4: FINALIZING', type: 'TASK' },
+            stage: { title: 'STAGE 4:  FINALIZING', type: 'TASK' },
             steps: DEFAULT_STEPS["finalizing"]
         },
         success: {
-            stage: { title: 'COMPLETE: HARVEST SUCCESSFUL', type: 'SUCCESS' },
+            stage: { title: 'FINSHED:  TASK  WORK  SUCCESSFUL', type: 'SUCCESS' },
             steps: DEFAULT_STEPS["success"]
         },
         error: {
-            stage: { title: 'ERROR: HARVEST FAILED', type: 'FAILURE' },
+            stage: { title: 'ERROR:  TASK  WORK  FAILED', type: 'FAILURE' },
             steps: DEFAULT_STEPS["error"]
         }
     };

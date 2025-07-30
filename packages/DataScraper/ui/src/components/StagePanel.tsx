@@ -23,12 +23,6 @@ const StagePanel = () => {
             rotationInterval={7000}
           />
         </BracketsWindowStyling>
-        <p className='text-white font-roboto-mono'>
-          {stage.title}
-        </p>
-        <div className='flex flex-col w-[250px] gap-4'>
-         
-        </div>
       </div>
     )
   }

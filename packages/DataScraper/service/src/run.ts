@@ -17,7 +17,7 @@ async function main() {
     };
 
     try {
-        console.log("Starting harvester...");
+        console.log("Starting scraper...");
         await browserManager.init();
         
         const jobs = await scraper.discover(task);
@@ -30,7 +30,7 @@ async function main() {
         console.log("Harvester finished.");
 
     } catch (error) {
-        console.error("An error occurred during the harvesting process:", error);
+        console.error("An error occurred during the scrape task:", error);
     } finally {
         await browserManager.close();
     }

@@ -69,7 +69,6 @@ export class TiktokScraper extends AbstractScraper {
 
     public async discover(task: DiscoveryTask): Promise<ScrapeJob[]> {
         statusManager.setStage("discovery");
-        Logger.info(`Starting discovery on platform '${this.platform}'`, task);
 
 
         const page = await this.browserManager.getPage();
@@ -186,7 +185,7 @@ export class TiktokScraper extends AbstractScraper {
                         job,
                     })
                 } catch (error) {
-                    Logger.error(`Worker failed for URL ${job.url}`, error);
+                    Logger.error(`Job failed for URL ${job.url}`, error);
                     this.broadcast({
                         action: "FINALISE_JOB",
                         type: "error",
@@ -212,7 +211,7 @@ export class TiktokScraper extends AbstractScraper {
             type: "run_complete",
             report
         })
-        Logger.success("----------------- HARVEST COMPLETE -----------------");
+        Logger.success("----------------- SCRAPE COMPLETE -----------------");
     }
 
 

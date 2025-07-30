@@ -63,7 +63,6 @@ export const useWebSocket = create<State & Actions>()(
                 const outerPayload = JSON.parse(event.data);
                 const channel = outerPayload.channel;
                 
-                console.log("RECEIVED MESSAGE" , channel, outerPayload.message)
                 // The actual message from the service is a stringified JSON object
                 const innerPayload = JSON.parse(outerPayload.message);
 

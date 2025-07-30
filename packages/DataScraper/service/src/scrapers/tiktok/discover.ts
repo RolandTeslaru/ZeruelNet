@@ -3,10 +3,22 @@ import { Logger } from '../../lib/logger';
 import { DiscoveryTask } from '@zeruel/scraper-types';
 import { statusManager } from '../../lib/statusManager';
 
-const SELECTORS = {
-    videoCard: 'div[data-e2e="search-video-list"] div[class*="DivItemContainer"]',
-    videoLink: 'a[href*="/video/"]',
-};
+interface DiscoveryLayout {
+    name: string;
+    /** Selector for a single video card item on the discovery/tag page grid. */
+    videoCardSelector: string;
+}
+
+const discoveryLayouts: DiscoveryLayout[] = [
+    {
+        name: 'SearchE2E',
+        videoCardSelector: 'div[data-e2e="search-video-list"] div[class*="DivItemContainer"]',
+    },
+    {
+        name: 'ChallengeE2E',
+        videoCardSelector: 'div[data-e2e="challenge-item-list"] div[class*="DivItemContainerV2"]',
+    },
+];
 
 const MAX_VIDEOS_TO_FIND = 100
 
@@ -18,22 +30,36 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
     const url = `https://www.tiktok.com/tag/${identifier}`;
 
     
-    Logger.info(`Discoverer starting for hashtag: #${identifier}`);
+    Logger.info(`Starting discovery for hashtag: #${identifier}`);
     statusManager.updateStep('navigation', 'active', `Navigating to "tiktok.com/tag/${identifier}"`);
     Logger.info(`Navigating to ${url}`);
     
 
-    // Navigate to the main page and wait ofr the video cards to loa
-    // A captcha may appear
     try {
         await page.goto(url, { waitUntil: 'networkidle' });
-        await page.waitForSelector(SELECTORS.videoCard, { timeout: 15000 });
-        statusManager.updateStep('navigation', 'completed');
     } catch (e) {
-        Logger.error(`Failed to navigate to ${url} or find video card selector.`);
-        statusManager.updateStep('navigation', 'failed');
-        throw e;
+        Logger.error(`Failed to navigate to ${e}`, e)
     }
+
+    let activeLayout: DiscoveryLayout | null = null;
+    for (const layout of discoveryLayouts) {
+        try {
+            await page.waitForSelector(layout.videoCardSelector, { timeout: 7000 })
+            activeLayout = layout;
+            Logger.info(`Detected discovery layout: ${layout.name}`);
+            break;
+        } catch (e) {
+            // Layout not found, try next
+        }
+    }
+
+    if (!activeLayout) {
+        Logger.error(`Failed to detect a known discovery page layout for ${url}.`);
+        statusManager.updateStep('navigation', 'failed');
+        throw new Error('Could not detect discovery page layout.');
+    }
+    
+    statusManager.updateStep('navigation', 'completed');
 
 
     const numVideosToFind = task.limit || MAX_VIDEOS_TO_FIND;
@@ -63,7 +89,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
 
     const allHrefs = await page.evaluate((selector) => {
         return Array.from(document.querySelectorAll(selector)).map(el => (el as HTMLAnchorElement).href);
-    }, `${SELECTORS.videoCard} a`);
+    }, `${activeLayout.videoCardSelector} a`);
 
     allHrefs.forEach(href => videoUrls.add(href));
 

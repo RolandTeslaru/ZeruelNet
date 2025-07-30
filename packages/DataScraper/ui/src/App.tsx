@@ -72,7 +72,7 @@ function App() {
           noStyling={true}
           showControls={false}
         >
-          <div className='fixed left-1 bottom-1 w-[500px] h-[120px] p-2 rounded-xl bg-black/5 '>
+          <div className='fixed left-1 bottom-1 p-2 rounded-xl bg-black/10 '>
             <WindowControlDots />
             <LogPanel />
           </div>
