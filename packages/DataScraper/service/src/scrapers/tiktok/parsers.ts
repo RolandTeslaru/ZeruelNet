@@ -1,22 +1,9 @@
 import { Page } from 'playwright';
 import { chromium } from 'playwright-extra';
-import { CommentLayout, commentLayouts } from './layouts';
+import { CommentLayout, commentLayouts } from './pageLayouts';
 import { v4 as uuidv4 } from 'uuid';
-import chalk from 'chalk';
-import path from 'path';
 import { ScrapeJob, ScrapedVideo, ScrapedComment } from '@zeruel/scraper-types';
 import { Logger } from '../../lib/logger';
-
-const USER_DATA_DIR = path.join(__dirname, '..', '..', '..', 'tiktok_user_data');
-
-// This file contains the core logic for scraping a single video.
-// It includes functions moved from the original scraper:
-// - scrapeVideo (new main function for the worker)
-// - scrapeComments
-// - scrapeCommentData
-// - detectCommentLayout
-// - parseLikes
-
 
 function parseLikes(text: string | null): number {
     if (!text) return 0;

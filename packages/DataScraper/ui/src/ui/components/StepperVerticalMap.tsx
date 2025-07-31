@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Check, Circle, Minus, X } from '../icons';
 import { SystemStep } from '@zeruel/scraper-types';
 import classNames from 'classnames';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface StepperVerticalMapProps {
     steps?: Map<string, SystemStep>
@@ -9,34 +10,64 @@ interface StepperVerticalMapProps {
     maxHeight?: string
 }
 
-const StepperVerticalMap: React.FC<StepperVerticalMapProps> = ({
+export interface StepperVerticalMapHandles {
+    scrollToBottom: () => void;
+    scrollToStep: (stepId: string) => void;
+}
+
+const StepperVerticalMap = forwardRef<StepperVerticalMapHandles, StepperVerticalMapProps>(({
     steps = new Map(),
     className = "!w-full",
     maxHeight = "max-h-[300px]",
-}) => {
+}, ref) => {
     const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+
+    useImperativeHandle(ref, () => ({
+        scrollToBottom: () => {
+            if(scrollContainerRef.current){
+                scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight
+            }
+        },
+        scrollToStep: (stepId: string) => {
+            if (scrollContainerRef.current) {
+                const stepElement = scrollContainerRef.current.querySelector(`#step--${stepId}`);
+                if (stepElement) {
+                    stepElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+    }))
+
 
     return (
         <div className='relative'>
             <div
                 ref={scrollContainerRef}
-                className={`${maxHeight} !w-full overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 ${
-                    steps.size > 2 ? "[mask-image:linear-gradient(to_bottom,transparent,black_28px)]" : ""
-                }`}
+                className={`${maxHeight} scroll-smooth !w-full gap-1 pt-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20" `}
             >
-                <div className='space-y-1'>
-                    {steps.size === 0? (
-                        <div className="text-center text-white/40 font-mono text-sm">
-                            NO_PROCESSES_ACTIVE
-                        </div>
-                    ) : (
-                        Array.from(steps).map(([stepId, step], index) => <Step {...step} index={index} mapLength={step.size} />)
-                    )}
-                </div>
+                {steps.size === 0 ? (
+                    <div className="text-center text-white/40 font-mono text-sm">
+                        NO_PROCESSES_ACTIVE
+                    </div>
+                ) : (
+                    <AnimatePresence>
+                        {Array.from(steps).map(([stepId, step], index) =>
+                            <motion.div
+                                key={stepId}
+                                initial={{ opacity: 0, x: -200 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.5 }}
+                                transition={{ ease: 'linear', duration: 0.5 }}
+                            >
+                                <Step {...step} index={index} mapLength={step.size} />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                )}
             </div>
         </div>
     )
-}
+})
 
 export default StepperVerticalMap
 
@@ -55,9 +86,9 @@ const Step: React.FC<SystemStep & { index: number, mapLength }> = (props) => {
                 <div
                     className={classNames(
                         `w-4 h-4 rounded-full border-2 flex items-center justify-center font-mono text-sm font-bold transition-all duration-300`,
-                        {"bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20": props.status === "completed"},
-                        {"bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20 animate-pulse": props.status === "active"},
-                        {"bg-black border-white/40 text-white/60": props.status === "pending"} 
+                        { "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20": props.status === "completed" },
+                        { "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20 animate-pulse": props.status === "active" },
+                        { "bg-black border-white/40 text-white/60": props.status === "pending" }
                     )}
                 >
                     {props.status === "completed" && <Check className="w-4 h-4" />}
@@ -86,7 +117,7 @@ const Step: React.FC<SystemStep & { index: number, mapLength }> = (props) => {
                 )}
 
                 {/* Status and Timestamp */}
-             
+
             </div>
         </div>
     )

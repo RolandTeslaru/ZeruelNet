@@ -1,6 +1,6 @@
 import { DiscoveryTask, ScrapedComment, ScrapedVideo, ScrapeJob, T_ScraperJobPayload, T_SetCurrentBatchPayload, T_AddJobPayload, T_AddVideoMetadataPayload } from '@zeruel/scraper-types';
 import { discoverVideos } from './discover';
-import { scrapeComments } from './scrapeHelpers';
+import { scrapeComments } from './parsers';
 import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
 import { eventBus } from '../../lib/eventBus';
@@ -123,7 +123,7 @@ export class TiktokScraper extends AbstractScraper {
         const jobsQueue = [...jobs];
         const BATCH_SIZE = 4;
 
-        statusManager.setStage('harvesting');
+        statusManager.setStage("scraping");
         Logger.info(`Starting to process ${jobs.length} scrape jobs with a more human-like, rate-limited pattern.`);
         statusManager.updateStep('batch_processing', 'active', `Processing ${jobsQueue.length} videos in batches of ${BATCH_SIZE}.`);
 
@@ -135,15 +135,16 @@ export class TiktokScraper extends AbstractScraper {
             totalCommentsScraped: 0,
         };
 
+        const totalBatches = Math.ceil(jobsQueue.length / BATCH_SIZE);
 
         for (let i = 0; i < jobsQueue.length; i += BATCH_SIZE) {
             const batch = jobsQueue.slice(i, i + BATCH_SIZE);
             const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
-            const totalBatches = Math.ceil(jobsQueue.length / BATCH_SIZE);
 
 
             statusManager.updateStep('batch_processing', 'active', `Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
             Logger.info(`Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
+            
             this.broadcast({
                 action: "SET_CURRENT_BATCH",
                 batch,
@@ -156,12 +157,13 @@ export class TiktokScraper extends AbstractScraper {
                 await sleep(jitter);
 
                 Logger.debug(`Starting worker for URL: ${job.url}`);
-    
+
                 try {
                     const page = await this.browserManager.getPage();
 
                     const videoData = await this.processJob(job, page);
-                    await DatabaseManager.saveVideo(videoData);
+                    await DatabaseManager.saveVideo(videoData)
+                    statusManager.updateStep("data_persistence", "active", `Saved video ${videoData.video_id} and its ${videoData.comments.length} comments`)
 
                     // Update report and emit rich event
                     if (job.scrape_policy === 'full') {
@@ -193,11 +195,15 @@ export class TiktokScraper extends AbstractScraper {
                 const waitTime = Math.round(batchDelay / 1000);
                 statusManager.updateStep('rate_limit_delays', 'active', `Waiting for ${waitTime}s before next batch...`);
                 Logger.info(`Batch complete. Waiting for ${waitTime}s before next batch...`);
-                
+
                 await sleep(batchDelay);
                 statusManager.updateStep('rate_limit_delays', 'pending');
             }
         }
+
+        statusManager.removeStep('rate_limit_delays', "completed");
+        statusManager.updateStep("batch_processing", "completed", `All ${totalBatches} batches have been processed`);
+        statusManager.updateStep("data_persistence", "completed", `Data has been saved to the database`)
 
         // Publish the final report as a rich event
         eventBus.broadcast("summary", {

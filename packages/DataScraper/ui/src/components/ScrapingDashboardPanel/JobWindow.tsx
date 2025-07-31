@@ -64,7 +64,7 @@ const JobWindow: React.FC<Props> = ({ index, job }) => {
             }}
           />
 
-          <p className='text-xs absolute bottom-10 left-1/2 -translate-x-1/2  text-nowrap animate-pulse text-white/60'>Scraping comments</p>
+          <p className='text-xs absolute bottom-4 left-1/2 -translate-x-1/2  text-nowrap animate-pulse text-white/60'>Scraping comments</p>
           <div className='absolute bottom-1/2 translate-y-1/2 w-full text-xs font-light flex flex-col gap-2'>
             <div className='flex flex-row gap-2'>
               <Heart size={18} />

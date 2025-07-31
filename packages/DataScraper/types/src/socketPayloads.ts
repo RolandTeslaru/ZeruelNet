@@ -1,4 +1,4 @@
-import { ScrapedVideo, ScrapeJob, StageType, SystemStage, SystemStep, TPlatforms } from ".";
+import { ScrapedVideo, ScrapeJob, StageType, StepStatus, SystemStage, SystemStatusUpdate, SystemStep, TPlatforms } from ".";
 
 // SystemStatus Manager
 
@@ -6,7 +6,7 @@ type T_BaseSystemStatusPayload = {
     action: T_SystemStatusAction,
 }
 
-export type T_SystemStatusAction = "UPDATE_STEP" | "SET_STAGE" | "CLEAR_STEPS"
+export type T_SystemStatusAction = "UPDATE_STEP" | "SET_STAGE" | "CLEAR_STEPS" | "REMOVE_STEP"
 
 export type T_UpdateSystemStepPayload = T_BaseSystemStatusPayload & { action: "UPDATE_STEP", stepId: string, step: SystemStep }
 export type T_UpdateSystemStagePayload = T_BaseSystemStatusPayload & { action: "SET_STAGE", 
@@ -14,9 +14,9 @@ export type T_UpdateSystemStagePayload = T_BaseSystemStatusPayload & { action: "
     steps: Record<string, SystemStep>
  };
 export type T_ClearSystemStepsPayload = T_BaseSystemStatusPayload & { action: "CLEAR_STEPS" };
+export type T_RemoveSystemStepPayload = T_BaseSystemStatusPayload & { action: "REMOVE_STEP", stepId: string, description?: string, delayMs?: number, status: StepStatus}
 
-
-export type T_SystemStatusPayload = T_UpdateSystemStepPayload | T_UpdateSystemStagePayload | T_ClearSystemStepsPayload;
+export type T_SystemStatusPayload = T_UpdateSystemStepPayload | T_UpdateSystemStagePayload | T_ClearSystemStepsPayload | T_RemoveSystemStepPayload;
 
 
 

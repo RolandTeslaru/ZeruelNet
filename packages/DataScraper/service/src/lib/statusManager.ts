@@ -14,11 +14,6 @@ const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
             label: 'BROWSER_MANAGER_INIT',
             description: 'Initializing persistent browser',
             status: 'pending'
-        },
-        browser_ready: {
-            label: 'BROWSER_READY',
-            description: 'Browser ready for discovery',
-            status: 'pending'
         }
     },
     discovery: {
@@ -30,11 +25,6 @@ const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
         scroll_automation: {
             label: 'SCROLL_AUTOMATION',
             description: 'Scrolling to load video grid',
-            status: 'pending'
-        },
-        url_extraction: {
-            label: 'URL_EXTRACTION',
-            description: 'Extracting video URLs from page',
             status: 'pending'
         }
     },
@@ -61,31 +51,21 @@ const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
             description: 'Processing videos in batches',
             status: 'pending'
         },
+        rate_limit_delays: {
+            label: 'RATE_LIMIT_DELAY',
+            description: 'Applying human-like delays',
+            status: 'pending'
+        },
         data_persistence: {
             label: 'DATA_PERSISTENCE',
             description: 'Saving data to database',
             status: 'pending'
         },
-        rate_limit_delays: {
-            label: 'RATE_LIMIT_DELAYS',
-            description: 'Applying human-like delays',
-            status: 'pending'
-        }
     },
     finalizing: {
-        report_generation: {
-            label: 'REPORT_GENERATION',
-            description: 'Compiling final harvest report',
-            status: 'pending'
-        },
         browser_shutdown: {
             label: 'BROWSER_SHUTDOWN',
             description: 'Closing browser instance',
-            status: 'pending'
-        },
-        process_complete: {
-            label: 'PROCESS_COMPLETE',
-            description: 'Harvester run finished',
             status: 'pending'
         }
     },
@@ -93,14 +73,14 @@ const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
         success: {
             label: 'SUCCESS',
             description: 'The operation completed successfully.',
-            status: 'pending'
+            status: "completed"
         }
     },
     error: {
         error: {
             label: 'ERROR',
             description: 'An unrecoverable error occurred.',
-            status: 'pending'
+            status: "failed"
         }
     }
 }
@@ -126,7 +106,7 @@ class StatusManager {
             stage: { title: 'STAGE 2:  ANALYZING  WORKLOAD', type: 'TASK' },
             steps: DEFAULT_STEPS["analysis"]
         },
-        harvesting: {
+        scraping: {
             stage: { title: 'STAGE 3:  SCRAPING  DATA', type: 'TASK' },
             steps: DEFAULT_STEPS["scraping"]
         },
@@ -182,13 +162,27 @@ class StatusManager {
                 stepId,
                 step: {
                     ...step,
-                    status,
-                    description
+                    status
                 }
             });
         }
         else {
             console.error("Could not update step", stepId, ". No such step exists");
+        }
+    }
+
+    public removeStep(stepId: string, status: StepStatus, description?: string, delayMs?: number){
+        const step = this.currentStatus.steps[stepId];
+        if(step){
+            this.broadcast({
+                action: "REMOVE_STEP",
+                stepId,
+                delayMs,
+                status,
+                description,
+            })
+        } else {
+            console.error(`Remove Step `)
         }
     }
 }

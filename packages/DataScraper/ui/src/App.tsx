@@ -14,7 +14,7 @@ useWebSocket.getState().connect();
 function App() {
   return (
     <Layout>
-      <div className="flex flex-row gap-4 min-w-auto min-h-screen w-full px-6 pb-6 pt-[150px]">
+      <div className="flex flex-row gap-4 min-w-auto min-h-screen w-full px-7 pb-6 pt-[150px]">
         {/* <Watermark /> */}
         {/* Left Panel */}
         <div className='min-w-60 h-auto'>
@@ -36,6 +36,10 @@ function App() {
             <ScrapingDashboardPanel />
           </VXWindow>
         </div>
+
+    
+
+
 
         {/* Right Panel */}
         <div className='w-60 h-auto'>

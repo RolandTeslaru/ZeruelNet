@@ -24,24 +24,52 @@ export const useSystemStatus = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(data: T_SystemStatusPayload) {
-    switch (data.action) {
+function handleSocketMessage(payload: T_SystemStatusPayload) {
+    switch (payload.action) {
         case "UPDATE_STEP":
             useSystemStatus.setState(state => {
-                state.steps.set(data.stepId, data.step);
+                state.steps.set(payload.stepId, payload.step);
             });
             break;
         case "SET_STAGE":
             useSystemStatus.setState(state => {
-                console.log
-                state.stage =  data.stage;
-                state.steps = new Map(Object.entries(data.steps));
+                state.stage = payload.stage;
+                Object.entries(payload.steps).forEach(([stepKey, newStep]) => {
+                    state.steps.set(stepKey, newStep)
+                })
+                // state.steps = new Map(Object.entries(payload.steps));
             });
             break;
         case "CLEAR_STEPS":
             useSystemStatus.setState(state => {
                 state.steps.clear();
             });
+            break;
+        case "REMOVE_STEP":
+            const { delayMs, stepId, status, description } = payload
+            if(delayMs){
+                useSystemStatus.setState(state => {
+                    const step = state.steps.get(stepId);
+                    step.status = status
+                    if (description)
+                        step.description = description
+                })
+
+                // delay te actual removal so the user can see the new status
+                setTimeout(() => {
+                    useSystemStatus.setState(state => {
+                        state.steps.delete(stepId);
+                    })
+                }, delayMs)
+            } else {
+                useSystemStatus.setState(state => {
+                    const step = state.steps.get(stepId);
+                    step.status = status
+                    if (description)
+                        step.description = description
+                    state.steps.delete(stepId);
+                })
+            }
             break;
     }
 }

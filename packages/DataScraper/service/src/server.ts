@@ -9,9 +9,8 @@ import { messageBroker } from './lib/messageBroker';
 const app = express();
 const PORT = process.env.HARVESTER_PORT || 3001;
 
-// Middleware
-app.use(cors()); // Allow requests from our frontend
-app.use(express.json()); // Allow the server to understand JSON in request bodies
+app.use(cors()); 
+app.use(express.json());
 
 // Routes
 import v1Routes from './api/v1/routes';
@@ -22,7 +21,6 @@ app.get('/', (req, res) => {
 });
 
 
-// Start the server
 async function startServer() {
     await messageBroker.connect();
     app.listen(PORT, () => {

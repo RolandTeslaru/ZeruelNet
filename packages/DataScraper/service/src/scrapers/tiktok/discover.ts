@@ -2,22 +2,7 @@ import { Page } from 'playwright';
 import { Logger } from '../../lib/logger';
 import { DiscoveryTask } from '@zeruel/scraper-types';
 import { statusManager } from '../../lib/statusManager';
-
-interface DiscoveryLayout {
-    name: string;
-    videoCardSelector: string; // Selector for a single video card in the discovery page
-}
-
-const discoveryLayouts: DiscoveryLayout[] = [
-    {
-        name: 'SearchE2E',
-        videoCardSelector: 'div[data-e2e="search-video-list"] div[class*="DivItemContainer"]',
-    },
-    {
-        name: 'ChallengeE2E',
-        videoCardSelector: 'div[data-e2e="challenge-item-list"] div[class*="DivItemContainerV2"]',
-    },
-];
+import { DiscoveryLayout, discoveryLayouts } from './pageLayouts';
 
 const MAX_VIDEOS_TO_FIND = 100
 
@@ -43,7 +28,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
     let activeLayout: DiscoveryLayout | null = null;
     for (const layout of discoveryLayouts) {
         try {
-            await page.waitForSelector(layout.videoCardSelector, { timeout: 7000 })
+            await page.waitForSelector(layout.videoCardSelector, { timeout: 2000 })
             activeLayout = layout;
             Logger.info(`Detected discovery layout: ${layout.name}`);
             break;
@@ -54,7 +39,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
 
     if (!activeLayout) {
         Logger.error(`Failed to detect a known discovery page layout for ${url}.`);
-        statusManager.updateStep('navigation', 'failed');
+        statusManager.updateStep('navigation', 'failed', "Could not find a layout for this page");
         throw new Error('Could not detect discovery page layout.');
     }
     
@@ -65,7 +50,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
     let videoUrls = new Set<string>();
 
 
-    statusManager.updateStep('scroll_automation', 'active');
+    statusManager.updateStep('scroll_automation', 'active', "Scrolling to load video cards");
     Logger.info(`Scrolling to find up to ${numVideosToFind} video URLs...`);
 
 
@@ -75,7 +60,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
     while(videoUrls.size < numVideosToFind && retries > 0){
         try {
             await page.mouse.wheel(0, 8000);
-            await page.waitForTimeout(2500 + Math.random() * 1000) // Randomness to appear more human like
+            await page.waitForTimeout(1500 + Math.random() * 1000) // Randomness to appear more human like
             
             // Extracts hrefs from all the videoCards on the disover grid
             const allHrefs = await extractAllHrefs(page, `${activeLayout.videoCardSelector} a`)
@@ -85,15 +70,17 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
                 }
             })
 
+            statusManager.updateStep("scroll_automation", "active", `Found ${videoUrls.size} hrefs`)
+
         } catch (e){
             Logger.error("Could not extract video cards ", e);
+            statusManager.updateStep('url_extraction', "failed", "Failed to extract refs")
         }
     }
 
-    statusManager.updateStep('scroll_automation', 'completed', `Found ${numVideosToFind} videos to scrape`);
-    statusManager.updateStep('url_extraction', 'active');
+
+    statusManager.updateStep('scroll_automation', 'completed', `Found ${videoUrls.size} unique videos to scrape`);
     Logger.success(`Found ${videoUrls.size} unique video URLs.`);
-    statusManager.updateStep('url_extraction', 'completed');
 
 
     return Array.from(videoUrls);
