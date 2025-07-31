@@ -20,7 +20,7 @@ const JobWindow: React.FC<Props> = ({ index, job }) => {
   // const metadata = null;
   const [metadata, status] = useActiveJobFeed(state => [
     state.videoMetadata[job.url],
-    state.jobStatus[job.url]
+    state.jobStatus[job.url] || "SCRAPING"
   ])
 
   return (
