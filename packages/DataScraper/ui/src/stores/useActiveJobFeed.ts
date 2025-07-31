@@ -2,10 +2,16 @@ import { create } from "zustand";
 import { useWebSocket } from "./useWebSocket";
 import { ScrapedVideo, ScrapeJob, T_ScraperJobPayload, T_VideoMetadata } from "@zeruel/scraper-types";
 import { immer } from "zustand/middleware/immer";
+import { enableMapSet } from "immer";
+
+enableMapSet()
+
+
 
 type State = {
-    activeJobs: ScrapeJob[]
+    activeJobs: Map<string, ScrapeJob>
     videoMetadata: Record<string, T_VideoMetadata>
+    jobStatus: Record<string, "SCRAPING" | "SUCCESS" | "ERROR" >
     currentBatchNr: number
     totalBatches: number
 }
@@ -16,7 +22,8 @@ type Actions = {
 
 export const useActiveJobFeed = create<State & Actions>()(
     immer((set, get) => ({
-        activeJobs: [],
+        activeJobs: new Map(),
+        jobStatus: {},
         videoMetadata: {},
         currentBatchNr: 0,
         totalBatches: 0
@@ -26,8 +33,10 @@ export const useActiveJobFeed = create<State & Actions>()(
 function handleSocketMessage(payload: T_ScraperJobPayload) {
     switch (payload.action) {
         case "ADD_JOB":
+            const key = payload.job.url
             useActiveJobFeed.setState(state => {
-                state.activeJobs.push(payload.job);
+                state.activeJobs.set(key, payload.job)
+                state.jobStatus[key] = "SCRAPING"
             })
             break;
         case "ADD_VIDEO_METADATA":
@@ -36,12 +45,27 @@ function handleSocketMessage(payload: T_ScraperJobPayload) {
             })    
         break;
         case "FINALISE_JOB":
+            let status = payload.error ? "ERROR" : "SUCCESS" as "SCRAPING" | "SUCCESS" | "ERROR"
+
+            useActiveJobFeed.setState(state => {
+                state.jobStatus[payload.job.url] = status;
+            })
+
+            // Delay the removal so the user can see the job succeeded or failed
+            setTimeout(() => {
+                useActiveJobFeed.setState(state => {
+                    state.activeJobs.delete(payload.job.url);
+                });
+            }, 10000); 
+            
             break;
         case "SET_CURRENT_BATCH":
             useActiveJobFeed.setState(state => {
                 state.currentBatchNr = payload.currentBatch
-                state.activeJobs = payload.batch
                 state.totalBatches = payload.totalBatches
+                payload.batch.forEach(job => {
+                    state.activeJobs.set(job.url, job)
+                })
             })
             break;
     }

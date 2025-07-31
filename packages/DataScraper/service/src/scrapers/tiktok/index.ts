@@ -10,18 +10,11 @@ import { statusManager } from '../../lib/statusManager';
 import { DatabaseManager } from '../../lib/DatabaseManager';
 import { AbstractScraper } from '../AbstractScraper';
 import { Page } from 'playwright';
+import { sleep } from './utils';
 
 type StatusUpdateCallback = (message: any) => void;
 
 const PROCESS_LIMIT = 20
-
-/**
- * Creates a promise that resolves after a specified number of milliseconds.
- * @param ms The number of milliseconds to wait.
- */
-function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export class TiktokScraper extends AbstractScraper {
     public readonly platform: 'tiktok' = 'tiktok';
@@ -283,6 +276,8 @@ export class TiktokScraper extends AbstractScraper {
         }
     }
 }
+
+
 
 
 

@@ -2,6 +2,9 @@ import { SystemStage, SystemStep, StageType, T_SystemStatusPayload } from '@zeru
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 import { useWebSocket, webSocketEvents } from "./useWebSocket";
+import { enableMapSet } from 'immer';
+
+enableMapSet();
 
 type State = {
     stage: SystemStage
@@ -30,6 +33,7 @@ function handleSocketMessage(data: T_SystemStatusPayload) {
             break;
         case "SET_STAGE":
             useSystemStatus.setState(state => {
+                console.log
                 state.stage =  data.stage;
                 state.steps = new Map(Object.entries(data.steps));
             });

@@ -127,7 +127,7 @@ class StatusManager {
             steps: DEFAULT_STEPS["analysis"]
         },
         harvesting: {
-            stage: { title: 'STAGE 3:  SRAPING  DATA', type: 'TASK' },
+            stage: { title: 'STAGE 3:  SCRAPING  DATA', type: 'TASK' },
             steps: DEFAULT_STEPS["scraping"]
         },
         finalizing: {

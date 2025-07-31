@@ -5,8 +5,7 @@ import { statusManager } from '../../lib/statusManager';
 
 interface DiscoveryLayout {
     name: string;
-    /** Selector for a single video card item on the discovery/tag page grid. */
-    videoCardSelector: string;
+    videoCardSelector: string; // Selector for a single video card in the discovery page
 }
 
 const discoveryLayouts: DiscoveryLayout[] = [
@@ -59,7 +58,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
         throw new Error('Could not detect discovery page layout.');
     }
     
-    statusManager.updateStep('navigation', 'completed');
+    statusManager.updateStep('navigation',"completed");
 
 
     const numVideosToFind = task.limit || MAX_VIDEOS_TO_FIND;
@@ -71,32 +70,52 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
 
 
     let retries = 10;
-    while (videoUrls.size < numVideosToFind && retries > 0) {
+
+    // Scroll the page until we find the desired numbers of UNIQUE videos to scrape
+    while(videoUrls.size < numVideosToFind && retries > 0){
         try {
             await page.mouse.wheel(0, 8000);
-            await page.waitForTimeout(2500 + Math.random() * 1000);
-            retries--;
-        } catch (e) {
-            Logger.warn(`Scroll attempt failed, retrying. Retries left: ${retries}`);
-            retries--;
+            await page.waitForTimeout(2500 + Math.random() * 1000) // Randomness to appear more human like
+            
+            // Extracts hrefs from all the videoCards on the disover grid
+            const allHrefs = await extractAllHrefs(page, `${activeLayout.videoCardSelector} a`)
+            allHrefs.forEach(href => {
+                if(checkIfUrlIsVideo(href) && !videoUrls.has(href)){
+                    videoUrls.add(href);
+                }
+            })
+
+        } catch (e){
+            Logger.error("Could not extract video cards ", e);
         }
     }
 
-
     statusManager.updateStep('scroll_automation', 'completed', `Found ${numVideosToFind} videos to scrape`);
     statusManager.updateStep('url_extraction', 'active');
-
-
-    const allHrefs = await page.evaluate((selector) => {
-        return Array.from(document.querySelectorAll(selector)).map(el => (el as HTMLAnchorElement).href);
-    }, `${activeLayout.videoCardSelector} a`);
-
-    allHrefs.forEach(href => videoUrls.add(href));
-
-
     Logger.success(`Found ${videoUrls.size} unique video URLs.`);
     statusManager.updateStep('url_extraction', 'completed');
 
 
     return Array.from(videoUrls);
 }; 
+
+
+
+const checkIfUrlIsVideo = (href: string) => {
+    return href.split("/").includes("video");
+}
+
+
+const extractAllHrefs = async (page: Page, selectorId: string) => {
+    return page.evaluate(selector => {
+        const elements = document.querySelectorAll(selector);
+        const hrefs: string[] = [];
+
+        elements.forEach(el => {
+            if(el instanceof HTMLAnchorElement && el.href)
+                hrefs.push(el.href);
+        })
+
+        return hrefs;
+    }, selectorId)
+}

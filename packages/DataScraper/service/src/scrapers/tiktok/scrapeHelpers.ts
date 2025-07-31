@@ -17,6 +17,7 @@ const USER_DATA_DIR = path.join(__dirname, '..', '..', '..', 'tiktok_user_data')
 // - detectCommentLayout
 // - parseLikes
 
+
 function parseLikes(text: string | null): number {
     if (!text) return 0;
     const cleanText = text.trim().toLowerCase();
