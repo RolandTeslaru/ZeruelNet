@@ -1,24 +1,32 @@
 import React, { useState } from 'react'
 import CollapsiblePanel from '../ui/components/CollapsiblePanel'
-import { Switch, Input, Button, Label } from '../ui/foundations'
-import { DiscoveryTask } from '@zeruel/scraper-types'
+import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '../ui/foundations'
+import { DiscoveryTask, ScrapeTask } from '@zeruel/scraper-types'
+import { useSystemStatus } from '../stores/useSystemStatus'
 
 const CommandPanel = () => {
-    const [hashtag, setHashtag] = useState('');
-    const [limit, setLimit] = useState(50);
-    const [forceRefresh, setForceRefresh] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [responseMessage, setResponseMessage] = useState('');
+
+    const stage = useSystemStatus(state => state.stage)
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
         setResponseMessage('');
 
-        const task: DiscoveryTask = {
+        const formData = new FormData(e.currentTarget);
+        const hashtag = formData.get('hashtag') as string;
+        const limit = Number(formData.get('limit'));
+        const batchSize = Number(formData.get("batchSize"));
+
+
+        const task: ScrapeTask = {
             source: 'hashtag',
             identifier: hashtag,
-            limit: limit
+            limit: limit,
+            batchSize: batchSize
         };
 
         try {
@@ -37,7 +45,7 @@ const CommandPanel = () => {
             }
 
             setResponseMessage(data.message);
-            setHashtag(''); 
+            e.currentTarget.reset();
         } catch (error: any) {
             setResponseMessage(`Error: ${error.message}`);
         } finally {
@@ -49,42 +57,59 @@ const CommandPanel = () => {
     return (
         <CollapsiblePanel title="Command Panel">
             <form onSubmit={handleSubmit} className='relative flex flex-col gap-4 font-roboto-mono text-xs text-white'>
-                <div className='flex flex-col gap-1.5'>
-                    <Label htmlFor="hashtag">Hashtag</Label>
+                <div className='flex flex-row justify-between gap-1.5'>
+                    <Label htmlFor="hashtag" className='h-auto my-auto font-light'>Hashtag</Label>
                     <Input
                         id="hashtag"
-                        className='text-xs'
-                        value={hashtag}
-                        onChange={(e) => setHashtag(e.target.value)}
-                        placeholder='e.g., news'
+                        name="hashtag"
+                        className='text-xs !w-28'
+                        placeholder='news fyp'
                         required
                     />
                 </div>
-                <div className='flex flex-col gap-1.5'>
-                    <Label htmlFor="limit">Max Videos</Label>
+                <div className='flex flex-row justify-between gap-1.5'>
+                    <Label htmlFor="limit" className='h-auto my-auto font-light'>Max Videos</Label>
                     <Input
                         id="limit"
-                        className='w-[80px] text-xs'
+                        name="limit"
+                        className='w-24 text-xs'
                         type='number'
-                        value={limit}
-                        onChange={(e) => setLimit(parseInt(e.target.value, 10))}
+                        min={1}
+                        defaultValue={10}
+                        required
+                    />
+                </div>
+                <div className='flex flex-row justify-between gap-1.5'>
+                    <Label htmlFor="batch-size" className='h-auto my-auto font-light'>Videos per Batch</Label>
+                    <Input
+                        id="batchSize"
+                        name="batchSize"
+                        className='w-24 text-xs'
+                        type='number'
+                        defaultValue={4}
+                        min={1}
+                        max={4}
                         required
                     />
                 </div>
 
-                <div className='flex items-center justify-between font-light'>
-                    <Label htmlFor="refresh-switch" className='text-white'>Refresh already saved media</Label>
-                    <Switch
-                        id="refresh-switch"
-                        checked={forceRefresh}
-                        onCheckedChange={setForceRefresh}
-                    />
-                </div>
+                {/* <div className='flex items-center justify-between font-light'>
+                    <Label htmlFor="refresh-switch" className='text-white font-light'>Policy</Label>
+                    <Select>
+                        <SelectTrigger className="w-36">
+                            <SelectValue placeholder="Theme" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="full">Full</SelectItem>
+                            <SelectItem value="metadata-only">Metadata Only</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div> */}
 
                 <Button type="submit" variant='primary' className='relative text-xs' size='sm' disabled={isSubmitting}>
                     {isSubmitting ? 'Starting...' : 'Start'}
                 </Button>
-                {responseMessage && <p className="mt-2 text-white/80">{responseMessage}</p>}
+                {/* {responseMessage && <p className="mt-2 text-white/80">{responseMessage}</p>} */}
             </form>
         </CollapsiblePanel>
     )

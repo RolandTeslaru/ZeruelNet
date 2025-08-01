@@ -19,7 +19,7 @@ export abstract class AbstractScraper {
      * @param {ScrapeJob[]} jobs - The list of scrape jobs to process.
      * @returns {Promise<void>} A promise that resolves when all jobs are processed.
     */
-    abstract work(jobs: ScrapeJob[]): Promise<void>
+    abstract work(jobs: ScrapeJob[], batchSize: number): Promise<void>
     
     /**
      * Processes a single scrape job, extracting video data and comments.

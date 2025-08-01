@@ -65,7 +65,7 @@ export class TiktokScraper extends AbstractScraper {
 
 
         const page = await this.browserManager.getPage();
-        const allFoundUrls = await discoverVideos(task, page);
+        const allFoundUrls = await discoverVideos(task.identifier, task.limit, page);
 
         const videoIds = allFoundUrls.map(url => url.split('/').pop() as string);
         const existingIds = await DatabaseManager.getStoredVideoIds(videoIds);
@@ -119,13 +119,12 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    public async work(jobs: ScrapeJob[]): Promise<void> {
+    public async work(jobs: ScrapeJob[], batchSize: number): Promise<void> {
         const jobsQueue = [...jobs];
-        const BATCH_SIZE = 4;
 
         statusManager.setStage("scraping");
         Logger.info(`Starting to process ${jobs.length} scrape jobs with a more human-like, rate-limited pattern.`);
-        statusManager.updateStep('batch_processing', 'active', `Processing ${jobsQueue.length} videos in batches of ${BATCH_SIZE}.`);
+        statusManager.updateStep('batch_processing', 'active', `Processing ${jobsQueue.length} videos in batches of ${batchSize}.`);
 
 
         const report = {
@@ -135,11 +134,11 @@ export class TiktokScraper extends AbstractScraper {
             totalCommentsScraped: 0,
         };
 
-        const totalBatches = Math.ceil(jobsQueue.length / BATCH_SIZE);
+        const totalBatches = Math.ceil(jobsQueue.length / batchSize);
 
-        for (let i = 0; i < jobsQueue.length; i += BATCH_SIZE) {
-            const batch = jobsQueue.slice(i, i + BATCH_SIZE);
-            const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+        for (let i = 0; i < jobsQueue.length; i += batchSize) {
+            const batch = jobsQueue.slice(i, i + batchSize);
+            const currentBatch = Math.floor(i / batchSize) + 1;
 
 
             statusManager.updateStep('batch_processing', 'active', `Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
@@ -190,7 +189,7 @@ export class TiktokScraper extends AbstractScraper {
                 }
             });
             await Promise.all(batchPromises);
-            if (i + BATCH_SIZE < jobsQueue.length) {
+            if (i + batchSize < jobsQueue.length) {
                 const batchDelay = Math.random() * 5000 + 2500;
                 const waitTime = Math.round(batchDelay / 1000);
                 statusManager.updateStep('rate_limit_delays', 'active', `Waiting for ${waitTime}s before next batch...`);

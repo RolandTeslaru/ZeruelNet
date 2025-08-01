@@ -9,8 +9,7 @@ const MAX_VIDEOS_TO_FIND = 100
 // Explores the tiktok videos grid page for a specifc hastag
 // And extracts the urls for the videos whcih are then opened in difrent tabs in the next step
 
-export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<string[]> => {
-    const { identifier } = task;
+export const discoverVideos = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
     const url = `https://www.tiktok.com/tag/${identifier}`;
 
     
@@ -46,7 +45,7 @@ export const discoverVideos = async (task: DiscoveryTask, page: Page): Promise<s
     statusManager.updateStep('navigation',"completed");
 
 
-    const numVideosToFind = task.limit || MAX_VIDEOS_TO_FIND;
+    const numVideosToFind = limit || MAX_VIDEOS_TO_FIND;
     let videoUrls = new Set<string>();
 
 

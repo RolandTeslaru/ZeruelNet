@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
-import { DiscoveryTask } from '@zeruel/scraper-types';
+import { DiscoveryTask, ScrapeTask } from '@zeruel/scraper-types';
 import { statusManager } from '../../lib/statusManager';
 import { TiktokScraper } from "../../scrapers/tiktok"
 
@@ -13,7 +13,7 @@ export const startScraper = async (req: Request, res: Response) => {
         return res.status(409).send({ message: 'A scrape task is already in progress. Please wait for it to complete.' });
     }
 
-    const { source, identifier, limit } = req.body;
+    const { source, identifier, limit, batchSize } = req.body as ScrapeTask;
     if (!source || !identifier) {
         return res.status(400).send({ message: 'Missing required parameters: source and identifier.' });
     }
@@ -48,7 +48,7 @@ export const startScraper = async (req: Request, res: Response) => {
 
         const task: DiscoveryTask = { source, identifier, limit };
         const jobs = await scraper.discover(task);
-        await scraper.work(jobs);
+        await scraper.work(jobs, batchSize);
 
 
         statusManager.setStage('finalizing');        

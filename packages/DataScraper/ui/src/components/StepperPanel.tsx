@@ -27,7 +27,7 @@ const StepperPanel = () => {
 
     return (
         <BracketsWindowStyling className='mr-auto w-full relative py-0'>
-            <StepperVerticalMap ref={stepperRef} steps={steps} maxHeight='max-h-[200px]' />
+            <StepperVerticalMap ref={stepperRef} steps={steps} maxHeight='max-h-[250px]' />
         </BracketsWindowStyling>
     )
 }

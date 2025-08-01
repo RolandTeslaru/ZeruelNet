@@ -49,11 +49,17 @@ export interface SystemStatusUpdate {
     steps: Record<string, SystemStep>;
 }
 
-// Harvester-specific job and task types
+export interface ScrapeTask {
+    source: "hashtag" | "user"
+    identifier: string
+    limit: number
+    batchSize: number
+}
+
 export interface DiscoveryTask {
   source: 'hashtag' | 'user';
-  identifier: string; // e.g., 'russia' or 'some_user_id'
-  limit?: number; // The max number of videos we want to process in a run
+  identifier: string; 
+  limit?: number;
 }
 
 export type TScrapePolicy = 'full' | 'metadata_only';

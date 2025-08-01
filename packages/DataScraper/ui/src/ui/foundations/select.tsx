@@ -36,7 +36,7 @@ function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        `flex w-full items-center justify-between rounded-xl border border-primary-thin  bg-secondary-regular px-2 text-xs
+        `flex w-full items-center justify-between rounded-lg border border-primary-thin  bg-secondary-regular px-2 text-xs
        ring-offset-background placeholder:text-white disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1
         shadow-md shadow-black/20 !h-6 antialiased font-medium
       `,
@@ -101,7 +101,7 @@ function SelectContent({
     <SelectPrimitive.Portal container={externalContainer}>
       <SelectPrimitive.Content
         className={cn(
-          `${theme} relative z-50 max-h-96 min-w-[8rem] overflow-hidden backdrop-blur-lg rounded-xl border border-primary-thin
+          `${theme} relative z-50 max-h-96 min-w-[8rem] overflow-hidden backdrop-blur-lg rounded-lg border border-primary-thin
          bg-background shadow-md shadow-black/20
           data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 
           data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2`,
@@ -148,7 +148,7 @@ function SelectItem({
   return (
     <SelectPrimitive.Item
       className={cn(
-        `group relative flex w-full  cursor-default select-none items-center rounded-lg py-1 pl-7 pr-1
+        `group relative flex w-full  cursor-pointer select-none items-center rounded-lg py-1 pl-7 pr-1
        text-xs outline-hidden data-disabled:pointer-events-none data-disabled:opacity-50 font-medium
        hover:bg-blue-600 hover:shadow-md shadow-black/30 hover:border-blue-500 border border-transparent 
        `,
