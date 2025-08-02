@@ -11,6 +11,7 @@ import { DatabaseManager } from '../../lib/DatabaseManager';
 import { AbstractScraper } from '../AbstractScraper';
 import { Page } from 'playwright';
 import { sleep } from './utils';
+import { messageBroker } from '../../lib/messageBroker';
 
 type StatusUpdateCallback = (message: any) => void;
 
@@ -161,7 +162,11 @@ export class TiktokScraper extends AbstractScraper {
                     const page = await this.browserManager.getPage();
 
                     const videoData = await this.processJob(job, page);
-                    await DatabaseManager.saveVideo(videoData)
+                    await DatabaseManager.saveVideo(videoData);
+
+                    await messageBroker.publish('enrichment_queue', videoData.video_id);
+                    Logger.info(`[Enrichment] Published ${videoData.video_id} to enrichment queue.`);
+
                     statusManager.updateStep("data_persistence", "active", `Saved video ${videoData.video_id} and its ${videoData.comments.length} comments`)
 
                     // Update report and emit rich event
