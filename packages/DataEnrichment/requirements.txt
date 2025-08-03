@@ -2,6 +2,8 @@ redis
 psycopg2-binary
 python-dotenv
 yt-dlp>=2023.12.30
+torch
 transformers
 opencv-python>=4.8.0
 numpy>=1.24.0
+scipy

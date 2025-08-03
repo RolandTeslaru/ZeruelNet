@@ -1,9 +1,9 @@
+from .transcriber import transcribe_audio
+from .sentiment import SentimentAnalyzer
 
-from AudioProcessor.transcriber import AudioTanscriber
+def process(audio_path: str):
+    transcript, lang, console_output = transcribe_audio(audio_path, model_name="ggml-base.bin")
 
-trascriber = AudioTanscriber(model_name="ggml-base.bin")
-
-def process_audio(audio_path: str):
-    transcript, lang, console_output = trascriber.extract(audio_path)
+    text_sentiment_results = SentimentAnalyzer.get_sentiment(transcript, lang)
 
     return transcript, lang

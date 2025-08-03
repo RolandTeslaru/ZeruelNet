@@ -6,14 +6,13 @@ import yt_dlp
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
+audio_output_dir = os.path.join(script_dir, "../tmp/audio")
+video_output_dir = os.path.join(script_dir, "../tmp/video")
 
+def download_tiktok_audio(video_id: str):
 
-def download_tiktok_audio(video_id: str, output_dir: str):
-    if not os.path.exists(output_dir):
-        raise ValueError(f"Output directory {output_dir} does not exist!")
-    
     video_url = f"https://www.tiktok.com/@placeholder/video/{video_id}"
-    output_path_template = os.path.join(output_dir, f"{video_id}.%(ext)s")
+    output_path_template = os.path.join(audio_output_dir, f"{video_id}.%(ext)s")
 
     options = {
         'format': "bestaudio/best",
@@ -31,7 +30,7 @@ def download_tiktok_audio(video_id: str, output_dir: str):
         with yt_dlp.YoutubeDL(options) as ydl:
             ydl.download([video_url])
 
-        final_output_path = os.path.join(output_dir, f"{video_id}.wav")
+        final_output_path = os.path.join(audio_output_dir, f"{video_id}.wav")
         logging.info(f"Successfully downloaded audio to: {final_output_path}")
         return video_url, final_output_path
     except Exception as e:
@@ -40,14 +39,9 @@ def download_tiktok_audio(video_id: str, output_dir: str):
 
 
 
-def download_tiktok_full(video_id: str, video_output_dir: str, audio_output_dir: str):
-    if not os.path.exists(video_output_dir):
-        raise ValueError(f"Video output directory {video_output_dir} does not exist!")
-    if not os.path.exists(audio_output_dir):
-        raise ValueError(f"Audio output directory {audio_output_dir} does not exist!")
-    
+def tiktok_full(video_id: str):
     video_url = f"https://www.tiktok.com/@placeholder/video/{video_id}"
-    downloaded_video_path = ""
+    video_path = ""
 
     try:
         # Download video ( video + audio )
@@ -60,8 +54,8 @@ def download_tiktok_full(video_id: str, video_output_dir: str, audio_output_dir:
         logging.info(f"Downloading video from {video_url}")
         with yt_dlp.YoutubeDL(video_opts) as ydl:
             info = ydl.extract_info(video_url, download=True)
-            downloaded_video_path = ydl.prepare_filename(info)
-            logging.info(f"Successfully downloaded video to: {downloaded_video_path}")
+            video_path = ydl.prepare_filename(info)
+            logging.info(f"Successfully downloaded video to: {video_path}")
 
         # Extract audio from the local file
         audio_output_template = os.path.join(audio_output_dir, f"{video_id}.%(ext)s")
@@ -73,14 +67,14 @@ def download_tiktok_full(video_id: str, video_output_dir: str, audio_output_dir:
             'outtmpl': audio_output_template,
             'quiet': True
         }
-        logging.info(f"Extracting audio from {downloaded_video_path}")
+        logging.info(f"Extracting audio from {video_path}")
         with yt_dlp.YoutubeDL(audio_opts) as ydl:
-            ydl.download([downloaded_video_path])
+            ydl.download([video_path])
         
-        final_audio_path = os.path.join(audio_output_dir, f"{video_id}.wav")
-        logging.info(f"Successfully extracted audio to: {final_audio_path}")
+        audio_path = os.path.join(audio_output_dir, f"{video_id}.wav")
+        logging.info(f"Successfully extracted audio to: {audio_path}")
         
-        return video_url, downloaded_video_path, final_audio_path
+        return video_url, video_path, audio_path
 
     except Exception as e:
         logging.error(f"Failed during download/extraction for video_id: {video_id}: {e}")
