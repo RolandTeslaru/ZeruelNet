@@ -1,9 +1,17 @@
-from utils.download import download_tiktok_full
-import AudioProcessor
-import os
+from .gemini import gemini
+import logging
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
+def process(video_path: str):
+    logging.info(f"Starting video processing for {video_path}")
 
-def process(video_id:str):
-    
-    return 
+    try:
+        analysis_result = gemini.analyze(video_path)
+        if analysis_result:
+            logging.info(f"Successfully processed video {video_path}")
+            return analysis_result
+        else:
+            logging.warning(f"Video processing for {video_path} returned no result.")
+            return None
+    except Exception as e:
+        logging.error(f"An error occurred during video processing for {video_path}: {e}")
+        return None 

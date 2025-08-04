@@ -6,4 +6,4 @@ def process(audio_path: str):
 
     text_sentiment_results = SentimentAnalyzer.get_sentiment(transcript, lang)
 
-    return transcript, lang
+    return transcript, lang, text_sentiment_results
