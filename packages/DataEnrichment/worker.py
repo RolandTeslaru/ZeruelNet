@@ -4,7 +4,7 @@ import redis
 import os
 from utils import download
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [EnrichmentWorker] - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(levelname)s - [EnrichmentWorker] - %(message)s')
 
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("REDIS_PORT", 6379)

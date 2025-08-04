@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [EnrichmentWorker] - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(levelname)s - [EnrichmentWorker] - %(message)s')
 
 
 DB_NAME = os.getenv("DB_NAME")
