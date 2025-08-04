@@ -3,11 +3,11 @@ import logging
 import os
 import yt_dlp
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-audio_output_dir = os.path.join(script_dir, "../tmp/audio")
-video_output_dir = os.path.join(script_dir, "../tmp/video")
+audio_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/audio"))
+video_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/video"))
 
 def download_tiktok_audio(video_id: str):
 
@@ -58,21 +58,26 @@ def tiktok_full(video_id: str):
             logging.info(f"Successfully downloaded video to: {video_path}")
 
         # Extract audio from the local file
-        audio_output_template = os.path.join(audio_output_dir, f"{video_id}.%(ext)s")
-        audio_opts = {
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'wav',
-            }],
-            'outtmpl': audio_output_template,
-            'quiet': True
-        }
-        logging.info(f"Extracting audio from {video_path}")
-        with yt_dlp.YoutubeDL(audio_opts) as ydl:
-            ydl.download([video_path])
-        
         audio_path = os.path.join(audio_output_dir, f"{video_id}.wav")
-        logging.info(f"Successfully extracted audio to: {audio_path}")
+        logging.info(f"Extracting audio from {video_path} to {audio_path}")
+        
+        if not os.path.exists(audio_path):
+            command = [
+                'ffmpeg',
+                '-i', video_path,
+                '-vn', # no video
+                '-acodec', 'pcm_s16le', # wav format
+                '-ar', '16000', 
+                '-ac', '1', # mono channel
+                audio_path
+            ]
+            
+            try:
+                subprocess.run(command, check=True, capture_output=True, text=True)
+                logging.info(f"Successfully extracted audio to: {audio_path}")
+            except subprocess.CalledProcessError as e:
+                logging.error(f"Failed to extract audio with FFmpeg: {e.stderr}")
+                raise
         
         return video_url, video_path, audio_path
 

@@ -2,7 +2,7 @@ import argparse
 import logging
 import os
 import db
-from run import process  
+from worker import process  
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [EnrichmentCLI] - %(message)s')
 

@@ -15,12 +15,14 @@ def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
     model_path = os.path.join(models_dir, model_name)
     executable_path = os.path.join(whisper_cpp_dir, "bin", "whisper-cli")
     
+    logging.info(f"Starting transcriber for audio in {audio_path}")
+
     command = [
         executable_path,
-        "--model", model_path,
-        "--language", "auto",
-        "--output-txt",
-        "--file", audio_path
+        "-m", model_path,
+        "-f", audio_path,
+        "-l", "auto",
+        "-otxt" 
     ]
 
     try:
@@ -44,6 +46,8 @@ def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
     
     except subprocess.CalledProcessError as e:
         logging.error(f"Whisper.cpp exited with error: {e}")
+        logging.error(f"Whisper.cpp stderr:\n{e.stderr}")
+        logging.error(f"Whisper.cpp stdout:\n{e.stdout}")
         raise
 
 
