@@ -6,8 +6,10 @@ def process(video_path: str):
 
     try:
         analysis_result = gemini.analyze(video_path)
+
+        logging.info(f"VIDEO Analysis result {analysis_result}")
+
         if analysis_result:
-            logging.info(f"Successfully processed video {video_path}")
             return analysis_result
         else:
             logging.warning(f"Video processing for {video_path} returned no result.")

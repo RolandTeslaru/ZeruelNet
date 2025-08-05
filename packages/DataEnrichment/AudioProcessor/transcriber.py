@@ -2,6 +2,7 @@ import subprocess
 import os
 import logging
 from typing import Tuple
+import re
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -54,10 +55,9 @@ def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
 def get_lang_from_process_output(process: subprocess.CompletedProcess[str])->str :
     detected_lang = "unknown"
     for line in process.stderr.splitlines():
-        if "detected language" in line:
-            detected_lang = line.split(":")[-1].strip()
-            break
-
-    logging.info(f"Detected language {detected_lang}")
+        match = re.search(r'detected language:?\s*([a-z]{2})', line, re.IGNORECASE)
+        if match:
+            detected_lang = match.group(1)
+            break  # Found it, no need to search further
 
     return detected_lang

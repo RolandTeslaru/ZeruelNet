@@ -11,19 +11,18 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
+# This is a sentiment analyzer that uses specifc models for en, fr, de, ro
 
 class _SentimentAnalyzer:
     def __init__(self):
         self.loaded_models = {}
         self.loaded_tokenizers = {}
-        # This map defines which model to use for each language code
         self.model_map = {
             'en': 'cardiffnlp/twitter-roberta-base-sentiment-latest',
             'de': 'oliverguhr/german-sentiment-bert',
             'fr': 'cmarkea/distilcamembert-base-sentiment',
             'ro': 'ldincov/roberta-base-romanian-sentiment-analysis'
         }
-        # Result labels because they are dfirent between models
         self.id2label_maps = {}
         self.label_translation_map = {
             'cardiffnlp/twitter-roberta-base-sentiment-latest': {
@@ -48,7 +47,7 @@ class _SentimentAnalyzer:
             },
         }
 
-    # Check if the language is supported otherwise default to english (which is universal but less accurate)
+    # Check if language is supported otherwise default to the english model
     def _check_lang(self, lang:str):
         if lang not in self.model_map:
             logging.warning(f"Language {lang} doesnt have a sentiment model. Defaulting to english")
@@ -65,12 +64,10 @@ class _SentimentAnalyzer:
                 self.loaded_tokenizers[model_name] = AutoTokenizer.from_pretrained(model_name)
                 model = AutoModelForSequenceClassification.from_pretrained(model_name)
                 self.loaded_models[model_name] = model
-                # Dynamically store the model's id-to-label mapping
                 self.id2label_maps[model_name] = model.config.id2label
                 logging.info(f"Successfully loaded model {model_name}")
             except Exception as e:
                 logging.error(f"An error occurred when tryng to load model {model_name} {e}")
-                # If the model is broken for a speicifc language then we must force it to use the default en model
                 self.model_map.pop(lang, None)
                 return None, None
         
@@ -108,8 +105,12 @@ class _SentimentAnalyzer:
             encoded_input = tokenizer(transcription, return_tensors='pt', truncation=True, max_length=512) 
             output = model(**encoded_input)
 
+            logging.info(f"SENTIMENT MODEL OUTPUT {output}")
+
             scores = output[0][0].detach().numpy()
             scores = softmax(scores)
+
+            logging.info(f"SENTIMENT MODEL SCORES {scores}")
 
             # Get the correct mappings for the current model
             id2label = self.id2label_maps[model_name]
@@ -121,6 +122,7 @@ class _SentimentAnalyzer:
                 "neutral": 0.0,
                 "negative": 0.0
             }
+
             
             # Map scores to their standard labels
             for i in range(len(scores)):

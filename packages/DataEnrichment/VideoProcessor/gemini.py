@@ -98,31 +98,17 @@ class _GeminiProcessor:
         # Format the knowledge object taht then gets passed onto the prompt
         self.knowledge_string = json.dumps(KNOWLEDGE, indent=2)
 
-    def _upload_video(self, video_path: str):
-        if not os.path.exists(video_path):
-            logging.error(f"Video path {video_path} could not be resolved")
-            return
-
-        video_file = self.client.files.upload_file(file = video_path)
-        return video_file
-
-    def _delete_uploaded_video(self, video_file):
-        if not video_file:
-            return
-
-        logging.info(f"Deleting video {video_file.display_name}")
-        try:
-            self.client.files.delete(name=video_file.name)
-            logging.info(f"Successfully deleted {video_file.display_name}")
-        except Exception as e:
-            logging.error(f"Failed to delete video file {video_file.display_name} with error: {e}")
-
 
     def analyze(self, video_path: str):
-        video_file = self._upload_video(video_path)
+        with open(video_path, "rb") as f:
+            video_bytes = f.read()
 
-        if not video_file:
-            return None
+        video_part = types.Part(
+            inline_data=types.Blob(
+                mime_type="video/mp4",
+                data=video_bytes
+            )
+        )
 
         try:
             final_prompt = VIDEO_ANALYSIS_PROMPT_TEMPLATE.format(knowledge_base=self.knowledge_string)
@@ -131,20 +117,17 @@ class _GeminiProcessor:
                 model=self.model_name,
                 config=self.generation_config,
                 contents=[
-                    video_file,
+                    video_part,
                     final_prompt
                 ]
             )
-
             # Parse the JSON string response into a Python dictionary
             parsed_response = json.loads(response.text)
             logging.info(json.dumps(parsed_response, indent=2))
             return parsed_response
         except Exception as e:
-            logging.error(f"An error occured during Gemini analysis for video {video_file.display_name}, error: {e}" )
+            logging.error(f"An error occured during Gemini analysis for video {video_path}, error: {e}" )
             return None 
-        finally:
-            self._delete_uploaded_video(video_file)
 
 
 gemini = _GeminiProcessor()

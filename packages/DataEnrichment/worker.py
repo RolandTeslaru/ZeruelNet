@@ -18,7 +18,7 @@ def process(video_id: str, db_conn):
         video_url, video_path, audio_path = download.tiktok_full(video_id)
 
         # Run the Processors
-        transcript, lang = AudioProcessor.process(audio_path)
+        transcript, lang, text_sentiment_analysis = AudioProcessor.process(audio_path)
         _ = VideoProcessor.process(video_path)
 
         # Upload to database
