@@ -6,14 +6,14 @@ from typing import Tuple
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-whisper_cpp_dir = os.path.abspath(os.path.join(script_dir, "support", "whisper"))
+whisper_cpp_dir = os.path.abspath(os.path.join(script_dir, "support", "whisper.cpp"))
 models_dir = os.path.join(whisper_cpp_dir, "models")
 
 DEFAULT_MODEL_NAME = "ggml-base.bin"
 
 def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
     model_path = os.path.join(models_dir, model_name)
-    executable_path = os.path.join(whisper_cpp_dir, "bin", "whisper-cli")
+    executable_path = os.path.join(whisper_cpp_dir, "build", "bin", "whisper-cli")
     
     logging.info(f"Starting transcriber for audio in {audio_path}")
 
@@ -22,14 +22,14 @@ def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
         "-m", model_path,
         "-f", audio_path,
         "-l", "auto",
-        "-otxt" 
+        "-otxt" # write the transcription to a .txt files
     ]
 
     try:
         # Run the Whisper.cpp model thru the CLI
         process = subprocess.run(command, check=True, capture_output=True, text=True, cwd=os.path.dirname(audio_path))
 
-        # Load transcription into memory then remove the file
+        # Load transcription into memory from the .txt file then remove it
         transcription_path = f"{audio_path}.txt"
         if not os.path.exists(transcription_path):
             raise FileNotFoundError(f"Transcription path does NOT exist {transcription_path}")
@@ -57,5 +57,7 @@ def get_lang_from_process_output(process: subprocess.CompletedProcess[str])->str
         if "detected language" in line:
             detected_lang = line.split(":")[-1].strip()
             break
+
+    logging.info(f"Detected language {detected_lang}")
 
     return detected_lang

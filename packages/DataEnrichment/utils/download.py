@@ -51,15 +51,18 @@ def tiktok_full(video_id: str):
             'outtmpl': video_output_template,
             'quiet': True,
         }
-        logging.info(f"Downloading video from {video_url}")
+
         with yt_dlp.YoutubeDL(video_opts) as ydl:
-            info = ydl.extract_info(video_url, download=True)
+            info = ydl.extract_info(video_url, download=False)
             video_path = ydl.prepare_filename(info)
-            logging.info(f"Successfully downloaded video to: {video_path}")
+            if not os.path.exists(video_path):
+                ydl.download([video_url])
+                logging.info(f"Successfully downloaded video to: {video_path}")
+            else:
+                logging.info(f"Video {video_id} is already downloaded to {video_path}. Skipping")
 
         # Extract audio from the local file
         audio_path = os.path.join(audio_output_dir, f"{video_id}.wav")
-        logging.info(f"Extracting audio from {video_path} to {audio_path}")
         
         if not os.path.exists(audio_path):
             command = [
@@ -78,6 +81,8 @@ def tiktok_full(video_id: str):
             except subprocess.CalledProcessError as e:
                 logging.error(f"Failed to extract audio with FFmpeg: {e.stderr}")
                 raise
+        else:
+            logging.info(f"Audio {video_id} is already downloaded in {audio_path}. Skipping")
         
         return video_url, video_path, audio_path
 
