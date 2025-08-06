@@ -30,6 +30,7 @@
   },
   "include": [
     "src",
-    "../../SharedUI/lib"
+    "../../SharedUI/lib",
+    "../types/src"
   ]
 }

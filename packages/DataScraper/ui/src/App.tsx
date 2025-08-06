@@ -1,5 +1,6 @@
 import Layout from './components/Layout';
-import { BracketsWindowStyling, CrossesWindowStyling, StandardWindowStyling, VXWindow } from "@zeruel/shared-ui/VXWindow";
+import { BracketsWindowStyling, CrossesWindowStyling, StandardWindowStyling } from "@zeruel/shared-ui/WindowStyling";
+import { VXWindow } from '@zeruel/shared-ui/VXWindow';
 import { LogPanel } from './components/LogPanel';
 import { WindowControlDots } from '@zeruel/shared-ui/VXWindow/WindowControlDots';
 
@@ -48,13 +49,16 @@ function App() {
             title='ZeruelNet DataHarvester: RightPanel'
             windowClasses='width=310,height=702,left=200,top=200,resizable=0'
             StylingComponent={
-              <StandardWindowStyling
-                className="w-60 h-[350px] pt-3"
+              <BracketsWindowStyling
+                className="w-64 h-[350px] p-4 !gap-6"
                 detachedClassName="!top-0 !left-0 !w-[calc(100%_-_60px)] h-full"
               />
             }
           >
             <CommandPanel />
+            <CommandPanel />
+            <CommandPanel />
+
           </VXWindow>
 
         </div>

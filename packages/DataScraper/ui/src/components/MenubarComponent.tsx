@@ -1,6 +1,6 @@
 import React from 'react'
 import { Menubar, MenubarContent, MenubarItem, MenubarSubContent, MenubarSubTrigger, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarTrigger } from '@zeruel/shared-ui/foundations/menubar'
-import { StandardWindowStyling } from '@zeruel/shared-ui/VXWindow'
+import { StandardWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import { DialogAbout } from "./dialogs/About"
 import { DialogSettings } from './dialogs/Settings'
 import { pushDialogStatic, useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'

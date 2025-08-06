@@ -1,5 +1,5 @@
 import React from 'react'
-import { CrossesWindowStyling } from '@zeruel/shared-ui/VXWindow'
+import { CrossesWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import { Spinner } from '@zeruel/shared-ui/foundations'
 import { ScrapeJob, T_VideoMetadata } from '@zeruel/scraper-types'
 import { useActiveJobFeed } from '../../stores/useActiveJobFeed'

@@ -18,7 +18,7 @@ export const useSystemStatus = create<State & Actions>()(
     immer((set, get) => ({
         stage: {
             type: "INFO",
-            title: `IDLE: CONNECTING TO SERVER`,
+            title: `IDLE:  CONNECTING  TO  SERVER`,
         },
         steps: new Map()
     }))

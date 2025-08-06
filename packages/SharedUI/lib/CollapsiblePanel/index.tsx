@@ -1,6 +1,7 @@
 import React, { useState, memo } from 'react'
 import classNames from "classnames"
 import { ChevronRight } from '../icons'
+import { CrossesWindowStyling } from '../WindowStyling'
 
 interface Props {
     title: string,
@@ -20,12 +21,10 @@ const CollapsiblePanel: React.FC<Props> = memo(
         const [open, setOpen] = useState(defaultOpen);
 
         return (
-            <div className={
+
+            <CrossesWindowStyling className={
                 classNames(className, { "max-h-[40px]!": open === false }, { "max-h-[650px]": open === true }, { "px-1": noPadding === false },
-                    `z-50 h-fit relative !transform-gpu rounded-xl bg-foreground overflow-hidden duration-500 ease
-                         shadow-md shadow-foreground-shadow border border-neutral-400/5
-                      `)}
-            >
+                    `z-50 h-fit relative !transform-gpu duration-500 ease bg-black/20 backdrop-blur-2xl`)}>
                 {/* Header*/}
                 <div className={`py-2 ${noPadding ? "px-2" : "px-0"} min-h-[37px] relativ`}>
                     {/* Open/Close Buton */}
@@ -57,7 +56,7 @@ const CollapsiblePanel: React.FC<Props> = memo(
                 >
                     {children}
                 </div>
-            </div>
+            </CrossesWindowStyling>
         )
     })
 
