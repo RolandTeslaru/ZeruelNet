@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "packages/DataScraper/*",
-    "packages/GatewayService"
+    "packages/GatewayService",
+    "packages/SharedUI"
   ],
   "scripts": {
     "types:build": "npm run build --workspace=@zeruel/scraper-types",
