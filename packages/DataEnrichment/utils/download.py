@@ -9,7 +9,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 audio_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/audio"))
 video_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/video"))
 
-def download_tiktok_audio(video_id: str):
+def tiktok_audio(video_id: str):
 
     video_url = f"https://www.tiktok.com/@placeholder/video/{video_id}"
     output_path_template = os.path.join(audio_output_dir, f"{video_id}.%(ext)s")

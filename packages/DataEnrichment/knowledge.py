@@ -14,8 +14,8 @@ KNOWLEDGE = {
     "sergey lavrov": {"category": "Political Leader", "country_code": "RU", "inherent_alignment": -1.0},
     "dimitri medvedev": {"category": "Political Leader", "country_code": "RU", "inherent_alignment": -1.0},
 
-    "alice weidel": {"category": "Political Leader", "country_code": "DE", "inherent_alignment": -0.5},
     "nigel farage": {"category": "Political Leader", "country_code": "UK", "inherent_alignment": -0.5},
+    "alice weidel": {"category": "Political Leader", "country_code": "DE", "inherent_alignment": -0.5},
     "marine le pen": {"category": "Political Leader", "country_code": "FR", "inherent_alignment": -0.5},
     "viktor orbán": {"category": "Political Leader", "country_code": "HU", "inherent_alignment": -0.6},
     "george simion": {"category": "Political Leader", "country_code": "RO", "inherent_alignment": -1.0},
@@ -24,7 +24,7 @@ KNOWLEDGE = {
     # Geopolitical Entities
     "nato": {"category": "Alliance", "country_code": None, "inherent_alignment": 1.0},
     "european union": {"category": "Alliance", "country_code": "EU", "inherent_alignment": 1.0},
-    "washington": {"category": "Country", "country_code": "RU", "inherent_alignment": 1.0},
+    "united states of america": {"category": "Country", "country_code": "US", "inherent_alignment": 1.0},
     "germany": {"category": "Country", "country_code": "DE", "inherent_alignment": 1.0},
     "france": {"category": "Country", "country_code": "FR", "inherent_alignment": 1.0},
     "ukraine": {"category": "Country", "country_code": "UA", "inherent_alignment": 1.0},
@@ -34,7 +34,6 @@ KNOWLEDGE = {
 
     "russia": {"category": "Country", "country_code": "RU", "inherent_alignment": -1.0},
     "belarus": {"category": "Country", "country_code": "BY", "inherent_alignment": -1.0},
-    "kremlin": {"category": "Country", "country_code": "RU", "inherent_alignment": -1.0},
 
     # Abstract Concepts
     "sovereignty": {"category": "Concept", "country_code": None, "inherent_alignment": -0.5},
