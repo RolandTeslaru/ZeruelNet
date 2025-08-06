@@ -2,7 +2,9 @@ import AudioProcessor, VideoProcessor, db
 import logging
 import redis
 import os
+import json
 from utils import download
+from VideoProcessor.gemini import GEMINI_MODEL_NAME
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - [EnrichmentWorker] - %(message)s')
 
@@ -12,34 +14,40 @@ ENRICHMENT_QUEUE_CHANNEL = "enrichment_queue"
 
 def process(video_id: str, db_conn):
     try:
-        logging.info("Starting data enrichment process")
+        logging.info("Starting data enrichment process for video_id: %s", video_id)
 
         # Download the content
         video_url, video_path, audio_path = download.tiktok_full(video_id)
 
         # Run the Processors
         transcript, lang, text_sentiment_analysis = AudioProcessor.process(audio_path)
-        _ = VideoProcessor.process(video_path)
+        analysis_result_json = VideoProcessor.process(video_path)
+
+        positive_sentiment = text_sentiment_analysis["positive"]
+        negative_sentiment = text_sentiment_analysis["negative"]
+        neutral_sentiment = text_sentiment_analysis["neutral"]
+
+        llm_summary = analysis_result_json["summary"]
+        identified_subjects = analysis_result_json["identified_subjects"] 
+        alignment = analysis_result_json["overall_alignment"]
 
         # Upload to database
-
-
-
-
+        with db_conn.cursor() as cur:
+            cur.execute(UPSERT_SUCCESSFUL_ENRICHMENT_QUERY,
+                (
+                    video_id, transcript, lang, 'completed',
+                    llm_summary, json.dumps(identified_subjects), alignment, GEMINI_MODEL_NAME,
+                    positive_sentiment, negative_sentiment, neutral_sentiment
+                )
+            )
+            db_conn.commit()
+            logging.info(f"Successfully comitted to database")
 
     except Exception as e:
         logging.error(f"Enrichment failed for video_id: {video_id} with error: {e}")
+        db_conn.rollback()
         with db_conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO video_features (video_id, enrichment_status)
-                VALUES (%s, %s)
-                ON CONFLICT (video_id) DO UPDATE SET
-                    enrichment_status = EXCLUDED.enrichment_status,
-                    last_updated = CURRENT_TIMESTAMP;
-                """,
-                (video_id, 'failed')
-            )
+            cur.execute(UPDATE_ENRICHMENT_STATUS_ON_FAILURE_QUERY, (video_id, 'failed'))
             db_conn.commit()
 
 def main():
@@ -69,3 +77,41 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# Query that runs if the DataEnrichment process is successfull 
+UPSERT_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
+    INSERT INTO video_features (
+        video_id, transcript, detected_language, enrichment_status, last_enriched_at,
+        llm_summary, llm_identified_subjects, llm_overall_alignment, llm_model_name,
+        text_sentiment_positive, text_sentiment_negative, text_sentiment_neutral
+    ) VALUES (
+        %s, %s, %s, %s, CURRENT_TIMESTAMP,
+        %s, %s, %s, %s,
+        %s, %s, %s
+    )
+    ON CONFLICT (video_id) DO UPDATE SET
+        transcript = EXCLUDED.transcript,
+        detected_language = EXCLUDED.detected_language,
+        enrichment_status = 'completed',
+        last_enriched_at = CURRENT_TIMESTAMP,
+        llm_summary = EXCLUDED.llm_summary,
+        llm_identified_subjects = EXCLUDED.llm_identified_subjects,
+        llm_overall_alignment = EXCLUDED.llm_overall_alignment,
+        llm_model_name = EXCLUDED.llm_model_name,
+        text_sentiment_positive = EXCLUDED.text_sentiment_positive,
+        text_sentiment_negative = EXCLUDED.text_sentiment_negative,
+        text_sentiment_neutral = EXCLUDED.text_sentiment_neutral;
+"""
+
+
+
+# Querry that runs if its unsucessfull
+# it sets the enrichment_status column to failed
+UPDATE_ENRICHMENT_STATUS_ON_FAILURE_QUERY = """--sql
+    INSERT INTO video_features (video_id, enrichment_status)
+    VALUES (%s, %s)
+    ON CONFLICT (video_id) DO UPDATE SET
+        enrichment_status = EXCLUDED.enrichment_status,
+        last_enriched_at = CURRENT_TIMESTAMP;
+"""

@@ -11,6 +11,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 load_dotenv()
 
+GEMINI_MODEL_NAME = "gemini-2.5-flash-lite"
+
 VIDEO_ANALYSIS_SCHEMA = {
     "type": "OBJECT",
     "properties": {
@@ -68,7 +70,7 @@ class _GeminiProcessor:
         # Config is set in .env
         self.client = genai.Client()
 
-        self.model_name = "gemini-2.5-flash-lite"
+        self.model_name = GEMINI_MODEL_NAME
         self.generation_config = types.GenerateContentConfig(
             response_mime_type="application/json",
             response_schema=VIDEO_ANALYSIS_SCHEMA,
