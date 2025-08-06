@@ -5,7 +5,7 @@ import base64
 import logging
 import os
 import json
-from knowledge import KNOWLEDGE
+from knowledge import MODEL_KNOWLEDGE
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -95,8 +95,8 @@ class _GeminiProcessor:
             ]
         )
 
-        # Format the knowledge object taht then gets passed onto the prompt
-        self.knowledge_string = json.dumps(KNOWLEDGE, indent=2)
+        # Format the knowledge object that then gets passed onto the prompt
+        self.knowledge_string = json.dumps(MODEL_KNOWLEDGE, indent=2)
 
 
     def analyze(self, video_path: str):
@@ -123,7 +123,7 @@ class _GeminiProcessor:
             )
             # Parse the JSON string response into a Python dictionary
             parsed_response = json.loads(response.text)
-            logging.info(json.dumps(parsed_response, indent=2))
+            # logging.info(json.dumps(parsed_response, indent=2))
             return parsed_response
         except Exception as e:
             logging.error(f"An error occured during Gemini analysis for video {video_path}, error: {e}" )
