@@ -24,9 +24,9 @@ const CollapsiblePanel: React.FC<Props> = memo(
 
             <CrossesWindowStyling className={
                 classNames(className, { "max-h-[40px]!": open === false }, { "max-h-[650px]": open === true }, { "px-1": noPadding === false },
-                    `z-50 h-fit relative !transform-gpu duration-500 ease bg-black/20 backdrop-blur-2xl`)}>
+                    `z-50 h-fit relative !transform-gpu duration-500 ease bg-zinc-900/40 backdrop-blur-2xl`)}>
                 {/* Header*/}
-                <div className={`py-2 ${noPadding ? "px-2" : "px-0"} min-h-[37px] relativ`}>
+                <div className={`py-2 ${noPadding ? "px-2" : "px-0"} min-h-[20px] relativ`}>
                     {/* Open/Close Buton */}
                     <button className={"absolute top-[7px] h-6 w-6 flex hover:bg-neutral-800 rounded-xl cursor-pointer "}
                         onClick={() => setOpen(!open)}
@@ -52,7 +52,7 @@ const CollapsiblePanel: React.FC<Props> = memo(
                         { "scale-100 opacity-100 ": open === true },
                         { "px-1": noPadding === false },
                         'text-xs h-auto border-t duration-300 flex flex-col py-2 bg-none !transform-gpu transition-all text-label-quaternary')}
-                    style={{ borderImage: "linear-gradient(90deg, rgba(64,64,64,0) 0%, rgba(64,64,64,1) 50%, rgba(64,64,64,0) 100%) 1" }}
+                    style={{ borderImage: "linear-gradient(90deg, rgba(128,128,128,0) 0%, rgba(128,128,128,1) 50%, rgba(128,128,128,0) 100%) 1" }}
                 >
                     {children}
                 </div>

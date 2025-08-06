@@ -16,12 +16,12 @@ export const DialogAbout = () => {
         <DialogDescription className='w-fit mx-auto mt-auto text-label-quaternary mb-3'>
           <div className='flex flex-col gap-1'>
             <div className='flex justify-between'>
-              <span>Data Harvester UI</span>
+              <span>DataScraper UI</span>
               &nbsp;
               <span>{dataHarvesterUIPackageJson.version}</span>
             </div>
             <div className='flex justify-between'>
-              <span>Data Harvester Service</span>
+              <span>DataScraper Service</span>
               &nbsp;
               <span>{dataHarvesterServicePackageJson.version}</span>
             </div>

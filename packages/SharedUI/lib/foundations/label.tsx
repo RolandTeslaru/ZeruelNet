@@ -5,7 +5,7 @@ import { cn } from "../utils/cn"
 
 
 const labelVariants = cva(
-  "text-xs font-roboto-mono  text-label-secondary leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+  "text-xs font-mono  text-label-secondary leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
   {
     variants: {
       variant: {

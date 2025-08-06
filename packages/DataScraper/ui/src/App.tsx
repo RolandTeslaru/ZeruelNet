@@ -9,6 +9,7 @@ import ScrapingDashboardPanel from './components/ScrapingDashboardPanel';
 import CommandPanel from './components/CommandPanel';
 import StepperPanel from './components/StepperPanel';
 import { useWebSocket } from './stores/useWebSocket';
+import VersionsPanel from './components/VersionsPanel';
 
 useWebSocket.getState().connect();
 
@@ -56,9 +57,7 @@ function App() {
             }
           >
             <CommandPanel />
-            <CommandPanel />
-            <CommandPanel />
-
+            <VersionsPanel/>
           </VXWindow>
 
         </div>
