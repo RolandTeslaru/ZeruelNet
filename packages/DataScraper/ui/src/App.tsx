@@ -1,7 +1,7 @@
 import Layout from './components/Layout';
-import { BracketsWindowStyling, CrossesWindowStyling, StandardWindowStyling, VXWindow } from './ui/components/VXWindow';
+import { BracketsWindowStyling, CrossesWindowStyling, StandardWindowStyling, VXWindow } from "@zeruel/shared-ui/VXWindow";
 import { LogPanel } from './components/LogPanel';
-import { WindowControlDots } from './ui/components/VXWindow/WindowControlDots';
+import { WindowControlDots } from '@zeruel/shared-ui/VXWindow/WindowControlDots';
 
 import StagePanel from './components/StagePanel';
 import ScrapingDashboardPanel from './components/ScrapingDashboardPanel';

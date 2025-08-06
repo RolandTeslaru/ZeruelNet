@@ -1,9 +1,10 @@
 import React from 'react'
-import { Menubar, MenubarContent, MenubarItem, MenubarSubContent, MenubarSubTrigger, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarTrigger } from '../ui/foundations/menubar'
-import { StandardWindowStyling } from '../ui/components/VXWindow'
-import { DialogAbout, DialogSettings } from '../ui/dialogs'
-import { pushDialogStatic, useUIManagerAPI } from '../ui/UIManager/store'
-import { DEBUG_NORMAL_dialog } from '../ui/dialogs/debug'
+import { Menubar, MenubarContent, MenubarItem, MenubarSubContent, MenubarSubTrigger, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarTrigger } from '@zeruel/shared-ui/foundations/menubar'
+import { StandardWindowStyling } from '@zeruel/shared-ui/VXWindow'
+import { DialogAbout } from "./dialogs/About"
+import { DialogSettings } from './dialogs/Settings'
+import { pushDialogStatic, useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'
+import { DEBUG_NORMAL_dialog } from '@zeruel/shared-ui/dialogs/debug'
 
 const LOG_MODULE = "VXMenubar"
 

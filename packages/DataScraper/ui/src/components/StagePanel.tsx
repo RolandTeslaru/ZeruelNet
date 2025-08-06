@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts';
-import RotatingText from '../ui/components/RotatingText';
-import { BracketsWindowStyling } from '../ui/components/VXWindow';
+import RotatingText from '@zeruel/shared-ui/RotatingText';
+import { BracketsWindowStyling } from '@zeruel/shared-ui/VXWindow';
 import { useSystemStatus } from '../stores/useSystemStatus';
 
 const StagePanel = () => {

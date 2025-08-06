@@ -1,5 +1,5 @@
 import React from 'react'
-import { BracketsWindowStyling } from '../ui/components/VXWindow'
+import { BracketsWindowStyling } from '@zeruel/shared-ui/VXWindow'
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts';
 
 const trafficData = [

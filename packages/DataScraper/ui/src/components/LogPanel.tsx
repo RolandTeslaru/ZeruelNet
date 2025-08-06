@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLogMessages } from "../stores/useLogMessages";
-import { Server } from "../ui/icons";
+// import { Server } from "../ui/icons";
+import { Server } from "@zeruel/shared-ui/icons"
 import classNames from "classnames";
 import { Virtuoso } from 'react-virtuoso'
 

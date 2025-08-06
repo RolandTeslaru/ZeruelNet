@@ -37,7 +37,7 @@
     "baseUrl": ".",
     "paths": {
       "@zeruel/scraper-types": ["../types/src"],
-      "@zeruel/shared-ui": ["../../SharedUI/src"],
+      "@zeruel/shared-ui/*": ["../../SharedUI/lib/*"],
       "@/*": ["./src/*"]
     }
   },

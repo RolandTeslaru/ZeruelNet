@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import CollapsiblePanel from '../ui/components/CollapsiblePanel'
-import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '../ui/foundations'
+import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
+import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '@zeruel/shared-ui/foundations'
 import { DiscoveryTask, ScrapeTask } from '@zeruel/scraper-types'
 import { useSystemStatus } from '../stores/useSystemStatus'
 

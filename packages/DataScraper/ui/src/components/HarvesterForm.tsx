@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '../ui/foundations/input';
-import { Label } from '../ui/foundations/label';
-import { Button } from '../ui/foundations/button';
-import { Text } from '../ui/foundations/Text';
+import { Input, Label, Button } from '@zeruel/shared-ui/foundations';
 import { DiscoveryTask } from '@zeruel/scraper-types';
 
 type TStatus = 'idle' | 'loading' | 'success' | 'error';

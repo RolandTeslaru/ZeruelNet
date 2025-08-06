@@ -16,6 +16,7 @@
     "gateway:dev": "npm run dev --workspace=@zeruel/gateway-service"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "typescript": "^5.4.2"
   }
-} 
+}

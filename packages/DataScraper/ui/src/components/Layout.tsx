@@ -1,10 +1,10 @@
 import React from 'react'
-import VexrLogo from '../ui/components/VexrLogo'
+import VexrLogo from '@zeruel/shared-ui/VexrLogo'
 import MenubarComponent from './MenubarComponent'
-import { DotPattern } from '../ui/components/DotPattern'
-import { useUIManagerAPI } from '../ui/UIManager/store'
-import AuroraBackground from '../ui/components/AuroraBackground'
-import { UIManagerDialogLayer } from '../ui/UIManager/ui'
+import { DotPattern } from '@zeruel/shared-ui/DotPattern'
+import { useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'
+import AuroraBackground from '@zeruel/shared-ui/AuroraBackground'
+import { UIManagerDialogLayer } from '@zeruel/shared-ui/UIManager/ui'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
     children?: React.ReactNode

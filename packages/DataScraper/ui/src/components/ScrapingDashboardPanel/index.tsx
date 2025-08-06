@@ -1,5 +1,4 @@
 import React from 'react'
-import { CrossesWindowStyling } from '../../ui/components/VXWindow'
 import JobWindow from './JobWindow'
 import { AnimatePresence, scale } from 'motion/react'
 import { motion } from 'motion/react'

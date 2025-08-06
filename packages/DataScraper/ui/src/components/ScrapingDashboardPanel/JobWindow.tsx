@@ -1,9 +1,9 @@
 import React from 'react'
-import { CrossesWindowStyling } from '../../ui/components/VXWindow'
-import { Spinner } from '../../ui/foundations'
+import { CrossesWindowStyling } from '@zeruel/shared-ui/VXWindow'
+import { Spinner } from '@zeruel/shared-ui/foundations'
 import { ScrapeJob, T_VideoMetadata } from '@zeruel/scraper-types'
 import { useActiveJobFeed } from '../../stores/useActiveJobFeed'
-import { Bookmark, Heart, Share, Comment, ICON_MAP, Eye, Check, X } from '../../ui/icons'
+import { Bookmark, Heart, Share, Comment, ICON_MAP, Eye, Check, X } from '@zeruel/shared-ui/icons'
 import classNames from 'classnames'
 
 interface Props {

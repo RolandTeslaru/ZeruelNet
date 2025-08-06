@@ -12,24 +12,14 @@
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": false,
     "moduleDetection": "force",
-    "noEmit": false,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@zeruel/shared-ui/*": ["../../SharedUI/lib/*"],
-      "@zeruel/scraper-types": ["../types/src"],
-      "@/*": ["./src/*"]
-    },
 
     /* Linting */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
   },
-  "include": [
-    "src",
-    "../../SharedUI/lib"
-  ]
+  "include": ["src", "lib"]
 }

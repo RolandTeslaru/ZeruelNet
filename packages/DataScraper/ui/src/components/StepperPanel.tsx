@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
-import { BracketsWindowStyling } from '../ui/components/VXWindow'
-import StepperVerticalMap, { StepperVerticalMapHandles } from '../ui/components/StepperVerticalMap'
+import { BracketsWindowStyling } from '@zeruel/shared-ui/VXWindow'
+import StepperVerticalMap, { StepperVerticalMapHandles } from '@zeruel/shared-ui/StepperVerticalMap'
 import { useSystemStatus } from '../stores/useSystemStatus'
 
 
