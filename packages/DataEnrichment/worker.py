@@ -13,6 +13,7 @@ REDIS_PORT = os.getenv("REDIS_PORT", 6379)
 ENRICHMENT_QUEUE_CHANNEL = "enrichment_queue"
 
 def process(video_id: str, db_conn):
+    video_path, audio_path = None, None
     try:
         logging.info("Starting data enrichment process for video_id: %s", video_id)
 
@@ -49,6 +50,17 @@ def process(video_id: str, db_conn):
         with db_conn.cursor() as cur:
             cur.execute(UPDATE_ENRICHMENT_STATUS_ON_FAILURE_QUERY, (video_id, 'failed'))
             db_conn.commit()
+    finally:
+        # Remove the temporary audio and video files
+        try:
+            if video_path and os.path.exists(video_path):
+                os.remove(video_path)
+                logging.info(f"Deleted temporary video file: {video_path}")
+            if audio_path and os.path.exists(audio_path):
+                os.remove(audio_path)
+                logging.info(f"Deleted temporary audio file: {audio_path}")
+        except OSError as e:
+            logging.error(f"Error removing temporary files: {e}")
 
 def main():
     logging.info("Data Enrichment is starting up")
