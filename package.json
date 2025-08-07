@@ -25,5 +25,8 @@
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
   }
 }
