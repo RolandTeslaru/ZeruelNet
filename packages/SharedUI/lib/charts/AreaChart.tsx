@@ -170,11 +170,11 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
         return (
             <div
                 ref={ref}
-                className={cx("h-80 w-full outline-none", className)}
+                className={cx("h-80 w-full", className)}
                 tremor-id="tremor-raw"
                 {...other}
             >
-                <ResponsiveContainer>
+                <ResponsiveContainer style={{ outlineStyle: "none"}} className="!outline-none">
                     <RechartsAreaChart
                         data={data}
                         onClick={
@@ -192,11 +192,13 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
                             right: yAxisLabel ? 5 : undefined,
                             
                         }}
+                        style={{ outlineStyle: "none"}}
+                        className="!outline-none"
                         stackOffset={type === "percent" ? "expand" : undefined}
                     >
                         {showGridLines ? (
                             <CartesianGrid
-                                className={cx("stroke-gray-200 stroke-1 dark:stroke-gray-800")}
+                                className={cx("stroke-gray-200 stroke-1 dark:stroke-white/10")}
                                 horizontal={true}
                                 vertical={false}
                             />

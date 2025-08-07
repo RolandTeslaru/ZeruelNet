@@ -3,7 +3,6 @@
 import React from "react"
 
 import { cx } from "./cx"
-import { focusRing } from "./focusRing"
 
 type Bar<T> = T & {
   key?: string
@@ -71,7 +70,6 @@ function BarListInner<T>(
               // base
               "group w-full rounded-sm",
               // focus
-              focusRing,
               onValueChange
                 ? [
                     "-m-0! cursor-pointer",
@@ -111,7 +109,6 @@ function BarListInner<T>(
                       // hover
                       "hover:underline hover:underline-offset-2",
                       // focus
-                      focusRing,
                     )}
                     target="_blank"
                     rel="noreferrer"
