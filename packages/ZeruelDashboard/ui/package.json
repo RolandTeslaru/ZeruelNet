@@ -1,5 +1,5 @@
 {
-  "name": "@zeruel/trend-analysis-ui",
+  "name": "@zeruel/dashboard-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,11 @@
   },
   "dependencies": {
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

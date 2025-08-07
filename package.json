@@ -5,15 +5,22 @@
   "workspaces": [
     "packages/DataScraper/*",
     "packages/GatewayService",
-    "packages/SharedUI"
+    "packages/SharedUI",
+    "packages/ZeruelDashboard/*"
   ],
   "scripts": {
-    "types:build": "npm run build --workspace=@zeruel/scraper-types",
+    "gateway:start": "npm run start --workspace=@zeruel/gateway-service",
+    "gateway:dev": "npm run dev --workspace=@zeruel/gateway-service",
     "scraper-service:start": "npm run start --workspace=@zeruel/scraper-service",
     "scraper-service:dev": "npm run dev:server --workspace=@zeruel/scraper-service",
+    "scraper-ui:start": "npm run start --workspace=@zeruel/scraper-ui",
     "scraper-ui:dev": "npm run dev --workspace=@zeruel/scraper-ui",
+    "types:build": "npm run build --workspace=@zeruel/scraper-types",
     "encirhcment:dev": "source packages/DataEnrichment/venv/bin/activate && python packages/DataEnrichment/worker.py",
-    "gateway:dev": "npm run dev --workspace=@zeruel/gateway-service"
+    "dashboard-ui:start": "npm run start --workspace=@zeruel/dashboard-ui",
+    "dashboard-ui:dev": "npm run dev --workspace=@zeruel/dashboard-ui",
+    "dashboard-serivce:start": "npm run start --workspace=@zeruel/dashboard-service",
+    "dashboard-service:dev": "npm run dev --workspace=@zeruel/dashboard-service"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
