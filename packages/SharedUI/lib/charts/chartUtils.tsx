@@ -46,16 +46,16 @@ export const chartColors = {
     text: "text-pink-500",
   },
   lime: {
-     bg: "bg-lime-500",
-     stroke: "stroke-lime-500",
-     fill: "fill-lime-500",
-     text: "text-lime-500",
+    bg: "bg-lime-500",
+    stroke: "stroke-lime-500",
+    fill: "fill-lime-500",
+    text: "text-lime-500",
   },
   fuchsia: {
-     bg: "bg-fuchsia-500",
-     stroke: "stroke-fuchsia-500",
-     fill: "fill-fuchsia-500",
-     text: "text-fuchsia-500",
+    bg: "bg-fuchsia-500",
+    stroke: "stroke-fuchsia-500",
+    fill: "fill-fuchsia-500",
+    text: "text-fuchsia-500",
   },
 } as const satisfies {
   [color: string]: {
@@ -96,34 +96,94 @@ export const getColorClassName = (
 // Tremor getYAxisDomain [v0.0.0]
 
 export const getYAxisDomain = (
-    autoMinValue: boolean,
-    minValue: number | undefined,
-    maxValue: number | undefined,
-  ) => {
-    const minDomain = autoMinValue ? "auto" : (minValue ?? 0)
-    const maxDomain = maxValue ?? "auto"
-    return [minDomain, maxDomain]
-  }
+  autoMinValue: boolean,
+  minValue: number | undefined,
+  maxValue: number | undefined,
+) => {
+  const minDomain = autoMinValue ? "auto" : (minValue ?? 0)
+  const maxDomain = maxValue ?? "auto"
+  return [minDomain, maxDomain]
+}
 
 
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Tremor hasOnlyOneValueForKey [v0.1.0]
 
 export function hasOnlyOneValueForKey(
-    array: any[],
-    keyToCheck: string,
-  ): boolean {
-    const val: any[] = []
-  
-    for (const obj of array) {
-      if (Object.prototype.hasOwnProperty.call(obj, keyToCheck)) {
-        val.push(obj[keyToCheck])
-        if (val.length > 1) {
-          return false
-        }
+  array: any[],
+  keyToCheck: string,
+): boolean {
+  const val: any[] = []
+
+  for (const obj of array) {
+    if (Object.prototype.hasOwnProperty.call(obj, keyToCheck)) {
+      val.push(obj[keyToCheck])
+      if (val.length > 1) {
+        return false
       }
     }
-  
-    return true
   }
+
+  return true
+}
+
+
+
+export function deepEqual<T>(obj1: T, obj2: T): boolean {
+  if (obj1 === obj2) return true
+
+  if (
+    typeof obj1 !== "object" ||
+    typeof obj2 !== "object" ||
+    obj1 === null ||
+    obj2 === null
+  ) {
+    return false
+  }
+
+  const keys1 = Object.keys(obj1) as Array<keyof T>
+  const keys2 = Object.keys(obj2) as Array<keyof T>
+
+  if (keys1.length !== keys2.length) return false
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) return false
+  }
+
+  return true
+}
+
+export const renderShape = (
+  props: any,
+  activeBar: any | undefined,
+  activeLegend: string | undefined,
+  layout: string,
+) => {
+  const { fillOpacity, name, payload, value } = props
+  let { x, width, y, height } = props
+
+  if (layout === "horizontal" && height < 0) {
+    y += height
+    height = Math.abs(height) // height must be a positive number
+  } else if (layout === "vertical" && width < 0) {
+    x += width
+    width = Math.abs(width) // width must be a positive number
+  }
+
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      opacity={
+        activeBar || (activeLegend && activeLegend !== name)
+          ? deepEqual(activeBar, { ...payload, value })
+            ? fillOpacity
+            : 0.3
+          : fillOpacity
+      }
+    />
+  )
+}
