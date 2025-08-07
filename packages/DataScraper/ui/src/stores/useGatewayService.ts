@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
-import { useSystemStatus } from "./useSystemStatus";
 
 const WS_URL = 'ws://localhost:4000';
 
@@ -20,7 +19,7 @@ type Actions = {
 
 const SOCKET_ON_MESSAGE_CALLBACK_REGISTRY: Record<string, (data: any) => void> = {}
 
-export const useWebSocket = create<State & Actions>()(
+export const useGatewayService = create<State & Actions>()(
     immer((set, get) => ({
         socket: null,
         isConnected: false,
@@ -38,8 +37,6 @@ export const useWebSocket = create<State & Actions>()(
                     state.isConnected = true;
                     state.socket = ws
                 });
-
-                console.log("WEB SOCKET CONNECTED ")
 
                 // Process any queued subscriptions
                 get().subscriptionQueue.forEach(sub => {
@@ -77,6 +74,8 @@ export const useWebSocket = create<State & Actions>()(
         disconnect: () => {
             get().socket?.close();
         },
+        // This is the function that the ui will use to subscribe to the backend
+        // topics have the form of "scaper_*" or "trends_*" like scraper_logs
         subscribeToTopic: (topic, callback) => {
             const socket = get().socket;
             if (socket === null || socket.readyState !== WebSocket.OPEN) {
@@ -87,7 +86,6 @@ export const useWebSocket = create<State & Actions>()(
                 return;
             }
             
-            console.log("SUBSCRIBED TO TOPIC ", topic, callback)
             get().socket.send(JSON.stringify({
                 action: 'subscribe', topic
             }))

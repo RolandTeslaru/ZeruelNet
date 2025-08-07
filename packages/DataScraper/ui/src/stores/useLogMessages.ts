@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
-import { useWebSocket } from "./useWebSocket";
+import { useGatewayService } from "./useGatewayService";
 
 export interface LogMessage {
     level: 'info' | 'error' | 'warn' | 'success' | 'debug';
@@ -26,7 +26,7 @@ export const useLogMessages = create<State & Actions>()(
     }))
 )
 
-useWebSocket.getState().subscribeToTopic("scraper_logs", (data: LogMessage) => {
+useGatewayService.getState().subscribeToTopic("scraper_logs", (data: LogMessage) => {
     useLogMessages.setState(state => {
         state.messages.push(data);
     })

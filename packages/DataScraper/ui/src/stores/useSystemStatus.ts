@@ -1,7 +1,7 @@
 import { SystemStage, SystemStep, StageType, T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
-import { useWebSocket, webSocketEvents } from "./useWebSocket";
+import { useGatewayService, webSocketEvents } from "./useGatewayService";
 import { enableMapSet } from 'immer';
 
 enableMapSet();
@@ -75,7 +75,7 @@ function handleSocketMessage(payload: T_SystemStatusPayload) {
 }
 
 
-useWebSocket.getState().subscribeToTopic("scraper_system_status", handleSocketMessage)
+useGatewayService.getState().subscribeToTopic("scraper_system_status", handleSocketMessage)
 webSocketEvents.addEventListener("open", () => {
     setTimeout(() => {
         useSystemStatus.setState(state => {

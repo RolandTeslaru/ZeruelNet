@@ -9,7 +9,7 @@ app.use(cors({ origin: '*' })); // Allow all origins for simplicity
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-// Add a subscriptions map
+// All webscoekts that are subscribed to the GatewayService ( scraper_, trend_, ....)
 const subscriptions = new Map<WebSocket, Set<string>>();
 
 const redisSubscriber = createClient();
@@ -60,17 +60,11 @@ async function startServer() {
     await redisSubscriber.connect();
     console.log('Connected to Redis and ready to subscribe.');
 
-    // We subscribe to all channels starting with 'harvester_'
-    await redisSubscriber.pSubscribe('scraper_*', (message, channel) => {
-        console.log(`Received message from ${channel}:`);
-        // Forward the message to all connected WebSocket clients
-        wss.clients.forEach((client) => {
-            const subs = subscriptions.get(client);
-            if (subs && subs.has(channel) && client.readyState === client.OPEN) {
-                client.send(JSON.stringify({ channel, message }));
-            }
-        });
-    });
+    // This subscribes to all the Scraper Channels
+    await redisSubscriber.pSubscribe('scraper_*', pubSubListenerCallback);
+
+    // This subscribes to all the Trend Channels
+    await redisSubscriber.pSubscribe('trend_*', pubSubListenerCallback)
 
     server.listen(PORT, () => {
         console.log(`Gateway Service listening on http://localhost:${PORT}`);
@@ -78,3 +72,15 @@ async function startServer() {
 }
 
 startServer(); 
+
+
+const pubSubListenerCallback = (message: string, channel: string) => {
+    console.log(`Received message from ${channel}:`);
+
+    wss.clients.forEach(client => {
+        const subs = subscriptions.get(client)
+        if (subs && subs.has(channel) && client.readyState === client.OPEN){
+            client.send(JSON.stringify({ channel, message}))
+        }
+    })
+}

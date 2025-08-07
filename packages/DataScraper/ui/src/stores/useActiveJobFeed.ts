@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { useWebSocket } from "./useWebSocket";
+import { useGatewayService } from "./useGatewayService";
 import { ScrapedVideo, ScrapeJob, T_ScraperJobPayload, T_VideoMetadata } from "@zeruel/scraper-types";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
@@ -71,4 +71,4 @@ function handleSocketMessage(payload: T_ScraperJobPayload) {
     }
 }
 
-useWebSocket.getState().subscribeToTopic("scraper_active_job_feed", handleSocketMessage)
+useGatewayService.getState().subscribeToTopic("scraper_active_job_feed", handleSocketMessage)

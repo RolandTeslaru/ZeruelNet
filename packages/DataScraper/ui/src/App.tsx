@@ -8,10 +8,10 @@ import StagePanel from './components/StagePanel';
 import ScrapingDashboardPanel from './components/ScrapingDashboardPanel';
 import CommandPanel from './components/CommandPanel';
 import StepperPanel from './components/StepperPanel';
-import { useWebSocket } from './stores/useWebSocket';
+import { useGatewayService } from './stores/useGatewayService';
 import VersionsPanel from './components/VersionsPanel';
 
-useWebSocket.getState().connect();
+useGatewayService.getState().connect();
 
 function App() {
   return (
