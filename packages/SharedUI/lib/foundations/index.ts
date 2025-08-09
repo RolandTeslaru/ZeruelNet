@@ -117,3 +117,31 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
 export { Text, BooleanText } from "./Text";
 
 export { Spinner } from "./Spinner"
+
+export { Checkbox } from "./checkbox"
+
+export { Badge, badgeVariants, type BadgeProps } from "./Badge" 
+
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerBody,
+} from "./drawer"
+
+export { Textarea } from "./textarea"
+
+export {
+  CommandBar,
+  CommandBarBar,
+  CommandBarCommand,
+  CommandBarSeperator,
+  CommandBarValue,
+} from "./commandBar"

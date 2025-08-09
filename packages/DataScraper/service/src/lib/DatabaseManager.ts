@@ -29,7 +29,7 @@ export class DatabaseManager {
         try {
             await client.query('BEGIN');
 
-            const videoInsertQuery = `
+            const videoInsertQuery = `--sql
                 INSERT INTO videos (id, video_id, searched_hashtag, video_url, author_username, video_description, extracted_hashtags, platform, likes_count, share_count, comment_count, play_count, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
                 ON CONFLICT (video_id) DO UPDATE SET
@@ -62,7 +62,7 @@ export class DatabaseManager {
 
             if (videoData.comments && videoData.comments.length > 0) {
                 for (const comment of videoData.comments) {
-                    const commentInsertQuery = `
+                    const commentInsertQuery = `--sql
                         INSERT INTO comments (id, video_id, comment_id, parent_comment_id, author, text, likes_count, is_creator, created_at)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
                         ON CONFLICT (comment_id) DO UPDATE SET
