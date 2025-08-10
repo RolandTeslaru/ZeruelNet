@@ -2,10 +2,10 @@ import { fetchVideos } from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { VideoQueryParams } from '@zeruel/dashboard-types'
 import { Spinner } from '@zeruel/shared-ui/foundations'
-import React from 'react'
+import React, { memo } from 'react'
 import JsonView from 'react18-json-view';
 
-const VideosTable = () => {
+const VideosTable = memo(() => {
 
   const params: VideoQueryParams = {
     limit: 20,
@@ -29,6 +29,6 @@ const VideosTable = () => {
       
     </div>
   )
-}
+})
 
 export default VideosTable

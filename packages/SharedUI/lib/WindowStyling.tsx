@@ -3,6 +3,7 @@ import React from "react"
 import { WindowStylingProps } from './VXWindow/useWindowContext';
 import classNames from 'classnames';
 import { DotPattern } from "./DotPattern";
+import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
 
 export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassName?: string }> = ({
     className, style, children, isDetached = false, detachedClassName, detachedStyling, crossesClassName, ...rest
@@ -32,11 +33,11 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
 }
 
 
-export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string }> = ({
+export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string } & HTMLMotionProps<"div">> = ({
     className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, ...rest
 }) => {
     return (
-        <div
+        <motion.div
             className={classNames(
                 isDetached && ['rounded-none', detachedClassName],
                 'relative p-2 flex flex-col gap-2 border border-white/20 h-fit',
@@ -55,7 +56,7 @@ export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClas
             <div className={`absolute -bottom-1 -left-1 w-3 h-3 border-white border-l border-b`} />
             <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-white border-r border-b`} />
             {children}
-        </div>
+        </motion.div>
     )
 }
 

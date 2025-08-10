@@ -36,8 +36,7 @@ const AuroraBackground = ({
         </style>
         <div
           className={cn(
-            "pointer-events-none absolute inset-0 overflow-hidden",
-            className,
+            "transition-bg pointer-events-none absolute inset-0  overflow-hidden",
           )}
           style={
             {
@@ -66,6 +65,7 @@ const AuroraBackground = ({
 
               showRadialGradient &&
                 `[mask-image:radial-gradient(ellipse_at_100%_0%,black_10%,var(--transparent)_70%)]`,
+                className
             )}
           ></div>
         </div>

@@ -10,23 +10,24 @@ const PageSwitcher = () => {
     return (
         <div className='relative p-0.5 border border-neutral-400/20 rounded-full'>
             <Tabs
-                defaultValue={currentPage}
+                value={currentPage}
+                onValueChange={setCurrentPage}
             >
                 <TabsList className='gap-2 !bg-neutral-800/40 !border-primary-thin' indicatorClassname='!bg-blue-500 !border-blue-500' indicatorStyle={{boxShadow: "0px 0px 10px 3px oklch(0.623 0.214 259.815" }}
                 >
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="scraper" onClick={() => setCurrentPage("scraper")}>
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="scraper">
                         <Bot strokeWidth={1.5} size={20}/>
                         SCRAPER
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="tables" onClick={() => setCurrentPage("tables")}>
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="tables">
                         <Table strokeWidth={1.5} size={20}/>
                         TABLES
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="trendsanalysis" onClick={() => setCurrentPage("trendsanalysis")}>
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="trendsanalysis">
                         <Activity strokeWidth={1.5} size={20}/>
                         TRENDS & ANALYSIS
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="health" onClick={() => setCurrentPage("health")}>
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="health">
                         <Health strokeWidth={1.5} size={20}/>
                         SYS. HEALTH
                     </TabsTrigger>

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { DetachableWindowProps, useWindowContext, VXEngineWindowProps, WindowContextProps, WindowStylingProps } from './useWindowContext';
 import { WindowControlDots } from './WindowControlDots';
 import { useUIManagerAPI } from '../UIManager/store';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export const WindowContext = createContext<WindowContextProps>({
     vxWindowId: "",
@@ -30,43 +31,23 @@ export const VXWindow: FC<VXEngineWindowProps> = memo((props) => {
     const handleAttach = () => attachVXWindow(vxWindowId)
 
     const Content = useMemo(() => {
+        const innerContent = (
+            <AnimatePresence>
+                {showControls && <motion.div key="controls"><WindowControlDots /></motion.div>}
+                {children}
+            </AnimatePresence>
+        );
+
+
         if (StylingComponent) {
             return React.cloneElement(StylingComponent, {
                 isDetached: !vxWindow.isAttached,
-                children: (
-                    <>
-                        {showControls && <WindowControlDots />}
-                        {children}
-                    </>
-                )
+                children: innerContent
             });
         }
         else
-            return (
-                <>
-                    {showControls && <WindowControlDots />}
-                    {children}
-                </>
-            )
+            return innerContent
     }, [StylingComponent, children, vxWindow.isAttached, showControls])
-
-
-    // const Content = () => {
-    //     if (noStyling) {
-    //         return <>{children}</>;
-    //     } else {
-    //         return (
-    //             <StandardWindowStyling
-    //                 className={className + ` ${theme}`}
-    //                 detachedClassName={detachedClassName}
-    //                 isDetached={!vxWindow.isAttached}
-    //             >
-    //                 <WindowControlDots />
-    //                 {children}
-    //             </StandardWindowStyling>
-    //         );
-    //     }
-    // }
 
     if (isStoreHydrated === false) return null;
 

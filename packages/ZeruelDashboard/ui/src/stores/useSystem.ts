@@ -12,6 +12,6 @@ type Actions = {
 export const useSystem = create<State & Actions>()(
     immer((set) => ({
         currentPage: "scraper",
-        setCurrentPage: (value) => set(state => state.currentPage = value)
+        setCurrentPage: (value) => set(state => { state.currentPage = value })
     }))
 )
