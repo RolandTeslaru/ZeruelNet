@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config({ path: __dirname+'/../.env' });
+
 import express from "express"
 import http from "http"
 import { WebSocketServer, WebSocket } from "ws"
@@ -13,5 +16,5 @@ app.use("/api/v1", v1Routes)
 
 const PORT = process.env.PORT || 5003
 app.listen(PORT, () => {
-    console.log(`Trend Analysis Service: listening on localhost:${PORT}`)
+    console.log(`Dashboard Service: listening on localhost:${PORT}`)
 })

@@ -27,6 +27,7 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "react18-json-view": "^0.2.9"
   }
 }

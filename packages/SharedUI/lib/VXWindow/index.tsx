@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { DetachableWindowProps, useWindowContext, VXEngineWindowProps, WindowContextProps, WindowStylingProps } from './useWindowContext';
 import { WindowControlDots } from './WindowControlDots';
 import { useUIManagerAPI } from '../UIManager/store';
-import { DotPattern } from '../DotPattern';
 
 export const WindowContext = createContext<WindowContextProps>({
     vxWindowId: "",

@@ -10,7 +10,7 @@ const baseParams = z.object({
 
 const videosSchema = z.object({
     limit: z.coerce.number().int().positive().max(100).default(20),
-    offset: z.coerce.number().int().positive().min(0).default(0),
+    offset: z.coerce.number().int().min(0).default(0),
     hashtag: z.string().trim().min(1).optional(),
     since: z.iso.datetime().optional(),
     until: z.iso.datetime().optional(),
@@ -45,11 +45,7 @@ export async function getVideos(req: Request, res: Response) {
           AND (
             $3::text IS NULL
             OR v.searched_hashtag = $3 -- the searched_hashtag is the single hashtahg used by the scraper when search for the videos
-            OR EXISTS (
-                SELECT 1
-                FROM jsonb_array_elements_text(v.extracted_hashtags) h
-                WHERE h = $3
-            )
+            OR $3 = ANY(v.extracted_hashtags)
           )
         ORDER BY ${timestampColumnId} ${direction}
         LIMIT $4 OFFSET $5
@@ -61,7 +57,7 @@ export async function getVideos(req: Request, res: Response) {
         res.json({ items: rows, page: {limit, offset, total }})
     } catch (e) {
         console.error(e);
-        res.status(500).json({ error: "querry_faled" })
+        res.status(500).json({ error: "querry_faled. See Server log", })
     }
 }
 

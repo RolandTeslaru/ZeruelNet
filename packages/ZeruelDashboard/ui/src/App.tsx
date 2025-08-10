@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import './App.css'
 import Layout from './components/Layout'
-import {TestChart1, TestChart2} from './components/TestChart'
+import { TestChart1, TestChart2 } from './components/TestChart'
 import { DataTable } from './components/Table/DataTable'
 import { Transaction } from "@/data/schema"
 import { transactions } from "@/data/transactions"
 import { Row } from '@tanstack/react-table'
 import { getColumns } from './components/Table/Columns'
 import { DataTableDrawer } from './components/Table/DataTableDrawer'
+import VideosTable from './components/VideosTable'
+import { VXWindow } from '@zeruel/shared-ui/VXWindow'
+import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling'
+import 'react18-json-view/src/style.css'
 
 function App() {
 
@@ -24,10 +28,23 @@ function App() {
 
   return (
     <Layout>
-      <div className="flex flex-row gap-4 min-w-auto min-h-screen w-full px-7 pb-6 pt-[150px]">
+      <div className="flex flex-row gap-4 min-w-auto min-h-screen max-h-screen w-full px-7 pb-6 pt-[70px] ">
         {/* <TestChart1/>
         <TestChart2/> */}
-        <DataTable
+        <VXWindow
+          vxWindowId='ZNDashboardVideosPanel'
+          title='ZereulNet DataHarvester: Scraped Videos Panel'
+          windowClasses=''
+          StylingComponent={
+            <BracketsWindowStyling
+              className='!relative w-[500px] backdrop-blur-sm max-h-[700px] p-1'
+              detachedClassName=''
+            />
+          }
+        >
+          <VideosTable />
+        </VXWindow>
+        {/* <DataTable
           data={transactions}
           columns={columns}
           onRowClick={(row) => {
@@ -35,7 +52,7 @@ function App() {
             setIsOpen(true)
           }}
         />
-                <DataTableDrawer open={isOpen} onOpenChange={setIsOpen} datas={datas} />
+                <DataTableDrawer open={isOpen} onOpenChange={setIsOpen} datas={datas} /> */}
       </div>
     </Layout>
   )
