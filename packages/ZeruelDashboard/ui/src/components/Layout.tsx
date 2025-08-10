@@ -31,10 +31,7 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
                     // {"!bg-blue-900/20": currentPage === "scraper"}
                 )} {...rest}
             >
-                {/* Aurora as independent background layer */}
-                <AuroraBackground asLayer 
-                  
-                />
+                <AuroraBackground asLayer />
                 <div className={classNames(
                     'pointer-events-none absolute inset-0 bg-transparent transition-bg duration-500 ease-in-out',
                     {"!bg-cyan-900/20": currentPage === "scraper"},
@@ -43,10 +40,13 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
                     {"!bg-indigo-500/10": currentPage === "health"},
                 )}/>
                 {/* Background */}
-                {/* <div
-                    className='pointer-events-none absolute inset-0'
-                    style={{background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%)',}}
-                /> */}
+                <div
+                    className='pointer-events-none absolute inset-0 transition-all duration-700 ease-in-out'
+                    style={{
+                        background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%)',
+                        opacity: currentPage === "tables" ? 1 : 0
+                    }}
+                />
                 <VexrLogo className={`pointer-events-none ${theme === "dark" && "!text-white/3"} ${theme === "light" && "!text-black/3 "} h-[100px] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2`} />
                 <DotPattern className={cn(
                     "pointer-events-none fill-neutral-200/20 [mask-image:radial-gradient(60vw_circle_at_center,white,transparent)]",

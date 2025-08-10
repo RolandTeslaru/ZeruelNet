@@ -1,95 +1,71 @@
-import { Button } from "@zeruel/shared-ui/foundations"
-import { cx, formatters } from "@/lib/utils"
-
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "@zeruel/shared-ui/icons"
-
-import { Table } from "@tanstack/react-table"
-
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>
-  pageSize: number
-}
-
-export function DataTablePagination<TData>({
-  table,
-  pageSize,
-}: DataTablePaginationProps<TData>) {
-  const paginationButtons = [
-    {
-      icon: ChevronsLeft,
-      onClick: () => table.setPageIndex(0),
-      disabled: !table.getCanPreviousPage(),
-      srText: "First page",
-      mobileView: "hidden sm:block",
-    },
-    {
-      icon: ChevronLeft,
-      onClick: () => table.previousPage(),
-      disabled: !table.getCanPreviousPage(),
-      srText: "Previous page",
-      mobileView: "",
-    },
-    {
-      icon: ChevronRight,
-      onClick: () => table.nextPage(),
-      disabled: !table.getCanNextPage(),
-      srText: "Next page",
-      mobileView: "",
-    },
-    {
-      icon: ChevronsRight,
-      onClick: () => table.setPageIndex(table.getPageCount() - 1),
-      disabled: !table.getCanNextPage(),
-      srText: "Last page",
-      mobileView: "hidden sm:block",
-    },
-  ]
-
-  const totalRows = table.getFilteredRowModel().rows.length
-  const currentPage = table.getState().pagination.pageIndex
-  const firstRowIndex = currentPage * pageSize + 1
-  const lastRowIndex = Math.min(totalRows, firstRowIndex + pageSize - 1)
-
-  return (
-    <div className="flex items-center justify-between">
-      <div className="text-sm tabular-nums text-gray-500">
-        {table.getFilteredSelectedRowModel().rows.length} of {totalRows} row(s)
-        selected.
-      </div>
-      <div className="flex items-center gap-x-6 lg:gap-x-8">
-        <p className="hidden text-sm tabular-nums text-gray-500 sm:block">
-          Showing{" "}
-          <span className="font-medium text-gray-900 dark:text-gray-50">
-            {firstRowIndex}-{lastRowIndex}
-          </span>{" "}
-          of{" "}
-          <span className="font-medium text-gray-900 dark:text-gray-50">
-            {formatters.unit(totalRows)}
-          </span>
-        </p>
-        <div className="flex items-center gap-x-1.5">
-          {paginationButtons.map((button, index) => (
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+  } from "@zeruel/shared-ui/icons"
+  import { Table } from "@tanstack/react-table"
+  
+  import { Button } from "@zeruel/shared-ui/foundations"
+  
+  interface DataTablePaginationProps<TData> {
+    table: Table<TData>
+  }
+  
+  export function DataTablePagination<TData>({
+    table,
+  }: DataTablePaginationProps<TData>) {
+    return (
+      <div className="flex w-full items-center justify-between">
+        <div className=" flex-1 text-xs  font-roboto-mono text-neutral-300">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="flex items-center space-x-4 lg:space-x-6">
+          <div className="flex items-center space-x-2">
             <Button
-              key={index}
-              variant="secondary"
-              className={cx(button.mobileView, "p-1.5")}
-              onClick={() => {
-                button.onClick()
-                table.resetRowSelection()
-              }}
-              disabled={button.disabled}
+              variant="dashed1"
+              className="hidden h-5 w-8 p-0 lg:flex text-neutral-200"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">{button.srText}</span>
-              <button.icon className="size-4 shrink-0" aria-hidden="true" />
+              <span className="sr-only">Go to first page</span>
+              <ChevronsLeft className="h-4 w-4" />
             </Button>
-          ))}
+            <Button
+              variant="dashed1"
+              className="h-5 w-8 p-0 text-neutral-200"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to previous page</span>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex w-[100px] text-neutral-300 font-roboto-mono items-center justify-center text-xs font-medium">
+              Page {table.getState().pagination.pageIndex + 1}/
+              {table.getPageCount()}
+            </div>
+            <Button
+              variant="dashed1"
+              className="h-5 w-8 p-0 text-neutral-200"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to next page</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="dashed1"
+              className="hidden h-5 w-8 p-0 lg:flex text-neutral-200"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to last page</span>
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
+  

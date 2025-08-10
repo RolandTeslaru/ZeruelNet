@@ -3,7 +3,7 @@ import React from "react"
 import { WindowStylingProps } from './VXWindow/useWindowContext';
 import classNames from 'classnames';
 import { DotPattern } from "./DotPattern";
-import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion'
+import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'motion/react'
 
 export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassName?: string }> = ({
     className, style, children, isDetached = false, detachedClassName, detachedStyling, crossesClassName, ...rest
@@ -33,8 +33,31 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
 }
 
 
-export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string } & HTMLMotionProps<"div">> = ({
-    className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, ...rest
+const bracketsWindowVariants: Variants = {
+    hidden: {
+        opacity: 0,
+        scale: 0.5,
+
+        transition: {
+            duration: 0.3,
+            ease: 'easeInOut',
+        }
+    },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        display: 'flex',
+        transition: {
+            delay: 0.4,
+            duration: 0.3,
+            ease: "easeInOut",
+        },
+    },
+}
+
+
+export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string, show: boolean } & HTMLMotionProps<"div">> = ({
+    className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, show, ...rest
 }) => {
     return (
         <motion.div
@@ -48,8 +71,20 @@ export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClas
                 ...(isDetached ? detachedStyling : {}),
                 ...style,
             }}
+            animate={show ? 'visible' : 'hidden'}
+            initial="hidden"
+            variants={bracketsWindowVariants}
+            
             {...rest}
         >
+            {/* <motion.span className="absolute size-full bg-white left-0 top-0 z-10"
+                animate={show ? 'visible' : 'hidden'}
+                variants={{
+                    visible: {
+                        scale:
+                    }
+                }}
+            /> */}
             {isDetached && <DotPattern />}
             <div className={`absolute -top-1 -left-1 w-3 h-3 border-white border-l border-t`} />
             <div className={`absolute -top-1 -right-1 w-3 h-3 border-white border-r border-t`} />

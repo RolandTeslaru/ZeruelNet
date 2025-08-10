@@ -5,7 +5,7 @@ import { cn } from "../utils/cn"
 
 
 export const buttonVariants = cva(
-  `cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors 
+  `cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors 
    focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50`,
   {
     variants: {
@@ -20,6 +20,8 @@ export const buttonVariants = cva(
           "border border-secondary-thin bg-neutral-800 hover:bg-neutral-950 hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        dashed1:
+          "bg-gray-400/10 border border-dashed outline-offset-2 border-white/20 hover:bg-white/10",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         expandIcon:
@@ -40,8 +42,7 @@ export const buttonVariants = cva(
           "border border-yellow-400 bg-yellow-500 hover:bg-yellow-600 hover:text-accent-foreground ",
         error:
           "border border-red-600 bg-red-700 hover:bg-red-800 hover:text-accent-foreground ",
-        
-          success:
+        success:
           "border border-green-600 "
       },
       size: {
@@ -100,7 +101,7 @@ const Button = React.forwardRef<
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, className })) + " "}
         ref={ref}
         style={{ boxShadow: "1px 1px 5px 1px rgba(1,1,1,0.2)", ...style}}
         {...props}

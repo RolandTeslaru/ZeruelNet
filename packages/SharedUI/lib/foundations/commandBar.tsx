@@ -2,10 +2,13 @@
 
 import * as Popover from "@radix-ui/react-popover"
 import * as React from "react"
-import { cx } from "../charts/cx"
+import { cn } from "../utils/cn"
+import { useWindowContext } from "../VXWindow/useWindowContext"
+import { useUIManagerAPI } from "../UIManager/store"
+import { cva } from "class-variance-authority"
 
 
-const shortcutStyles = cx(
+const shortcutStyles = cn(
   "hidden h-6 select-none items-center justify-center rounded-md bg-gray-800 px-2 font-mono text-xs text-gray-400 ring-1 ring-inset ring-gray-700 transition sm:flex",
 )
 
@@ -23,6 +26,9 @@ const CommandBar = ({
   disableAutoFocus = true,
   children,
 }: CommandBarProps) => {
+  const theme = useUIManagerAPI(state => state.theme)
+  const { externalContainer } = useWindowContext()
+
   return (
     <Popover.Root
       open={open}
@@ -30,9 +36,9 @@ const CommandBar = ({
       defaultOpen={defaultOpen}
     >
       <Popover.Anchor
-        className={cx("fixed inset-x-0 bottom-12 mx-auto w-fit items-center")}
+        className={cn("fixed inset-x-0 bottom-12 mx-auto w-fit items-center")}
       />
-      <Popover.Portal>
+      <Popover.Portal container={externalContainer}>
         <Popover.Content
           side="top"
           sideOffset={0}
@@ -41,13 +47,13 @@ const CommandBar = ({
               e.preventDefault()
             }
           }}
-          className={cx(
-            "z-50",
-            "data-[state=closed]:animate-hide",
-            "data-[side=top]:animate-slideUpAndFade",
+          className={cn(
+            `${theme} z-50 rounded-xl p-3 border-[1px] border-border-popover bg-popover text-popover-foreground shadow-xl shadow-black/40 backdrop-blur-xs outline-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2`
           )}
         >
-          {children}
+          <div className="-m-2">
+            {children}
+          </div>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
@@ -62,8 +68,8 @@ const CommandBarValue = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cx(
-        "px-3 py-2.5 text-sm tabular-nums text-gray-300",
+      className={cn(
+        " text-sm tabular-nums text-gray-300",
         className,
       )}
       {...props}
@@ -79,8 +85,8 @@ const CommandBarBar = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cx(
-        "relative flex items-center rounded-lg bg-gray-900 px-1 shadow-lg shadow-black/30 dark:ring-1 dark:ring-white/10",
+      className={cn(
+        "relative flex items-center",
         className,
       )}
       {...props}
@@ -96,12 +102,27 @@ const CommandBarSeperator = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cx("h-4 w-px bg-gray-700", className)}
+      className={cn("h-4 w-px bg-gray-700", className)}
       {...props}
     />
   )
 })
 CommandBarSeperator.displayName = "CommandBar.Seperator"
+
+const commandBarCommandVariants = cva(
+  'cursor-pointer relative gap-2 px-2 py-0.5 rounded-lg flex text-sm border border-transparent w-full items-center justify-between',
+  {
+      variants: {
+          variant: {
+              default: "hover:bg-blue-600 hover:border-blue-500 text-label-primary",
+              disabled: "text-gray-500 cursor-not-allowed"
+          }
+      },
+      defaultVariants: {
+          variant: "default"
+      }
+  }
+)
 
 interface CommandProps
   extends Omit<
@@ -145,35 +166,24 @@ const CommandBarCommand = React.forwardRef<HTMLButtonElement, CommandProps>(
     }, [action, shortcut, disabled])
 
     return (
-      <span
-        className={cx(
-          "flex items-center gap-x-2 rounded-lg bg-gray-900 p-1 text-base font-medium text-gray-50 outline-none transition focus:z-10 sm:text-sm",
-          "sm:last-of-type:-mr-1",
-          className,
-        )}
-      >
         <button
           ref={ref}
           type={type}
           onClick={action}
           disabled={disabled}
-          className={cx(
-            // base
-            "flex items-center gap-x-2 rounded-md px-1 py-1 hover:bg-gray-800",
-            // focus
-            "focus-visible:bg-gray-800 focus-visible:hover:bg-gray-800",
-            "disabled:text-gray-500"
-        )}
+          className={cn(
+            commandBarCommandVariants({ variant: disabled ? "disabled" : "default" }),
+            className,
+          )}
           {...props}
         >
-          <span>{label}</span>
+          <span className="text-xs font-roboto-mono">{label}</span>
           <span className={shortcutStyles}>
             {shortcut.label
               ? shortcut.label.toUpperCase()
               : shortcut.shortcut.toUpperCase()}
           </span>
         </button>
-      </span>
     )
   },
 )

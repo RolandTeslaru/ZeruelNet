@@ -22,7 +22,7 @@ function DataTableBulkEditor<TData>({
   return (
     <CommandBar open={hasSelectedRows}>
       <CommandBarBar>
-        <CommandBarValue>
+        <CommandBarValue className="text-nowrap text-xs text-neutral-300 font-roboto-mono px-1">
           {Object.keys(rowSelection).length} selected
         </CommandBarValue>
         <CommandBarSeperator />
