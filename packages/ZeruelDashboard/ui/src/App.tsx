@@ -12,6 +12,7 @@ import VideosTable from './components/VideosTable'
 import { VXWindow } from '@zeruel/shared-ui/VXWindow'
 import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import 'react18-json-view/src/style.css'
+import { Tabs, TabsList, TabsTrigger } from '@zeruel/shared-ui/foundations'
 
 function App() {
 
@@ -26,6 +27,8 @@ function App() {
     },
   })
 
+  const [currentPage, setCurrentPage] = useState<"scraper" | "tables" | "trendsanalysis" | "health">("scraper")
+
   return (
     <Layout>
       <div className="flex flex-row gap-4 min-w-auto min-h-screen max-h-screen w-full px-7 pb-6 pt-[70px] ">
@@ -37,11 +40,11 @@ function App() {
           windowClasses=''
           StylingComponent={
             <BracketsWindowStyling
-              className='!relative w-[500px] backdrop-blur-sm max-h-[700px] p-1'
+              className='!relative w-[500px]  max-h-[700px] p-1'
               detachedClassName=''
             />
           }
-        >
+          >
           <VideosTable />
         </VXWindow>
         {/* <DataTable

@@ -21,7 +21,13 @@ function Tabs({
 }
 
 
-const TabsList = ({ className, children, ...props }: ComponentProps<typeof TabsPrimitive.List>) => {
+const TabsList = ({
+  className,
+  children,
+  indicatorClassname,
+  indicatorStyle,
+  ...props
+}: ComponentProps<typeof TabsPrimitive.List> & { indicatorClassname?: string; indicatorStyle?: React.CSSProperties }) => {
   const indicatorRef = useRef<null | HTMLDivElement>(null);
   const listRef = useRef<null | HTMLDivElement>(null)
 
@@ -67,7 +73,8 @@ const TabsList = ({ className, children, ...props }: ComponentProps<typeof TabsP
       {/* Animated indicator */}
       <div
         ref={indicatorRef}
-        className="absolute top-[1px] z-[0] bg-primary-opaque border border-neutral-600 rounded-full transition-all duration-300 ease-out"
+        style={indicatorStyle}
+        className={indicatorClassname + " " + "absolute top-[1px] z-[0] bg-primary-opaque border border-neutral-600 rounded-full transition-all duration-300 ease-out"}
       />
     </div>
   )

@@ -101,9 +101,15 @@ function StarsBackground({
     <div
       data-slot="stars-background"
       className={cn(
-        'relative size-full overflow-hidden bg-[radial-gradient(ellipse_at_bottom,_#262626_0%,_#000_100%)]',
+        'relative size-full overflow-hidden',
         className,
       )}
+      style={{
+        // background: 'radial-gradient(ellipse at bottom, #262626 0%, #000 100%)',
+        background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 80%)',
+
+        ...(props.style || {}),
+      }}
       {...props}
     >
       <motion.div
