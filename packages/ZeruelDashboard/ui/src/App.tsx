@@ -27,8 +27,6 @@ function App() {
     },
   })
 
-  const [currentPage, setCurrentPage] = useState<"scraper" | "tables" | "trendsanalysis" | "health">("scraper")
-
   return (
     <Layout>
       <div className="flex flex-row gap-4 min-w-auto min-h-screen max-h-screen w-full px-7 pb-6 pt-[70px] ">

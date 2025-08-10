@@ -22,23 +22,27 @@ const Layout: React.FC<Props> = ({ children, className, ...rest }) => {
     return (
         <QueryClientProvider client={queryClient}>
             <div 
-                className={`bg-neutral-950 ${theme} ${className}`} {...rest}
+                className={`relative bg-neutral-950 ${theme} ${className}`} {...rest}
             >
-                <AuroraBackground>
-                    <UIManagerDialogLayer />
-                    <div className='fixed w-fit z-1 bottom-10'>
-                        <TabSwitcher/>
-                    </div>
-                    <MenubarComponent />
+                {/* Aurora as independent background layer */}
 
-                    {children}
-                    {/* Backgruond */}
-                    <div className='absolute size-full' style={{background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%)',}}/>
-                    <VexrLogo className={`${theme === "dark" && "!text-white/3"} ${theme === "light" && "!text-black/3 "} h-[100px] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2`} />
-                    <DotPattern className={cn(
-                        "fill-neutral-200/20 [mask-image:radial-gradient(60vw_circle_at_center,white,transparent)]",
-                    )} />
-                </AuroraBackground>
+                <UIManagerDialogLayer />
+                <div className='fixed left-1/2 -translate-x-1/2 w-fit z-1 bottom-10'>
+                    <TabSwitcher/>
+                </div>
+                <MenubarComponent />
+
+                {children}
+                <AuroraBackground asLayer />
+                {/* Background */}
+                <div
+                    className='pointer-events-none absolute inset-0'
+                    style={{background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%)',}}
+                />
+                <VexrLogo className={`pointer-events-none ${theme === "dark" && "!text-white/3"} ${theme === "light" && "!text-black/3 "} h-[100px] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2`} />
+                <DotPattern className={cn(
+                    "pointer-events-none fill-neutral-200/20 [mask-image:radial-gradient(60vw_circle_at_center,white,transparent)]",
+                )} />
             </div>
 
         </QueryClientProvider>
