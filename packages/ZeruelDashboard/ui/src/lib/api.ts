@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type VideosQueryParams, type VideosResponse } from "@zeruel/dashboard-types";
+import { CommentQueryParams, CommentsResponse, TableSchemaQueryParams, TableSchemaResponse, type VideosQueryParams, type VideosResponse } from "@zeruel/dashboard-types";
 import { type VideoFeaturesQueryParams, type VideoFeaturesResponse } from "@zeruel/dashboard-types";
 
 export const api = axios.create({
@@ -19,5 +19,16 @@ export async function fetchVideos(params: VideosQueryParams): Promise<VideosResp
 
 export async function fetchVideoFeatures(params: VideoFeaturesQueryParams): Promise<VideoFeaturesResponse>{
     const { data } = await api.get("/api/v1/video_features", { params })
+    return data;
+}
+
+export async function fetchComments(params: CommentQueryParams): Promise<CommentsResponse>{
+    const { data } = await api.get("/api/v1/comments", { params })
+    return data
+}
+
+export async function fetchTableSchema(params: TableSchemaQueryParams): Promise<TableSchemaResponse>{
+    const { tableName } = params;
+    const { data } = await api.get(`/api/v1/tables/${tableName}/schema`);
     return data;
 }

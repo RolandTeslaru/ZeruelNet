@@ -17,8 +17,8 @@ export const VideoFeaturesQuerySchema = baseParams.extend({
     min_polarity: z.coerce.number().min(-1).max(1).optional(),
     max_polarity: z.coerce.number().min(-1).max(1).optional(),
 
-    timestamp: z.enum(["last_enriched_at", "polarity", "llm_overall_alignment"]).default("last_enriched_at"),
-    sort: z.enum(["asc", "desc"]).default("desc"),
+    timestamp: z.enum(["last_enriched_at", "polarity", "llm_overall_alignment"]).default("last_enriched_at").optional(),
+    sort: z.enum(["asc", "desc"]).default("desc").optional(),
 
     identified_subjects: z.array(IdentifiedSubjectScehma).min(1).optional()
 })

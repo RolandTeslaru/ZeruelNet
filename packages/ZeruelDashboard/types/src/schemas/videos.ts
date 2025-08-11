@@ -3,8 +3,8 @@ import { baseParams } from "./base";
 
 export const VideosQuerySchema = baseParams.extend({
     hashtag: z.string().trim().min(1).optional(),
-    timestamp: z.enum(["created_at", "updated_at"]).default("created_at"),
-    sort: z.enum(["asc", "desc"]).default("desc")
+    timestamp: z.enum(["created_at", "updated_at"]).default("created_at").optional(),
+    sort: z.enum(["asc", "desc"]).default("desc").optional()
 })
 
 export type VideosQueryParams = z.infer<typeof VideosQuerySchema>

@@ -31,5 +31,5 @@
     "src",
     "../../SharedUI/lib",
     "../types/src"
-  ]
+, "../service/src/api/v1/controllers/schemas.ts"  ]
 }

@@ -12,8 +12,8 @@ export const CommentsQuerySchema = baseParams.extend({
     min_likes_count: z.coerce.number().min(0).optional(),
     max_likes_count: z.coerce.number().optional(),
 
-    sort_by: z.enum(["likes_count", "created_at", "updated_at"]).default("created_at"),
-    sort_dir: z.enum(["asc", "desc"]).default("desc")
+    sort_by: z.enum(["likes_count", "created_at", "updated_at"]).default("created_at").optional(),
+    sort_dir: z.enum(["asc", "desc"]).default("desc").optional()
 })
 
 export type CommentQueryParams = z.infer<typeof CommentsQuerySchema>
