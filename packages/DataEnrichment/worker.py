@@ -28,6 +28,8 @@ def process(video_id: str, db_conn):
         negative_sentiment = text_sentiment_analysis["negative"]
         neutral_sentiment = text_sentiment_analysis["neutral"]
 
+        polarity = positive_sentiment - neutral_sentiment
+
         llm_summary = analysis_result_json["summary"]
         identified_subjects = analysis_result_json["identified_subjects"] 
         alignment = analysis_result_json["overall_alignment"]
@@ -38,7 +40,7 @@ def process(video_id: str, db_conn):
                 (
                     video_id, transcript, lang, 'completed',
                     llm_summary, json.dumps(identified_subjects), alignment, GEMINI_MODEL_NAME,
-                    positive_sentiment, negative_sentiment, neutral_sentiment
+                    positive_sentiment, negative_sentiment, neutral_sentiment, polarity
                 )
             )
             db_conn.commit()
@@ -96,7 +98,7 @@ UPSERT_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
     INSERT INTO video_features (
         video_id, transcript, detected_language, enrichment_status, last_enriched_at,
         llm_summary, llm_identified_subjects, llm_overall_alignment, llm_model_name,
-        text_sentiment_positive, text_sentiment_negative, text_sentiment_neutral
+        text_sentiment_positive, text_sentiment_negative, text_sentiment_neutral, polarity
     ) VALUES (
         %s, %s, %s, %s, CURRENT_TIMESTAMP,
         %s, %s, %s, %s,
@@ -113,7 +115,8 @@ UPSERT_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
         llm_model_name = EXCLUDED.llm_model_name,
         text_sentiment_positive = EXCLUDED.text_sentiment_positive,
         text_sentiment_negative = EXCLUDED.text_sentiment_negative,
-        text_sentiment_neutral = EXCLUDED.text_sentiment_neutral;
+        text_sentiment_neutral = EXCLUDED.text_sentiment_neutral,
+        polarity = EXCLUDED.polarity;
 """
 
 

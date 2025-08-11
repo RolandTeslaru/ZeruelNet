@@ -5,7 +5,7 @@ import { Variants } from 'motion/react';
 import React from 'react'
 import { columns } from './_components/Columns';
 import { useQuery } from '@tanstack/react-query';
-import { VideoQueryParams } from '@zeruel/dashboard-types';
+import { VideosQueryParams } from '@zeruel/dashboard-types';
 import { fetchVideos } from '@/lib/api';
 import {
     getCoreRowModel,
@@ -85,7 +85,7 @@ const DatabaseTable = () => {
         })
 
 
-    const params: VideoQueryParams = {
+    const params: VideosQueryParams = {
         limit: pageSize,
         offset: pageIndex * pageSize,
         timestamp: "created_at",

@@ -56,8 +56,8 @@ const bracketsWindowVariants: Variants = {
 }
 
 
-export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string, show: boolean } & HTMLMotionProps<"div">> = ({
-    className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, show, ...rest
+export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string, show?: boolean } & HTMLMotionProps<"div">> = ({
+    className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, show = true, ...rest
 }) => {
     return (
         <motion.div

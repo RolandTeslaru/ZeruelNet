@@ -1,1 +1,4 @@
-export * from "./querySchemas"
+export * from "./schemas/base"
+export * from "./schemas/videos"
+export * from "./schemas/videoFeatures"
+export * from "./schemas/comments"
