@@ -17,7 +17,7 @@ export const TablesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   return (
     <TablesContext.Provider value={value}>
-      {children}-
+      {children}
     </TablesContext.Provider>
   );
 };

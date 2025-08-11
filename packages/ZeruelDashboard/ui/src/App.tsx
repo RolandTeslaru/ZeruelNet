@@ -13,13 +13,16 @@ function App() {
   
   return (
     <Layout>
-      <div className="flex flex-row gap-4 min-w-auto min-h-screen max-h-screen w-full px-7 pb-6 pt-[70px] ">
-        {/* <TestChart1/>
-        <TestChart2/> */}
-        <Scraper show={currentPage === "scraper"}/>
-        <Tables show={currentPage === "tables"}/>
-        <Trends show={currentPage === "trendsanalysis"}/>
-        <SysHealth show={currentPage === "health"}/>
+      <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-24 ">
+        <div className=' w-full  '>
+
+          {/* <TestChart1/>
+          <TestChart2/> */}
+          <Scraper show={currentPage === "scraper"}/>
+          <Tables show={currentPage === "tables"}/>
+          <Trends show={currentPage === "trendsanalysis"}/>
+          <SysHealth show={currentPage === "health"}/>
+        </div>
       </div>
     </Layout>
   )
