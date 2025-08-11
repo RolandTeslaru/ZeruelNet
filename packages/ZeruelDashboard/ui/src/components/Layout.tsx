@@ -11,6 +11,7 @@ import { cn } from '@zeruel/shared-ui/utils/cn'
 import TabSwitcher from './PageSwitcher'
 import { useSystem } from '@/stores/useSystem'
 import classNames from 'classnames'
+import StagePanel from './StagePanel'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
     children?: React.ReactNode
@@ -53,9 +54,10 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
                 )} />
 
                 <UIManagerDialogLayer />
-                <div className='fixed left-1/2 -translate-x-1/2 w-fit z-10 bottom-10'>
+                <div className='fixed left-1/2 -translate-x-1/2 w-fit z-10 bottom-3'>
                     <TabSwitcher/>
                 </div>
+                <StagePanel/>
                 <MenubarComponent />
                 {children}
             </div>

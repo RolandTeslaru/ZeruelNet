@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 
-type State = {
-    currentPage: "scraper" | "tables" | "trendsanalysis" | "health"
+export type DashboardPages = "scraper" | "tables" | "trendsanalysis" | "health"
+
+export type State = {
+    currentPage: DashboardPages
 }
 
-type Actions = {
+export type Actions = {
     setCurrentPage: (value: "scraper" | "tables" | "trendsanalysis" | "health") => void
 }
 

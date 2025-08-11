@@ -1,6 +1,6 @@
 import React from 'react'
 import { Menubar, MenubarContent, MenubarItem, MenubarSubContent, MenubarSubTrigger, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarSub, MenubarTrigger } from '@zeruel/shared-ui/foundations/menubar'
-import { StandardWindowStyling } from '@zeruel/shared-ui/WindowStyling'
+import { BracketsWindowStyling, StandardWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import { pushDialogStatic, useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'
 import { DEBUG_NORMAL_dialog } from '@zeruel/shared-ui/dialogs/debug'
 
@@ -8,14 +8,13 @@ const LOG_MODULE = "VXMenubar"
 
 const MenubarComponent = () => {
     return (
-        <StandardWindowStyling
-            className='fixed top-6 left-6 z-10 px-3! py-0! rounded-3xl text-white'
-            style={{ boxShadow: "0 4px 15px -3px rgb(0 0 0 / 0.6), 0 2px 6px -4px rgb(0 0 0 / 0.6" }}
+        <BracketsWindowStyling
+            className='!fixed !w-fit left-1/2 -translate-x-1/2 top-3 z-10 px-3! py-0! text-white'
             id="VXEngineMenubar"
         >
             <div className='my-auto-fit text-white! font-roboto-mono flex flex-row text-sm'>
                 <Menubar className=' h-auto'>
-                    <LogoButton />
+                    {/* <LogoButton /> */}
                     <FileButton />
                     <EditButton />
                     <SelectButton />
@@ -24,7 +23,7 @@ const MenubarComponent = () => {
                     <SceneButton />
                 </Menubar>
             </div>
-        </StandardWindowStyling>
+        </BracketsWindowStyling>
     )
 }
 
