@@ -33,7 +33,6 @@ const TabsList = ({
 
   const onTabsTriggerClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const target = e.currentTarget as HTMLElement  
-    console.log("New Target", target)
     if (indicatorRef.current) {
       indicatorRef.current.style.width = `${target.clientWidth}px`
       indicatorRef.current.style.height = `${target.clientHeight + 2}px`

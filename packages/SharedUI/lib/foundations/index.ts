@@ -145,3 +145,8 @@ export {
   CommandBarSeperator,
   CommandBarValue,
 } from "./commandBar"
+
+export * from "./Tooltip"
+export * from "./dropdownMenu"
+export * from "./separator"
+export * from "./calendar"

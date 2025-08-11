@@ -48,7 +48,7 @@ const bracketsWindowVariants: Variants = {
         scale: 1,
         display: 'flex',
         transition: {
-            delay: 0.4,
+            delay: 0.5,
             duration: 0.3,
             ease: "easeInOut",
         },
