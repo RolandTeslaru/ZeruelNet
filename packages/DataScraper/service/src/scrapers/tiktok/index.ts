@@ -1,4 +1,4 @@
-import { DiscoveryTask, ScrapedComment, ScrapedVideo, ScrapeJob, T_ScraperJobPayload, T_SetCurrentBatchPayload, T_AddJobPayload, T_AddVideoMetadataPayload } from '@zeruel/scraper-types';
+import { T_ScraperJobPayload, T_SetCurrentBatchPayload, T_AddJobPayload, T_AddVideoMetadataPayload, DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedVideoStats, TiktokScrapedComment, TiktokScrapedVideo } from '@zeruel/scraper-types';
 import { discoverVideos } from './discover';
 import { scrapeComments } from './parsers';
 import { BrowserManager } from '../../lib/browserManager';
@@ -61,12 +61,12 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    public async discover(task: DiscoveryTask): Promise<ScrapeJob[]> {
+    public async discover(mission: DiscoverMission): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}> {
         statusManager.setStage("discovery");
 
 
         const page = await this.browserManager.getPage();
-        const allFoundUrls = await discoverVideos(task.identifier, task.limit, page);
+        const allFoundUrls = await discoverVideos(mission.identifier, mission.limit, page);
 
         const videoIds = allFoundUrls.map(url => url.split('/').pop() as string);
         const existingIds = await DatabaseManager.getStoredVideoIds(videoIds);
@@ -89,43 +89,17 @@ export class TiktokScraper extends AbstractScraper {
 
         Logger.success(`Identified ${newVideoUrls.length} new videos to prioritize.`);
 
-
-        // Create the jobs list, prioritizing new videos
-        const processingLimit = task.limit || PROCESS_LIMIT;
-        const jobs: ScrapeJob[] = [];
-
-        // Add all new videos first
-        for (const url of newVideoUrls) {
-            jobs.push({
-                platform: this.platform, url, parent_task: task, scrape_policy: 'full',
-            });
-        }
-
-        // Fill remaining slots with the most recently found existing videos
-        const remainingSlots = processingLimit - jobs.length;
-        if (remainingSlots > 0) {
-            const existingVideosToProcess = existingVideoUrls.slice(0, remainingSlots);
-            for (const url of existingVideosToProcess) {
-                jobs.push({
-                    platform: this.platform, url, parent_task: task, scrape_policy: 'metadata_only',
-                });
-            }
-        }
-
-        Logger.info(`Created a final job list of ${jobs.length} videos.`);
-
-        return jobs.slice(0, processingLimit); // Ensure we don't exceed the limit
+        return {newVideoUrls, existingVideoUrls}
     }
 
 
 
 
-    public async work(jobs: ScrapeJob[], batchSize: number): Promise<void> {
-        const jobsQueue = [...jobs];
-
+    public async scrape(mission: ScrapeMisson): Promise<void> {
+        const sideMissions = mission.sideMissions
         statusManager.setStage("scraping");
-        Logger.info(`Starting to process ${jobs.length} scrape jobs with a more human-like, rate-limited pattern.`);
-        statusManager.updateStep('batch_processing', 'active', `Processing ${jobsQueue.length} videos in batches of ${batchSize}.`);
+        Logger.info(`Starting to process ${sideMissions.length} scrape jobs with a more human-like, rate-limited pattern.`);
+        statusManager.updateStep('batch_processing', 'active', `Processing ${sideMissions.length} videos in batches of ${sideMissions}.`);
 
 
         const report = {
@@ -135,11 +109,11 @@ export class TiktokScraper extends AbstractScraper {
             totalCommentsScraped: 0,
         };
 
-        const totalBatches = Math.ceil(jobsQueue.length / batchSize);
+        const totalBatches = Math.ceil(sideMissions.length / mission.batchSize);
 
-        for (let i = 0; i < jobsQueue.length; i += batchSize) {
-            const batch = jobsQueue.slice(i, i + batchSize);
-            const currentBatch = Math.floor(i / batchSize) + 1;
+        for (let i = 0; i < sideMissions.length; i += mission.batchSize) {
+            const batch = sideMissions.slice(i, i + mission.batchSize);
+            const currentBatch = Math.floor(i / mission.batchSize) + 1;
 
 
             statusManager.updateStep('batch_processing', 'active', `Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
@@ -152,16 +126,16 @@ export class TiktokScraper extends AbstractScraper {
                 totalBatches,
             } as T_SetCurrentBatchPayload)
 
-            const batchPromises = batch.map(async (job) => {
+            const batchPromises = batch.map(async (_sideMission) => {
                 const jitter = Math.random() * 1500 + 500;
                 await sleep(jitter);
 
-                Logger.debug(`Starting worker for URL: ${job.url}`);
+                Logger.debug(`Starting worker for URL: ${_sideMission.url}`);
 
                 try {
                     const page = await this.browserManager.getPage();
 
-                    const videoData = await this.processJob(job, page);
+                    const videoData = await this.processScrapeSideMission(_sideMission, page, mission.identifier);
                     await DatabaseManager.saveVideo(videoData);
 
                     await messageBroker.publish('enrichment_queue', videoData.video_id);
@@ -170,7 +144,7 @@ export class TiktokScraper extends AbstractScraper {
                     statusManager.updateStep("data_persistence", "active", `Saved video ${videoData.video_id} and its ${videoData.comments.length} comments`)
 
                     // Update report and emit rich event
-                    if (job.scrape_policy === 'full') {
+                    if (_sideMission.policy === 'full') {
                         report.newVideosScraped++;
                         report.totalCommentsScraped += videoData.comments.length;
                     } else {
@@ -181,20 +155,20 @@ export class TiktokScraper extends AbstractScraper {
                     this.broadcast({
                         action: "FINALISE_JOB",
                         type: "succes",
-                        job,
+                        sideMission: _sideMission,
                     })
                 } catch (error) {
-                    Logger.error(`Job failed for URL ${job.url}`, error);
+                    Logger.error(`Job failed for URL ${_sideMission.url}`, error);
                     this.broadcast({
                         action: "FINALISE_JOB",
                         type: "error",
-                        job,
+                        sideMission: _sideMission,
                         error: JSON.stringify(error)
                     })
                 }
             });
             await Promise.all(batchPromises);
-            if (i + batchSize < jobsQueue.length) {
+            if (i + mission.batchSize < sideMissions.length) {
                 const batchDelay = Math.random() * 5000 + 2500;
                 const waitTime = Math.round(batchDelay / 1000);
                 statusManager.updateStep('rate_limit_delays', 'active', `Waiting for ${waitTime}s before next batch...`);
@@ -220,9 +194,9 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    protected async processJob(job: ScrapeJob, page: Page): Promise<ScrapedVideo> {
+    protected async processScrapeSideMission(sideMission: ScrapeSideMission, page: Page, identifier: string): Promise<TiktokScrapedVideo> {
         try {
-            await page.goto(job.url, { waitUntil: 'domcontentloaded' });
+            await page.goto(sideMission.url, { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]', { state: 'attached', timeout: 30000 });
 
             const sigiState = await page.locator('script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]').innerText();
@@ -239,7 +213,7 @@ export class TiktokScraper extends AbstractScraper {
                 metadata: {
                     video_id: videoInfo.id,
                     thumbnail_url: videoInfo.video.cover,
-                    video_url: job.url,
+                    video_url: sideMission.url,
                     author_username: videoInfo.author.uniqueId,
                     video_description: description,
                     extracted_hashtags,
@@ -254,20 +228,20 @@ export class TiktokScraper extends AbstractScraper {
             } as T_AddVideoMetadataPayload)
 
 
-            let comments: ScrapedComment[] = [];
+            let comments: TiktokScrapedComment[] = [];
             // Only do a full comment scrape if the policy is 'full' and there are comments to scrape
-            if (job.scrape_policy === 'full' && videoInfo.stats.commentCount > 0) {
+            if (sideMission.policy === 'full' && videoInfo.stats.commentCount > 0) {
                 Logger.info(`[Policy: Full] Scraping comments for video ${videoInfo.id}`);
                 comments = await scrapeComments(page, 200);
             } else if (videoInfo.stats.commentCount > 0) {
                 Logger.warn(`[Policy: Metadata-Only] Skipping comments for video ${videoInfo.id}`);
             }
 
-            const videoData: ScrapedVideo = {
+            const videoData: TiktokScrapedVideo = {
                 video_id: videoInfo.id,
                 thumbnail_url: videoInfo.video.cover,
-                searched_hashtag: job.parent_task.identifier,
-                video_url: job.url,
+                searched_hashtag: identifier,
+                video_url: sideMission.url,
                 author_username: videoInfo.author.uniqueId,
                 video_description: description,
                 extracted_hashtags,

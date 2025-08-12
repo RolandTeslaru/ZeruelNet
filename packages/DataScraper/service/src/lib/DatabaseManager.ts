@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { Logger } from "./logger";
-import { ScrapedVideo } from "@zeruel/scraper-types";
 import { v4 as uuidv4 } from 'uuid';
+import { TiktokScrapedVideo } from "@zeruel/scraper-types";
 
 const pool = new Pool({
     user: process.env.DB_USER || 'postgres',
@@ -24,7 +24,7 @@ export class DatabaseManager {
 
     private constructor() {}
 
-    public static async saveVideo(videoData: ScrapedVideo): Promise<void> {
+    public static async saveVideo(videoData: TiktokScrapedVideo): Promise<void> {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
@@ -105,7 +105,7 @@ export class DatabaseManager {
 
         const client = await pool.connect();
         try {
-            const query = `
+            const query = `--sql
               SELECT video_id FROM videos WHERE video_id = ANY($1::text[])
             `;
             const result = await client.query(query, [videoIds]);

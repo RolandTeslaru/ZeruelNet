@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "packages/DataScraper/*",
     "packages/GatewayService",
+    "packages/DataScraper/*",
     "packages/SharedUI",
+    "packages/types",
     "packages/ZeruelDashboard/*"
   ],
   "scripts": {

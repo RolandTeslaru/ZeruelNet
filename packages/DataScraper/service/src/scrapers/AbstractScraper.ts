@@ -1,4 +1,4 @@
-import { DiscoveryTask, ScrapedVideo, ScrapeJob } from "@zeruel/scraper-types";
+import { DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedVideo } from "@zeruel/scraper-types";
 import { BrowserManager } from "../lib/browserManager";
 import { Page } from "playwright";
 
@@ -12,14 +12,14 @@ export abstract class AbstractScraper {
      * @param {DiscoveryTask} task - The discovery task containing search parameters.
      * @returns {Promise<ScrapeJob[]>} A promise that resolves to an array of scrape jobs.
     */
-    abstract discover(task: DiscoveryTask): Promise<ScrapeJob[]>;
+    abstract discover(mission: DiscoverMission): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}>;
 
     /**
      * Processes a list of scrape jobs, scraping video data and comments.
      * @param {ScrapeJob[]} jobs - The list of scrape jobs to process.
      * @returns {Promise<void>} A promise that resolves when all jobs are processed.
     */
-    abstract work(jobs: ScrapeJob[], batchSize: number): Promise<void>
+    abstract scrape(mission: ScrapeMisson): Promise<void>
     
     /**
      * Processes a single scrape job, extracting video data and comments.
@@ -28,5 +28,5 @@ export abstract class AbstractScraper {
      * @returns {Promise<ScrapedVideo>} A promise that resolves to the scraped video data.
      * @protected
      */
-    protected abstract processJob(job: ScrapeJob, page: Page): Promise<ScrapedVideo>
+    protected abstract processScrapeSideMission(sideMission: ScrapeSideMission, page: Page, identifier: string): Promise<TiktokScrapedVideo>
 }
