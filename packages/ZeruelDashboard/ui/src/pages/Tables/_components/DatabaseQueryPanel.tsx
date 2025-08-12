@@ -1,6 +1,7 @@
 import { useTablesContext } from '../context'
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@zeruel/shared-ui/foundations'
+import { useForm, SubmitHandler } from "react-hook-form"
 
 const DATA_TABLES = [
     "videos",
@@ -10,6 +11,13 @@ const DATA_TABLES = [
 
 const DatabaseQueryPanel = () => {
     const { selectedTable, setSelectedTable } = useTablesContext()
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm();
 
     return (
         <CollapsiblePanel
