@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react'
 import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import StepperVerticalMap, { StepperVerticalMapHandles } from '@zeruel/shared-ui/StepperVerticalMap'
-import { useSystemStatus } from '../stores/useSystemStatus'
+import { useWorkflowStatus } from '../stores/useWorkflowStatus'
 
 
 const StepperPanel = () => {
-    const steps = useSystemStatus(state => state.steps);
+    const steps = useWorkflowStatus(state => state.steps);
     const stepperRef = useRef<StepperVerticalMapHandles>(null)
 
 

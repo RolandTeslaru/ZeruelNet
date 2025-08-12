@@ -9,6 +9,5 @@
       "strict": true,
       "skipLibCheck": true
     },
-    "include": ["src", "../service/src/api/v1/controllers/schemas.ts"],
     "exclude": ["node_modules", "dist"]
   } 

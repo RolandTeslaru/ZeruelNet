@@ -1,20 +1,21 @@
-import { SystemStage, SystemStep, StageType, T_SystemStatusPayload } from '@zeruel/scraper-types';
+import { T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 import { useGatewayService, webSocketEvents } from "./useGatewayService";
 import { enableMapSet } from 'immer';
+import { WorkflowStatusStage, WorkflowStatusStep } from '@zeruel/types';
 
 enableMapSet();
 
 type State = {
-    stage: SystemStage
-    steps: Map<string, SystemStep>
+    stage: WorkflowStatusStage
+    steps: Map<string, WorkflowStatusStep>
 } 
 
 type Actions = {
 }
 
-export const useSystemStatus = create<State & Actions>()(
+export const useWorkflowStatus = create<State & Actions>()(
     immer((set, get) => ({
         stage: {
             type: "INFO",
@@ -27,12 +28,12 @@ export const useSystemStatus = create<State & Actions>()(
 function handleSocketMessage(payload: T_SystemStatusPayload) {
     switch (payload.action) {
         case "UPDATE_STEP":
-            useSystemStatus.setState(state => {
+            useWorkflowStatus.setState(state => {
                 state.steps.set(payload.stepId, payload.step);
             });
             break;
         case "SET_STAGE":
-            useSystemStatus.setState(state => {
+            useWorkflowStatus.setState(state => {
                 state.stage = payload.stage;
                 Object.entries(payload.steps).forEach(([stepKey, newStep]) => {
                     state.steps.set(stepKey, newStep)
@@ -41,14 +42,14 @@ function handleSocketMessage(payload: T_SystemStatusPayload) {
             });
             break;
         case "CLEAR_STEPS":
-            useSystemStatus.setState(state => {
+            useWorkflowStatus.setState(state => {
                 state.steps.clear();
             });
             break;
         case "REMOVE_STEP":
             const { delayMs, stepId, status, description } = payload
             if(delayMs){
-                useSystemStatus.setState(state => {
+                useWorkflowStatus.setState(state => {
                     const step = state.steps.get(stepId);
                     step.status = status
                     if (description)
@@ -57,12 +58,12 @@ function handleSocketMessage(payload: T_SystemStatusPayload) {
 
                 // delay te actual removal so the user can see the new status
                 setTimeout(() => {
-                    useSystemStatus.setState(state => {
+                    useWorkflowStatus.setState(state => {
                         state.steps.delete(stepId);
                     })
                 }, delayMs)
             } else {
-                useSystemStatus.setState(state => {
+                useWorkflowStatus.setState(state => {
                     const step = state.steps.get(stepId);
                     step.status = status
                     if (description)
@@ -78,7 +79,7 @@ function handleSocketMessage(payload: T_SystemStatusPayload) {
 useGatewayService.getState().subscribeToTopic("scraper_system_status", handleSocketMessage)
 webSocketEvents.addEventListener("open", () => {
     setTimeout(() => {
-        useSystemStatus.setState(state => {
+        useWorkflowStatus.setState(state => {
             state.stage = {
                 type: "INFO",
                 title: "IDLE:  AWAITING  TASK  WORK"

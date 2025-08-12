@@ -1,6 +1,5 @@
 import { Page } from 'playwright';
 import { Logger } from '../../lib/logger';
-import { DiscoveryTask } from '@zeruel/scraper-types';
 import { statusManager } from '../../lib/statusManager';
 import { DiscoveryLayout, discoveryLayouts } from './pageLayouts';
 

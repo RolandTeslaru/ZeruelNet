@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '@zeruel/shared-ui/foundations'
 import { DiscoveryTask, ScrapeTask } from '@zeruel/scraper-types'
-import { useSystemStatus } from '../stores/useSystemStatus'
+import { useWorkflowStatus } from '../stores/useWorkflowStatus'
 
 const CommandPanel = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [responseMessage, setResponseMessage] = useState('');
 
-    const stage = useSystemStatus(state => state.stage)
+    const stage = useWorkflowStatus(state => state.stage)
 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

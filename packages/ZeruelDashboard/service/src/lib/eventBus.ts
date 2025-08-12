@@ -11,7 +11,7 @@ class EventBus extends EventEmitter {
     // A channel is for example: "scraper_logs", "scraper_job_feed"
 
     public broadcast(topic: string, payload: any){
-        const channel = `scraper_${topic}`;
+        const channel = `dashboard_${topic}`;
 
         this.emit("publish", { channel, payload });
     }

@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts';
 import RotatingText from '@zeruel/shared-ui/RotatingText';
 import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling';
-import { useSystemStatus } from '../stores/useSystemStatus';
+import { useWorkflowStatus } from '../stores/useWorkflowStatus';
 
 const StagePanel = () => {
-    const stage = useSystemStatus(state => state.stage);
+    const stage = useWorkflowStatus(state => state.stage);
   
     return (
       <div className='fixed flex flex-col gap-4 left-7 top-20 w-fit transition-all'>

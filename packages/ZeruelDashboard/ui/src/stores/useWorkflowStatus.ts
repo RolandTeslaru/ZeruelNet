@@ -1,22 +1,23 @@
-import { SystemStage, SystemStep, StageType, T_SystemStatusPayload } from '@zeruel/scraper-types';
+import { T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 import { useGatewayService, webSocketEvents } from "./useGatewayService";
 import { enableMapSet } from 'immer';
 import { DashboardPages } from './useSystem';
+import { WorkflowStatusStage, WorkflowStatus, WorkflowStatusStep } from '@zeruel/types';
 
 enableMapSet();
 
 
 type State = {
-    pageStages: Record<DashboardPages, SystemStage>
-    pageSteps: Record<DashboardPages, Map<string, SystemStep>>
+    pageStages: Record<DashboardPages, WorkflowStatusStage>
+    pageSteps: Record<DashboardPages, Map<string, WorkflowStatusStep>>
 } 
 
 type Actions = {
 }
 
-export const useSystemStatus = create<State & Actions>()(
+export const useWorkflowStatus = create<State & Actions>()(
     immer((set, get) => ({
 
         pageStages: {
@@ -49,12 +50,12 @@ export const useSystemStatus = create<State & Actions>()(
 function handleSocketMessage(payload: T_SystemStatusPayload, currentPage: DashboardPages) {
     switch (payload.action) {
         case "UPDATE_STEP":
-            useSystemStatus.setState(state => {
+            useWorkflowStatus.setState(state => {
                 state.pageSteps[currentPage].set(payload.stepId, payload.step);
             });
             break;
         case "SET_STAGE":
-            useSystemStatus.setState(state => {
+            useWorkflowStatus.setState(state => {
                 state.pageStages[currentPage] = payload.stage;
                 Object.entries(payload.steps).forEach(([stepKey, newStep]) => {
                     state.pageSteps[currentPage].set(stepKey, newStep)
@@ -63,14 +64,14 @@ function handleSocketMessage(payload: T_SystemStatusPayload, currentPage: Dashbo
             });
             break;
         case "CLEAR_STEPS":
-            useSystemStatus.setState(state => {
+            useWorkflowStatus.setState(state => {
                 state.pageSteps[currentPage].clear();
             });
             break;
         case "REMOVE_STEP":
             const { delayMs, stepId, status, description } = payload
             if(delayMs){
-                useSystemStatus.setState(state => {
+                useWorkflowStatus.setState(state => {
                     const step = state.pageSteps[currentPage].get(stepId);
                     step.status = status
                     if (description)
@@ -79,12 +80,12 @@ function handleSocketMessage(payload: T_SystemStatusPayload, currentPage: Dashbo
 
                 // delay te actual removal so the user can see the new status
                 setTimeout(() => {
-                    useSystemStatus.setState(state => {
+                    useWorkflowStatus.setState(state => {
                         state.pageSteps[currentPage].delete(stepId);
                     })
                 }, delayMs)
             } else {
-                useSystemStatus.setState(state => {
+                useWorkflowStatus.setState(state => {
                     const step = state.pageSteps[currentPage].get(stepId);
                     step.status = status
                     if (description)
@@ -101,7 +102,7 @@ useGatewayService.getState().subscribeToTopic("scraper_system_status", payload =
 useGatewayService.getState().subscribeToTopic("dashboard_system_status",  payload =>  handleSocketMessage(payload, 'trendsanalysis'))
 // webSocketEvents.addEventListener("open", () => {
 //     setTimeout(() => {
-//         useSystemStatus.setState(state => {
+//         useWorkflowStatus.setState(state => {
 //             state.stage = {
 //                 type: "INFO",
 //                 title: "IDLE:  AWAITING  TASK  WORK"

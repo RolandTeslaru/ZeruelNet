@@ -1,8 +1,9 @@
-import { SystemStatusUpdate, SystemStage, SystemStep, StepStatus, T_SystemStatusAction, T_SystemStatusPayload } from '@zeruel/scraper-types';
+import { T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { eventBus } from './eventBus';
+import { WorkflowStatusStage, WorkflowStatusStep, WorkflowStatusStepStatus, WorkflowStatusSchema, WorkflowStatus } from '@zeruel/types';
 
 
-const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
+const DEFAULT_STEPS: Record<string, Record<string, WorkflowStatusStep>> = {
     idle: {},
     initialization: {
         api_request_received: {
@@ -85,11 +86,11 @@ const DEFAULT_STEPS: Record<string, Record<string, SystemStep>> = {
     }
 }
 
-class StatusManager {
-    private currentStatus: SystemStatusUpdate;
-    private static instance: StatusManager;
+class WorkflowStatusManager {
+    private currentStatus: WorkflowStatus;
+    private static instance: WorkflowStatusManager;
 
-    private stages: Record<string, { stage: SystemStage; steps: Record<string, SystemStep> }> = {
+    private stages: Record<string, { stage: WorkflowStatusStage; steps: Record<string, WorkflowStatusStep> }> = {
         idle: {
             stage: { title: 'IDLE:  AWAITING  TASK  WORK', type: 'INFO' },
             steps: DEFAULT_STEPS["idle"]
@@ -128,11 +129,11 @@ class StatusManager {
         this.currentStatus = this.stages.idle;
     }
 
-    public static getInstance(): StatusManager {
-        if (!StatusManager.instance) {
-            StatusManager.instance = new StatusManager();
+    public static getInstance(): WorkflowStatusManager {
+        if (!WorkflowStatusManager.instance) {
+            WorkflowStatusManager.instance = new WorkflowStatusManager();
         }
-        return StatusManager.instance;
+        return WorkflowStatusManager.instance;
     }
 
     private broadcast(payload: T_SystemStatusPayload) {
@@ -150,7 +151,7 @@ class StatusManager {
         }
     }
 
-    public updateStep(stepId: string, status: StepStatus, description?: string) {
+    public updateStep(stepId: string, status: WorkflowStatusStepStatus, description?: string) {
         const step = this.currentStatus.steps[stepId];
         if (step) {
             step.status = status;
@@ -171,7 +172,7 @@ class StatusManager {
         }
     }
 
-    public removeStep(stepId: string, status: StepStatus, description?: string, delayMs?: number){
+    public removeStep(stepId: string, status: WorkflowStatusStepStatus, description?: string, delayMs?: number){
         const step = this.currentStatus.steps[stepId];
         if(step){
             this.broadcast({
@@ -187,5 +188,5 @@ class StatusManager {
     }
 }
 
-export const statusManager = StatusManager.getInstance();
+export const statusManager = WorkflowStatusManager.getInstance();
 
