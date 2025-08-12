@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
-import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapeWorkflowRequest } from '@zeruel/scraper-types';
 import { statusManager } from '../../lib/statusManager';
 import { TiktokScraper } from "../../scrapers/tiktok"
+import { DiscoverMission, ScrapeSideMission, ScrapeWorkflowRequest } from '@zeruel/scraper-types';
 
 let isScraperRunning = false;
 

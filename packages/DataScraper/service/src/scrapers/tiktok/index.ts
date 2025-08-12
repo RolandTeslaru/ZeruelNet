@@ -1,4 +1,4 @@
-import { T_ScraperJobPayload, T_SetCurrentBatchPayload, T_AddJobPayload, T_AddVideoMetadataPayload, DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedVideoStats, TiktokScrapedComment, TiktokScrapedVideo } from '@zeruel/scraper-types';
+import {  DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedComment, TiktokScrapedVideo, AbstractScraperPayload } from '@zeruel/scraper-types';
 import { discoverVideos } from './discover';
 import { scrapeComments } from './parsers';
 import { BrowserManager } from '../../lib/browserManager';
@@ -54,7 +54,7 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    private broadcast(payload: T_ScraperJobPayload) {
+    private broadcast(payload: AbstractScraperPayload) {
         eventBus.broadcast("active_job_feed", payload)
     }
 
@@ -118,13 +118,13 @@ export class TiktokScraper extends AbstractScraper {
 
             statusManager.updateStep('batch_processing', 'active', `Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
             Logger.info(`Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
-            
+        
             this.broadcast({
-                action: "SET_CURRENT_BATCH",
+                action: "SET_CURRENT_BATCH" as const,
                 batch,
                 currentBatch,
                 totalBatches,
-            } as T_SetCurrentBatchPayload)
+            })
 
             const batchPromises = batch.map(async (_sideMission) => {
                 const jitter = Math.random() * 1500 + 500;
@@ -153,14 +153,14 @@ export class TiktokScraper extends AbstractScraper {
                     }
 
                     this.broadcast({
-                        action: "FINALISE_JOB",
+                        action: "FINALISE_SIDE_MISSION" as const,
                         type: "succes",
                         sideMission: _sideMission,
                     })
                 } catch (error) {
                     Logger.error(`Job failed for URL ${_sideMission.url}`, error);
                     this.broadcast({
-                        action: "FINALISE_JOB",
+                        action: "FINALISE_SIDE_MISSION" as const,
                         type: "error",
                         sideMission: _sideMission,
                         error: JSON.stringify(error)
@@ -225,7 +225,7 @@ export class TiktokScraper extends AbstractScraper {
                         play_count: videoInfo.stats.playCount,
                     },
                 }
-            } as T_AddVideoMetadataPayload)
+            })
 
 
             let comments: TiktokScrapedComment[] = [];

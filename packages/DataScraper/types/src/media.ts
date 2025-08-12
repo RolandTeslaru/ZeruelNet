@@ -9,6 +9,8 @@ export const TiktokScrapedVideoStatsSchema = z.object({
 })
 export type TiktokScrapedVideoStats = z.infer<typeof TiktokScrapedVideoStatsSchema>
 
+
+
 export const TiktokScrapedCommentSchema = z.object({
     comment_id: z.string(),
     parent_comment_id: z.string().nullable(),
@@ -19,7 +21,9 @@ export const TiktokScrapedCommentSchema = z.object({
 })
 export type TiktokScrapedComment = z.infer<typeof TiktokScrapedCommentSchema> 
 
-export const TiktokScrapedVideoSchema = z.object({
+
+
+export const TiktokScrapedVideoMetadataSchema = z.object({
     video_id: z.string(),
     thumbnail_url: z.string(),
     searched_hashtag: z.string(),
@@ -29,6 +33,12 @@ export const TiktokScrapedVideoSchema = z.object({
     extracted_hashtags: z.array(z.string()),
     platform: PlatformsSchema,
     stats: TiktokScrapedVideoStatsSchema,
+})
+export type TiktokScrapedVideoMetadata = z.infer<typeof TiktokScrapedVideoMetadataSchema>
+
+
+
+export const TiktokScrapedVideoSchema = TiktokScrapedVideoMetadataSchema.extend({
     comments: z.array(TiktokScrapedCommentSchema)
 })
 export type TiktokScrapedVideo = z.infer<typeof TiktokScrapedVideoSchema>

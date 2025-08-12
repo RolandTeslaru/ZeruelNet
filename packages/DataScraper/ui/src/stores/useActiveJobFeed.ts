@@ -1,16 +1,16 @@
 import { create } from "zustand";
 import { useGatewayService } from "./useGatewayService";
-import { ScrapedVideo, ScrapeJob, T_ScraperJobPayload, T_VideoMetadata } from "@zeruel/scraper-types";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
+import { AbstractScraperPayload, ScrapeSideMission, TiktokScrapedVideoMetadata } from "@zeruel/scraper-types";
 
 enableMapSet()
 
 
 
 type State = {
-    activeJobs: Map<string, ScrapeJob>
-    videoMetadata: Record<string, T_VideoMetadata>
+    activeJobs: Map<string, ScrapeSideMission>
+    videoMetadata: Record<string, Omit<TiktokScrapedVideoMetadata, "searched_hashtag">>
     jobStatus: Record<string, "SCRAPING" | "SUCCESS" | "ERROR" >
     currentBatchNr: number
     totalBatches: number
@@ -30,12 +30,12 @@ export const useActiveJobFeed = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(payload: T_ScraperJobPayload) {
+function handleSocketMessage(payload: AbstractScraperPayload) {
     switch (payload.action) {
-        case "ADD_JOB":
-            const key = payload.job.url
+        case "ADD_SIDE_MISSION":
+            const key = payload.sideMission.url
             useActiveJobFeed.setState(state => {
-                state.activeJobs.set(key, payload.job)
+                state.activeJobs.set(key, payload.sideMission)
                 state.jobStatus[key] = "SCRAPING"
             })
             break;
@@ -44,17 +44,17 @@ function handleSocketMessage(payload: T_ScraperJobPayload) {
                 state.videoMetadata[payload.metadata.video_url] = payload.metadata
             })    
         break;
-        case "FINALISE_JOB":
+        case "FINALISE_SIDE_MISSION":
             let status = payload.error ? "ERROR" : "SUCCESS" as "SCRAPING" | "SUCCESS" | "ERROR"
 
             useActiveJobFeed.setState(state => {
-                state.jobStatus[payload.job.url] = status;
+                state.jobStatus[payload.sideMission.url] = status;
             })
 
             // Delay the removal so the user can see the job succeeded or failed
             setTimeout(() => {
                 useActiveJobFeed.setState(state => {
-                    state.activeJobs.delete(payload.job.url);
+                    state.activeJobs.delete(payload.sideMission.url);
                 });
             }, 10000); 
             

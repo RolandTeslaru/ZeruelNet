@@ -1,10 +1,10 @@
-import { T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 import { useGatewayService, webSocketEvents } from "./useGatewayService";
 import { enableMapSet } from 'immer';
 import { DashboardPages } from './useSystem';
 import { WorkflowStatusStage, WorkflowStatus, WorkflowStatusStep } from '@zeruel/types';
+import { WorkflowStatusPayload } from "@zeruel/scraper-types";
 
 enableMapSet();
 
@@ -47,7 +47,7 @@ export const useWorkflowStatus = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(payload: T_SystemStatusPayload, currentPage: DashboardPages) {
+function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: DashboardPages) {
     switch (payload.action) {
         case "UPDATE_STEP":
             useWorkflowStatus.setState(state => {

@@ -9,7 +9,7 @@ export type ScrapePolicy = z.infer<typeof ScrapePolicySchema>
 
 // SCRAPE MISSION ( contains multiple scrape sideMissions)
 
-const ScrapeSideMissionSchema = z.object({
+export const ScrapeSideMissionSchema = z.object({
     platform: PlatformsSchema,
     url: z.string(),
     policy: ScrapePolicySchema

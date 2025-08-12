@@ -9,7 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@zeruel/scraper-types": ["../types/src"]
+      "@zeruel/scraper-types": ["../types/src"],
+      "@zeruel/types": ["../../types/src"],
+      
     }
   },
   "include": ["src/**/*.ts"],
