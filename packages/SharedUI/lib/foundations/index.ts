@@ -107,6 +107,9 @@ export {
 // Slider
 export { Slider } from "./slider";
 
+// Dual Range Slider
+export { DualRangeSlider } from "./dualRangeSlider";
+
 // Switch
 export { Switch } from "./switch";
 
