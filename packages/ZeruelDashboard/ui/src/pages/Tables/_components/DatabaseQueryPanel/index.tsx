@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useState, memo } from 'react'
 import { useTablesContext } from '../../context'
-import { useForm } from 'react-hook-form';
+import { ControllerRenderProps, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel';
 import {Form, FormField, FormItem, FormLabel,} from '@zeruel/shared-ui/foundations'
@@ -13,6 +13,7 @@ import { arrayInputRender, integerInputRenderer, stringInputRenderer } from './c
 const INPUT_MAP = {
     "string": stringInputRenderer,
     "integer": integerInputRenderer,
+    "number": integerInputRenderer,
     "array": arrayInputRender
 } as const
 
@@ -28,6 +29,9 @@ const DatabaseQueryPanel = memo(() => {
         defaultValues: currentDefaultValues
     })
 
+    useEffect(() => {
+        form.reset(currentDefaultValues);
+    }, [selectedTable, currentDefaultValues])
 
     return (
         <CollapsiblePanel
@@ -46,7 +50,7 @@ const DatabaseQueryPanel = memo(() => {
                             <FormItem>
                                 <FormLabel className='font-sans text-neutral-400'>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</FormLabel>
                                 <FormItem>
-                                    {(INPUT_MAP[zodProp.type] as (zodProp: ZodPropertyObject, field: any) => React.ReactNode)(zodProp, field)}
+                                    {(INPUT_MAP[zodProp.type] as (zodProp: ZodPropertyObject, field: ControllerRenderProps) => React.ReactNode)(zodProp, field)}
                                 </FormItem>
                             </FormItem>
                         )}
