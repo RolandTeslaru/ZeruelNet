@@ -52,7 +52,7 @@ const DatabaseQueryPanel = memo(() => {
             contentClassName='overflow-scroll'
         >
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
+                <form onSubmit={form.handleSubmit(onSubmit)} className='w-full flex flex-col gap-1'>
                     <CurrentTableSelector form={form} />
                     {table && table.propertiesArray.map(([key, zodProp]: [key: string, zodProp: ZodPropertyObject]) =>
                         <FormField
@@ -61,9 +61,9 @@ const DatabaseQueryPanel = memo(() => {
                             // @ts-expect-error
                             name={key}
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className='gap-1'>
                                     <FormLabel className='font-sans text-neutral-400'>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</FormLabel>
-                                    <FormItem>
+                                    <FormItem className='relative'>
                                         {(INPUT_MAP[zodProp.type] as (zodProp: ZodPropertyObject, field: ControllerRenderProps, control: Control) => React.ReactNode)(zodProp, field, form.control)}
                                     </FormItem>
                                     <FormMessage />

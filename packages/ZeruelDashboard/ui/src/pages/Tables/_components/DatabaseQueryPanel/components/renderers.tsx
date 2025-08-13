@@ -18,57 +18,69 @@ import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper';
 export const stringInputRenderer = (zodStringObject: ZodStringObject, field: ControllerRenderProps, control: Control) => {
     if (zodStringObject.format === "date-time") {
         return (
-            <Input
-                {...field}
-                type="date"
-                className='w-1/2 ml-auto'
-                defaultValue={field.value}
-                value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : undefined)}
-            />
+            <>
+                <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
+                <Input
+                    {...field}
+                    type="date"
+                    className='w-1/2 ml-auto'
+                    defaultValue={field.value}
+                    value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                    onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+                />
+            </>
         )
     }
     if (zodStringObject.enum) {
         return (
-            <Select
-                onValueChange={field.onChange}
-                value={field.value}
-                defaultValue={field.value}
-            >
-                <SelectTrigger className="w-1/2 ml-auto focus:outline-hidden text-xs!">
-                    <SelectValue placeholder="ENUM" className={field.value ? "text-white" : "text-neutral-200"} />
-                </SelectTrigger>
-                <SelectContent>
-                    {zodStringObject.enum.map((value) => (
-                        <SelectItem key={value} value={value}>
-                            {value}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+            <>
+                <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
+                <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                >
+                    <SelectTrigger className="w-1/2 ml-auto focus:outline-hidden text-xs!">
+                        <SelectValue placeholder="ENUM" className={field.value ? "text-white" : "text-neutral-200"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {zodStringObject.enum.map((value) => (
+                            <SelectItem key={value} value={value}>
+                                {value}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </>
         )
     }
     return (
-        <Input
-            {...field}
-            type='text'
-            className='w-1/2 ml-auto'
-            placeholder='STRING'
-        />
+        <>
+            <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2'/>
+            <Input
+                {...field}
+                type='text'
+                className='w-1/2 ml-auto'
+                placeholder='STRING'
+            />
+        </>
     )
 }
 
 export const integerInputRenderer = (zodIntegerObject: ZodIntegerObject, field: ControllerRenderProps, control: Control) => {
     return (
-        <Input
-            {...field}
-            className='w-1/2 ml-auto'
-            type="number"
-            defaultValue={field.value}
-            min={zodIntegerObject.minimum || zodIntegerObject.exclusiveMinimum}
-            max={zodIntegerObject.maximum || zodIntegerObject.exclusiveMaximum}
-            placeholder="INTEGER"
-        />
+        <>
+            <div className='h-1/2 w-[20px] border-b border-l border-neutral-500 absolute left-2'/>
+            <Input
+                {...field}
+                className='w-1/2 ml-auto'
+                type="number"
+                defaultValue={field.value}
+                min={zodIntegerObject.minimum || zodIntegerObject.exclusiveMinimum}
+                max={zodIntegerObject.maximum || zodIntegerObject.exclusiveMaximum}
+                placeholder="INTEGER"
+            />
+        </>
     )
 }
 
