@@ -40,7 +40,7 @@ export function DataTable<TData>({
         <>
             <div className="w-full h-full  overflow-x-scroll">
                 <Table>
-                    <TableHead className="sticky top-0">
+                    <TableHead className="sticky top-0 bg-neutral-950/90 z-20">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow
                                 key={headerGroup.id}

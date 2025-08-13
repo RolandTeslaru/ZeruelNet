@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { z } from "zod"
 import { pool } from "../../../lib/db"
 import { VideosQuerySchema } from "@zeruel/dashboard-types"
+import { timeStamp } from "console";
 
 // The scraped videos in the videos table
 export async function getVideos(req: Request, res: Response) {
@@ -11,10 +12,19 @@ export async function getVideos(req: Request, res: Response) {
         return res.status(400).json({ error: z.treeifyError(parsed.error) })
     }
 
-    const { limit, offset, since, until, hashtag, timestamp, sort } = parsed.data
+    const { limit, offset, since, until, hashtag, sort_dir, sort_by } = parsed.data
     
-    const timestampColumnId = `v.${timestamp}`
-    const direction = sort === "asc" ? "ASC" : "DESC"
+    const orderByWhitelist = {
+        "created_at": "v.created_at",
+        "updated_at": "v.updated_at",
+        "play_count": "v.play_count",
+        "comment_count": "v.comment_count",
+        "share_count": "v.share_count",
+        "likes_count": "v.likes_count",
+    }
+
+    const orderBy = orderByWhitelist[sort_by]
+    const direction = sort_dir.toUpperCase()
 
     const query_params = [
         since ?? null,    // 1
@@ -27,14 +37,14 @@ export async function getVideos(req: Request, res: Response) {
     const query = `--sql
         SELECT v.*, COUNT(*) OVER() as total_count
         FROM public.videos v
-        WHERE ($1::timestamptz IS NULL OR ${timestampColumnId} >= $1)
-          AND ($2::timestamptz IS NULL OR ${timestampColumnId} < $2)
+        WHERE ($1::timestamptz IS NULL OR v.created_at >= $1)
+          AND ($2::timestamptz IS NULL OR v.created_at < $2)
           AND (
             $3::text IS NULL
             OR v.searched_hashtag = $3 -- the searched_hashtag is the single hashtahg used by the scraper when search for the videos
             OR $3 = ANY(v.extracted_hashtags)
           )
-        ORDER BY ${timestampColumnId} ${direction}
+        ORDER BY ${orderBy} ${direction}
         LIMIT $4 OFFSET $5
     `;
 
