@@ -6,12 +6,16 @@ import {
     Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, 
     DualRangeSlider,
     Slider,
+    Calendar,
+    Popover, PopoverTrigger, PopoverContent,
+    Button,
 } from '@zeruel/shared-ui/foundations'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { VideosQuerySchema, VideoFeaturesQuerySchema, CommentsQuerySchema } from '@zeruel/dashboard-types'
 import { z } from 'zod'
 import React from 'react'
+import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker'
 
 const DATA_TABLES = [
     "videos",
@@ -76,6 +80,38 @@ const getEnumOptions = (zodType: any): string[] => {
         return inner._def.values
     }
     return []
+}
+
+// Utilities for date parsing/formatting
+const parseIso = (value: unknown): Date | undefined => {
+    if (typeof value !== 'string' || !value) return undefined
+    const d = new Date(value)
+    return isNaN(d.getTime()) ? undefined : d
+}
+const toIso = (date: Date | undefined): string | undefined => date ? date.toISOString() : undefined
+const formatDate = (date: Date | undefined): string => date ? date.toLocaleDateString('en-CA') : ''
+
+// Render a since/until pair with a Calendar range picker
+const renderDateRangePair = (
+    sinceKey: string,
+    untilKey: string,
+    form: any,
+) => {
+    const since = parseIso(form.watch(sinceKey))
+    const until = parseIso(form.watch(untilKey))
+    const selected: any = { from: since, to: until }
+
+    return (
+        <FormItem key={`${sinceKey}_${untilKey}`} className='flex flex-col gap-2'>
+            <div className='flex items-center justify-between'>
+                <FormLabel className='font-inter text-neutral-400'>Date range</FormLabel>
+                <FormControl>
+                    <DateRangePicker/>
+                    {/*  */}
+                </FormControl>
+            </div>
+        </FormItem>
+    )
 }
 
 // Render a pair min_/max_ with DualRangeSlider
@@ -242,7 +278,7 @@ const DatabaseQueryPanel = () => {
         defaultValues: {}
     });
 
-    // Build fields list with min/max grouping
+    // Build fields list with min/max grouping and date range grouping
     const fields = React.useMemo(() => {
         if (!currentSchema) return [] as Array<React.ReactElement>
         const entries = Object.entries((currentSchema as any).shape)
@@ -252,6 +288,23 @@ const DatabaseQueryPanel = () => {
 
         for (const [key, type] of entries) {
             if (used.has(key)) continue
+            // Handle since/until as a single date range control
+            if (key === 'since') {
+                const untilKey = 'until'
+                if (entries.find(([k]) => k === untilKey)) {
+                    used.add('since')
+                    used.add('until')
+                    nodes.push(renderDateRangePair('since', 'until', form))
+                    continue
+                }
+            }
+            if (key === 'until') {
+                const sinceKey = 'since'
+                if (entries.find(([k]) => k === sinceKey)) {
+                    used.add('until')
+                    continue // will be handled with since
+                }
+            }
             if (key.startsWith('min_')) {
                 const base = key.replace(/^min_/, '')
                 const maxKey = `max_${base}`
@@ -309,6 +362,12 @@ const DatabaseQueryPanel = () => {
                         {fields}
                     </div>
                 )}
+                <Button
+                    variant="dashed1"
+                    className='border-blue-400/60 rounded-none bg-blue-500/30 hover:bg-blue-400/30 text-blue-100 font-roboto-mono font text-xs mt-2'
+                >
+                    Query Database
+                </Button>
             </Form>
         </CollapsiblePanel>
     )

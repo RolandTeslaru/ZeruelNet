@@ -23,10 +23,10 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
             {...rest}
         >
             {isDetached && <DotPattern />}
-            <Icon className={classNames("absolute h-4 w-4 top-0 left-0 transform -translate-x-1/2 -translate-y-1/2", crossesClassName)} />
-            <Icon className={classNames("absolute h-4 w-4 top-0 right-0 transform translate-x-1/2 -translate-y-1/2", crossesClassName)} />
-            <Icon className={classNames("absolute h-4 w-4 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2", crossesClassName)} />
-            <Icon className={classNames("absolute h-4 w-4 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2", crossesClassName)} />
+            <Icon className={classNames("absolute h-3 w-3 top-0 left-0 transform -translate-x-1/2 -translate-y-1/2", crossesClassName)} />
+            <Icon className={classNames("absolute h-3 w-3 top-0 right-0 transform translate-x-1/2 -translate-y-1/2", crossesClassName)} />
+            <Icon className={classNames("absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2", crossesClassName)} />
+            <Icon className={classNames("absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2", crossesClassName)} />
             {children}
         </div>
     )

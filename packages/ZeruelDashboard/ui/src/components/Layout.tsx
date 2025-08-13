@@ -24,6 +24,7 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
 
     const currentPage = useSystem(state => state.currentPage)
 
+
     return (
         <QueryClientProvider client={queryClient}>
             <div 

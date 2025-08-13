@@ -5,7 +5,7 @@ import { cn } from "../utils/cn"
 
 
 export const buttonVariants = cva(
-  `cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors 
+  `cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors shadow-[1px_1px_5px_1px_rgba(1,1,1,0.2)]
    focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50`,
   {
     variants: {
@@ -17,12 +17,12 @@ export const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-secondary-thin bg-neutral-800 hover:bg-neutral-950 hover:text-accent-foreground",
+          "border border-primary-opaque bg-secondary-opaque hover:bg-tertiary-opaque hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         dashed1:
           "bg-gray-400/10 border border-dashed outline-offset-2 border-white/20 hover:bg-white/10",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "text-neutral-200 hover:bg-accent hover:text-neutral-300 shadow-none",
         link: "text-primary underline-offset-4 hover:underline",
         expandIcon:
           "group relative text-primary-foreground bg-neutral-950 hover:bg-neutral-950/90",
@@ -46,8 +46,9 @@ export const buttonVariants = cva(
           "border border-green-600 "
       },
       size: {
-        default: "h-8 px-4 py-0",
-        sm: "h-7 rounded-lg px-3",
+        default: "rounded-sm h-8 px-4 py-0",
+        sm: " rounded-lg px-1",
+        md: "rounded-lg px-3 py-1",
         lg: "h-9 rounded-lg px-8",
         icon: "h-10 w-10",
       },
@@ -103,7 +104,7 @@ const Button = React.forwardRef<
       <Comp
         className={cn(buttonVariants({ variant, size, className })) + " "}
         ref={ref}
-        style={{ boxShadow: "1px 1px 5px 1px rgba(1,1,1,0.2)", ...style}}
+        // style={{ boxShadow: "1px 1px 5px 1px rgba(1,1,1,0.2)", ...style}}
         {...props}
       >
         <Slottable>{props.children}</Slottable>

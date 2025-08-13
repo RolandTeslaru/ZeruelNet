@@ -6,6 +6,7 @@ import Scraper from './pages/Scraper'
 import Tables from './pages/Tables'
 import Trends from './pages/Trends'
 import SysHealth from './pages/SysHealth'
+import { useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'
 
 function App() {
 
