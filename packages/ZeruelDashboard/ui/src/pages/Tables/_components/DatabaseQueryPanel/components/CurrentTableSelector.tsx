@@ -14,7 +14,7 @@ const CurrentTableSelector = ({ form }: { form: any }) => {
                 setQueryParams({}) // Clear previous filters
             }}
         >
-            <SelectTrigger className="w-[180px] !min-h-7 my-auto focus:outline-hidden text-xs! text-white">
+            <SelectTrigger className="w-full !mb-2 !min-h-7 my-auto focus:outline-hidden text-xs! text-white">
                 <SelectValue placeholder="Select a Table" />
             </SelectTrigger>
             <SelectContent>
