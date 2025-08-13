@@ -183,8 +183,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
         modal={true}
         open={isOpen}
         onOpenChange={(open: boolean) => {
-          if (!open) {
-            resetValues()
+          // When the picker closes, propagate the selected range to parent via onUpdate
+          if (!open && typeof onUpdate === "function") {
+            onUpdate({ range })
           }
           setIsOpen(open)
         }}

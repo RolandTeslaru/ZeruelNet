@@ -38,7 +38,7 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
     return (
         <>
-            <div className="w-full h-full  overflow-scroll">
+            <div className="w-full h-full  overflow-x-scroll">
                 <Table>
                     <TableHead className="sticky top-0">
                         {table.getHeaderGroups().map((headerGroup) => (

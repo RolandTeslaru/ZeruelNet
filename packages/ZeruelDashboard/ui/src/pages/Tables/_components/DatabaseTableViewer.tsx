@@ -19,7 +19,7 @@ const DatabaseTableViewer = () => {
         pageSize: 25,
     });
 
-    const { selectedTable } = useTablesContext();
+    const { selectedTable, queryParams } = useTablesContext();
 
     // Fetch schema for the table that contains the columns
     const { data: schemaData, isLoading: isSchemaLoading } = useQuery({
@@ -30,14 +30,15 @@ const DatabaseTableViewer = () => {
 
     // Fetch the selected table
     const { data, isLoading: isDataLoading } = useQuery({
-        queryKey: [selectedTable, { pageIndex, pageSize }],
+        queryKey: [selectedTable, { pageIndex, pageSize, queryParams }],
         queryFn: () => {
             const baseParams = { limit: pageSize, offset: pageIndex * pageSize };
+            const paramsWithFilters = { ...baseParams, ...(queryParams ?? {}) } as any;
             switch (selectedTable) {
-                case 'video_features': return fetchVideoFeatures(baseParams);
-                case 'comments': return fetchComments(baseParams);
+                case 'video_features': return fetchVideoFeatures(paramsWithFilters);
+                case 'comments': return fetchComments(paramsWithFilters);
                 case 'videos':
-                default: return fetchVideos(baseParams);
+                default: return fetchVideos(paramsWithFilters);
             }
         },
         // Only run this query if the schema has been successfully loaded
