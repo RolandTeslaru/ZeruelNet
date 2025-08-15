@@ -33,7 +33,7 @@ export const VXWindow: FC<VXEngineWindowProps> = memo((props) => {
     const Content = useMemo(() => {
         const innerContent = (
             <AnimatePresence>
-                {showControls && <motion.div key="controls"><WindowControlDots /></motion.div>}
+                {showControls && <div key="controls"><WindowControlDots /></div>}
                 {children}
             </AnimatePresence>
         );
