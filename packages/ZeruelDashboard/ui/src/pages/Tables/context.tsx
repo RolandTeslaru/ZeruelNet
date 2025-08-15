@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, memo } from 'react';
 
 interface TablesContextState {
   selectedTable: string;
@@ -10,7 +10,7 @@ interface TablesContextState {
 
 const TablesContext = createContext<TablesContextState | undefined>(undefined);
 
-export const TablesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TablesProvider: React.FC<{ children: React.ReactNode }> = memo(({ children }) => {
   const [selectedTable, setSelectedTable] = useState('videos');
   const [queryParams, setQueryParams] = useState<Record<string, any> | undefined>(undefined);
 
@@ -26,7 +26,7 @@ export const TablesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
     </TablesContext.Provider>
   );
-};
+});
 
 export const useTablesContext = () => {
     const context = useContext(TablesContext);

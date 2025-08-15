@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import {
     getCoreRowModel,
     useReactTable,
@@ -13,7 +13,7 @@ import { DataTable } from '@/components/DataTable';
 
 const EMPTY_DATA = []
 
-const DatabaseTableViewer = () => {
+const DatabaseTableViewer = memo(() => {
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 25,
@@ -91,6 +91,6 @@ const DatabaseTableViewer = () => {
     return (
         <DataTable data={data ? data.items : EMPTY_DATA} columns={columns} table={table} />
     );
-}
+})
 
 export default DatabaseTableViewer

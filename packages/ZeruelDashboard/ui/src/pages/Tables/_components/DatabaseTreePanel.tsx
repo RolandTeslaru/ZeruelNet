@@ -5,6 +5,7 @@ import { Database, Table } from '@zeruel/shared-ui/icons'
 import { fetchTableColumns, fetchTableConstraints, fetchTableIndexes, fetchTableTriggers } from '@/lib/api'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger, Popover, PopoverContent, PopoverTrigger } from '@zeruel/shared-ui/foundations'
 import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper'
+import { memo } from 'react'
 
 const ZeruelTablesTree: Record<string, TreeNodeDataType> = {
     "zeruel_net": {
@@ -254,7 +255,7 @@ const DEFAULT_EXPANDED_KEYS = {
     "comments": true,
 }
 
-const DatabaseTreePanel = () => {
+const DatabaseTreePanel = memo(() => {
     const createNodeDataFn: CreateNodeDataFnType = (props) => {
         const createFn = LOADERS_MAP[props.key]
         if (createFn) {
@@ -278,6 +279,6 @@ const DatabaseTreePanel = () => {
                 />
         </CollapsiblePanel>
     )
-}
+})
 
 export default DatabaseTreePanel
