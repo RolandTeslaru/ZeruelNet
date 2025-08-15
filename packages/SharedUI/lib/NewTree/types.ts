@@ -1,3 +1,5 @@
+import React from "react"
+import { TreeStore } from "./context"
 
 export interface DummyTreeBranch{
     children?: Record<string, DummyTreeBranch>,
@@ -8,6 +10,9 @@ export type DummyTree = Record<string, DummyTreeBranch>
 
 export interface TreeComponentProps {
     src: DummyTree
+    className?: string
+    renderBranch?: RenderBranchFunction
+    loadBranchChildren?: LoadBranchChildrenFunction
 }
 
 export interface InternalTreeBranch {
@@ -22,4 +27,36 @@ export interface InternalTreeBranch {
 }
 
 export type InternalTree = Record<string, InternalTreeBranch>
+
+
+
+
+
+export type BranchTemplateProps = React.FC<{
+    children: React.ReactNode,
+    className?: string,
+    onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    onContextMenu?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    listClassNames?: string,
+} > & React.HTMLAttributes<HTMLDivElement>
+
+export type LoadBranchChildrenFunction = (
+    parentBranch: InternalTreeBranch,
+    treeState: TreeStore
+) => Map<string, InternalTreeBranch>
+
+export type RenderBranchFunction = (branch: InternalTreeBranch, BranchTemplate: BranchTemplateProps) => React.ReactNode
+export interface BranchComponentProps {
+    path: string
+    level: number
+    siblingsLen: number
+    indexToParent: number
+    renderBranch: RenderBranchFunction
+    loadBranchChildren: LoadBranchChildrenFunction
+}
+
+
+
+
+
 
