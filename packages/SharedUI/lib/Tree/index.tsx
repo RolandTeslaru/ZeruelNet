@@ -7,7 +7,7 @@ import JsonView from 'react18-json-view'
 import { createBranch } from './utils'
 import { ContextMenuContent } from '../foundations'
 
-const Tree: React.FC<TreeProps> = ({
+export const Tree: React.FC<TreeProps> = ({
     tree,
     defaultExpandedKeys = {},
     createNodeDataFn,
@@ -46,11 +46,6 @@ const Tree: React.FC<TreeProps> = ({
 export default Tree
 
 
-const loadBranch = (node: TreeNodeDataType, createNodeDataFn: CreateNodeDataFnType) => {
-    const loadedChildren = createBranch(node, createNodeDataFn);
-    node.children = loadedChildren
-}
-
 const TreeNode: React.FC<TreeNodeProps> =
     memo(({
         node,
@@ -65,23 +60,39 @@ const TreeNode: React.FC<TreeNodeProps> =
         const isFinalSibling = siblings - 1 === indexToParent
 
         const [isExpanded, setIsExpanded] = useState(defaultExpandedKeys?.[node.key] || false)
+        const [loading, setLoading] = useState(false)
 
         let canBeExpanded = false
-        if ("refObject" in node && node.children === null) {
-            canBeExpanded = true
-        }
-        else if (node.children && Object.values(node.children).length > 0) {
-            canBeExpanded = true
+        if (createNodeDataFn) {
+            if ("refObject" in node && node.children === null) {
+                canBeExpanded = true
+            }
+            else if (node.children && Object.values(node.children).length > 0) {
+                canBeExpanded = true
+            }
         }
         const branchNeedsLazyLoading = createNodeDataFn && canBeExpanded && !node.children
 
-        const handleOnCollapseCallback = useCallback(() => {
-            setIsExpanded((prev: boolean) => {
-                if (prev === false && branchNeedsLazyLoading)
-                    loadBranch(node, createNodeDataFn)
-                return !prev;
-            })
-        }, [node, createNodeDataFn, branchNeedsLazyLoading])
+        const handleOnCollapseCallback = useCallback(async () => {
+            if (!isExpanded && branchNeedsLazyLoading) {
+                setLoading(true)
+                try {
+                    const children = await createNodeDataFn({
+                        key: node.key,
+                        currentPath: node.currentPath,
+                        parentNode: node,
+                        value: node.refObject
+                    })
+                    node.children = children
+                } catch (e) {
+                    console.error("Failed to lazy load tree branch", e)
+                } finally {
+                    setLoading(false)
+                }
+            }
+            setIsExpanded((prev: boolean) => !prev)
+        }, [node, isExpanded, branchNeedsLazyLoading, createNodeDataFn])
+
 
         return (
             <>

@@ -23,12 +23,16 @@ export const TreeCollapseButton = memo(({ onClick, level, isExpanded, isFinalSib
                 type="button"
                 aria-label="Toggle children"
                 onClick={onClick}
+                className="cursor-pointer"
                 style={{
                     transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
                     transition: "transform 0.2s",
                 }}
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="m10 8 4 4-4 4" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth={1} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" strokeWidth="0.5" />
+                <path d="m10 8 4 4-4 4" />
+                </svg>
             </button>
             {!isExpanded && !isFinalSibling && (
                 <div className={classNames(

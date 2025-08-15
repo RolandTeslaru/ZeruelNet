@@ -1,6 +1,11 @@
 import axios from "axios";
-import { CommentQueryParams, CommentsResponse, TableSchemaQueryParams, TableSchemaResponse, type VideosQueryParams, type VideosResponse } from "@zeruel/dashboard-types";
-import { type VideoFeaturesQueryParams, type VideoFeaturesResponse } from "@zeruel/dashboard-types";
+import { 
+    CommentQueryParams, CommentsResponse, 
+    TableSchemaQueryParams, TableSchemaResponse, 
+    type VideosQueryParams, type VideosResponse,
+    type VideoFeaturesQueryParams, type VideoFeaturesResponse,
+    Constraint, Index, Trigger
+} from "@zeruel/dashboard-types";
 
 export const api = axios.create({
     baseURL: "http://localhost:5003",
@@ -30,5 +35,25 @@ export async function fetchComments(params: CommentQueryParams): Promise<Comment
 export async function fetchTableSchema(params: TableSchemaQueryParams): Promise<TableSchemaResponse>{
     const { tableName } = params;
     const { data } = await api.get(`/api/v1/tables/${tableName}/schema`);
+    return data;
+}
+
+export async function fetchTableColumns(tableName: string): Promise<TableSchemaResponse> {
+    const { data } = await api.get(`/api/v1/tables/${tableName}/columns`);
+    return data;
+}
+
+export async function fetchTableConstraints(tableName: string): Promise<Constraint[]> {
+    const { data } = await api.get(`/api/v1/tables/${tableName}/constraints`);
+    return data;
+}
+
+export async function fetchTableIndexes(tableName: string): Promise<Index[]> {
+    const { data } = await api.get(`/api/v1/tables/${tableName}/indexes`);
+    return data;
+}
+
+export async function fetchTableTriggers(tableName: string): Promise<Trigger[]> {
+    const { data } = await api.get(`/api/v1/tables/${tableName}/triggers`);
     return data;
 }
