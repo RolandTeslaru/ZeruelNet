@@ -1,11 +1,12 @@
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import Tree from '@zeruel/shared-ui/Tree'
-import { Database, Table } from '@zeruel/shared-ui/icons'
+import { Database, Info, Table } from '@zeruel/shared-ui/icons'
 import { fetchTableColumns, fetchTableConstraints, fetchTableIndexes, fetchTableTriggers } from '@/lib/api'
-import { ContextMenu, ContextMenuContent, ContextMenuTrigger, Popover, PopoverContent, PopoverTrigger } from '@zeruel/shared-ui/foundations'
+import { ContextMenu, ContextMenuContent, ContextMenuTrigger, Popover, PopoverContent, PopoverItem, PopoverTrigger } from '@zeruel/shared-ui/foundations'
 import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper'
 import { memo } from 'react'
 import { DummyTree, InternalTreeBranch, LoadBranchChildrenFunction, RenderBranchFunction } from '@zeruel/shared-ui/Tree/types'
+import { TreeStore } from '@zeruel/shared-ui/Tree/context'
 
 const ZeruelTablesTree: DummyTree = {
     "zeruel_net": {
@@ -58,24 +59,31 @@ const ICON_MAP = {
 
 
 const renderBranchContent: RenderBranchFunction = (branch, BranchTemplate) => {
+    const fetchedDataType = branch.data?.fetchedDataType;
     return (
-        <ContextMenu>
-            <ContextMenuTrigger>
-                <BranchTemplate className='h-[30px]'>
-                    <div className='flex flex-row gap-1'>
-                        <div>
-                            {ICON_MAP[branch.key]}
-                        </div>
-                        <p>
-                            {branch.key}
-                        </p>
+        <BranchTemplate className='h-[30px] min-w-fit'>
+            <div className='flex flex-row gap-1 min-w-full relative'>
+                <div>
+                    {ICON_MAP[branch.key]}
+                </div>
+                <p className='w-fit'>
+                    {branch.key}
+                </p>
+                {Object.keys(NAME_KEY_MAP).includes(fetchedDataType) &&
+                    <div className='absolute right-0 -mt-1'>
+                        <Popover>
+                            <PopoverTrigger className='ml-auto cursor-pointer'>
+                                <Info className='w-[16px]' />
+                            </PopoverTrigger>
+                            <PopoverContent side="right" align="start">
+                                <DataViewerWrapper src={branch.data?.item} title="Data" />
+                            </PopoverContent>
+                        </Popover>
+
                     </div>
-                </BranchTemplate>
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-                <DataViewerWrapper src={branch} title="Node Data" />
-            </ContextMenuContent>
-        </ContextMenu>
+                }
+            </div>
+        </BranchTemplate>
     )
 }
 
@@ -87,7 +95,7 @@ const NAME_KEY_MAP: Record<string, string> = {
 };
 
 
-const loadBranchChildren: LoadBranchChildrenFunction = async (parentBranch, state) => {
+const loadBranchChildren: LoadBranchChildrenFunction = async (parentBranch, state: TreeStore) => {
     const tableName = parentBranch.data?.tableName;
     if (!tableName) return new Map();
 
@@ -112,7 +120,10 @@ const loadBranchChildren: LoadBranchChildrenFunction = async (parentBranch, stat
             isExpanded: false,
             canBeExpanded: false,
             parentPaths: new Set([parentBranch.currentPath]),
-            data: item,
+            data: {
+                item,
+                "fetchedDataType": parentKey
+            },
             isLoading: false
         });
     });
@@ -125,13 +136,6 @@ const FETCHER_MAP: Record<string, any> = {
     "indexes": fetchTableIndexes,
     "triggers": fetchTableTriggers,
     "constraints": fetchTableConstraints,
-}
-
-const DEFAULT_EXPANDED_KEYS = {
-    "zeruel_net": true,
-    "videos": true,
-    "video_features": true,
-    "comments": true,
 }
 
 const DatabaseTreePanel = memo(() => {

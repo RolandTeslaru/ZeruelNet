@@ -13,25 +13,31 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
 }) => {
     const isFinalSibling = siblingsLen - 1 === indexToParent
     const store = getTreeStore();
-    const branch = useBranch(path)
+    const branch = useTree(s => s.branchesFlatMap.get(path))
+    // const branch = useBranch(path)
 
     const branchCanBeLazyLoaded = loadBranchChildren && branch.canBeExpanded && !branch.children
 
-    const onExpand = useCallback(async () => {
-        if (branch.children || branch.isLoading) return;
+    const onExpandButtonClick = useCallback(async () => {
+        if (branch.isExpanded)
+            store.getState().setExpanded(false, branch.currentPath)
+        else {
+            if (branch.children || branch.isLoading)
+                store.getState().setExpanded(true, branch.currentPath)
+            else {
+                store.getState().setBranchLoading(path, true);
 
-        store.getState().setBranchLoading(path, true);
-
-        try {
-            const maybe = loadBranchChildren?.(branch, store.getState())
-            const children = await Promise.resolve(maybe) // handles sync and async
-            store.getState().attachLoadedChildren(children, path)
-        } finally {
-            store.getState().setBranchLoading(path, false)
-            store.getState().setExpanded(true, path)
+                try {
+                    const maybe = loadBranchChildren?.(branch, store.getState())
+                    const children = await Promise.resolve(maybe) // handles sync and async
+                    store.getState().attachLoadedChildren(children, path)
+                } finally {
+                    store.getState().setBranchLoading(path, false)
+                    store.getState().setExpanded(true, path)
+                }
+            }
         }
-    }, [branchCanBeLazyLoaded])
-
+    }, [branch.isExpanded, branch.children, branch.isLoading])
 
     const BranchTemplate = ({ children, className, listClassName, ...rest }) => (
         <li
@@ -40,26 +46,25 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             aria-expanded={branch.isExpanded}
             aria-level={level}
             tabIndex={-1}
-            className={listClassName + " relative w-full"}
+            className={listClassName + " relative min-w-full w-fit"}
         >
-            <div
-                className={` relative h-8 w-full flex items-center gap-2`}
-                style={{
-                    paddingLeft: `${level * 24}px`
-                }}
+
+            <div className={`${className} relative h-8 min-w-full flex items-center gap-2`}
+                style={{ paddingLeft: `${level * 24}px` }}
                 {...rest}
             >
                 {branch.canBeExpanded ?
-                    <BranchExpandButton
-                        isExpanded={branch.isExpanded}
-                        onClick={() => {
-                            if(branch.isExpanded)
-                                store.getState().setExpanded(false, branch.currentPath)
-                            else
-                                onExpand()
-                        }}
-                        level={level}
-                    />
+                    <>
+                        <div className={`content-[""] absolute top-0 min-w-[1px] bg-neutral-500  h-[calc(50%_-_6px)] ml-[7.5px]`} />
+                        <BranchExpandButton
+                            isExpanded={branch.isExpanded}
+                            onClick={onExpandButtonClick}
+                            level={level}
+                        />
+                        {!branch.isExpanded && !isFinalSibling && (
+                            <div className={`content-[""] absolute bottom-0 min-w-[1px] h-[calc(50%_-_6px)] bg-neutral-500  ml-[7.5px]`}/>
+                        )}
+                    </>
                     : <>
                         {isFinalSibling ?
                             <TreeLineCorner level={level} />
@@ -88,7 +93,7 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             )}
         </li>
     )
- 
+
     return renderBranch ? renderBranch(branch, BranchTemplate) : null
 
 })
@@ -106,14 +111,12 @@ const BranchExpandButton: React.FC<BranchExpandButtonProps> = ({
 }) => {
     return (
         <button
-            className="!cursor-pointer"
+            className="!cursor-pointer transition-transform duration-200"
             {...props}
-            style={{
-                transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
-                transition: "transform 0.2s",
-            }}
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth={1} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            >
+            <svg
+                className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : 'rotate-0'}`}
+                xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth={1} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="18" height="18" x="3" y="3" rx="2" strokeWidth="0.5" />
                 <path d="m10 8 4 4-4 4" />
             </svg>

@@ -1,4 +1,4 @@
-import { createStore } from 'zustand';
+import { createStore, useStore } from 'zustand';
 import { createContext, useContext } from 'react';
 import type { StoreApi } from 'zustand';
 import { InternalTree, InternalTreeBranch } from './types';
@@ -82,6 +82,15 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                     branch.isExpanded = value
                 }),
                 attachLoadedChildren: (children, parentPath) => {
+                    if(children.size === 0){
+                        set(s => {
+                            const branch = s.branchesFlatMap.get(parentPath)
+                            if(branch){
+                                branch.children = children
+                                branch.canBeExpanded = false
+                            }
+                        })
+                    }
                     children.forEach(child => {
                         get().addBranch(child, [parentPath])
                     })
@@ -123,10 +132,12 @@ export const TreeProvider = ({ children, processedTree, branchFlatMap }) => {
 }
 
 
-export function useTree<T>(selector: (s: TreeStore) => T) {
+export function useTree<T>(
+    selector: (s: TreeStore) => T,
+) {
     const store = useContext(Context);
-    if (!store) throw new Error('Missing CounterProvider');
-    return store.getState() && selector(store.getState());
+    if (!store) throw new Error('Missing TreeProvider');
+    return useStore(store, selector);
 }
 
 export function getTreeStore(){

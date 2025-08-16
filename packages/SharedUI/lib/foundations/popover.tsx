@@ -15,6 +15,7 @@ const PopoverAnchor = PopoverPrimitive.Anchor
 
 type PopoverTriggerProps = ComponentProps<typeof PopoverPrimitive.Trigger> & {
   disableStyling?: boolean
+  className?: string
   icon?: ReactNode
 }
 
@@ -22,7 +23,7 @@ const PopoverTrigger: FC<PopoverTriggerProps> =
   ({ ref, children, className, icon, disableStyling, ...rest }) => {
     return (
       <PopoverPrimitive.Trigger
-        className={`w-full ${className}`}
+        className={` ${className} w-full`}
         ref={ref}
         {...rest}
       >
@@ -50,8 +51,8 @@ const PopoverContent: FC<ComponentProps<typeof PopoverPrimitive.Content>> =
           side={side}
           sideOffset={sideOffset}
           className={cn(
-            `${theme} backdrop-blur-xs z-50 w-72 rounded-xl border-[1px] border-border-popover bg-popover
-           p-2 text-popover-foreground shadow-xl shadow-black/40 outline-hidden 
+            `${theme} backdrop-blur-xs z-50 rounded-xl border-[1px] border-border-popover bg-popover
+           p-1 text-popover-foreground shadow-xl shadow-black/40 outline-hidden 
          data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 
          data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 
          data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2`,
