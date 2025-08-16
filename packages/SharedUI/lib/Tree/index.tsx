@@ -1,171 +1,40 @@
-import React, { useEffect, useState, memo, useRef, useCallback } from 'react'
-import s from "./s.module.scss"
-import classNames from 'classnames'
-import { CreateNodeDataFnType, TreeNodeDataType, TreeNodeProps, TreeProps } from './types'
-import { TreeCollapseButton, TreeLine, TreeLineConnect, TreeLineCorner } from './Elements'
-import JsonView from 'react18-json-view'
-import { createBranch } from './utils'
-import { ContextMenuContent } from '../foundations'
+import React, { memo, useCallback, useMemo } from 'react'
+import { InternalTreeBranch, DummyTreeBranch, TreeComponentProps, InternalTree, BranchComponentProps } from './types'
+import { getTreeStore, TreeProvider, useBranch, useTree } from './context'
+import { processDummyTree } from './utils'
+import { TreeCollapseButton } from '../Tree/Elements'
+import BranchComponent from './branch'
 
-export const Tree: React.FC<TreeProps> = ({
-    tree,
-    defaultExpandedKeys = {},
-    createNodeDataFn,
+const Tree: React.FC<TreeComponentProps> = ({
+    src,
     className,
-    ...restNodeProps
+    renderBranch,
+    loadBranchChildren
 }) => {
-    if (!tree) {
-        return null
-    }
-    const childrenLength = Object.values(tree).length
+    const { processedTree, branchFlatMap } = useMemo(() => processDummyTree(src), [src])
 
-    if (childrenLength === 0) {
-        return null
-    }
+    const firstRootLayer = Object.values(processedTree)
+
     return (
-        <ul
-            role="tree"
-            className={`${s.tree_container} ${className}`}
-        >
-            {Object.values(tree).map((node, i) =>
-                <TreeNode
-                    key={node.key}
-                    node={node}
-                    siblings={childrenLength}
-                    indexToParent={i}
-                    level={0}
-                    createNodeDataFn={createNodeDataFn}
-                    defaultExpandedKeys={defaultExpandedKeys}
-                    {...restNodeProps}
-                />
-            )}
-        </ul>
-    );
+        <TreeProvider processedTree={processedTree} branchFlatMap={branchFlatMap}>
+            <ul role='tree'
+                className={`${className} w-full`}
+            >
+                {firstRootLayer.map((branch, i) =>
+                    <BranchComponent
+                        key={branch.currentPath}
+                        siblingsLen={firstRootLayer.length}
+                        indexToParent={i}
+                        level={0}
+                        renderBranch={renderBranch}
+                        loadBranchChildren={loadBranchChildren}
+                        path={branch.currentPath}
+                    />
+                )}
+            </ul>
+        </TreeProvider>
+    )
 }
 
 export default Tree
 
-
-const TreeNode: React.FC<TreeNodeProps> =
-    memo(({
-        node,
-        level,
-        siblings,
-        indexToParent,
-        renderNodeContent,
-        size = "sm",
-        createNodeDataFn,
-        defaultExpandedKeys
-    }) => {
-        const isFinalSibling = siblings - 1 === indexToParent
-
-        const [isExpanded, setIsExpanded] = useState(defaultExpandedKeys?.[node.key] || false)
-        const [loading, setLoading] = useState(false)
-
-        let canBeExpanded = false
-        if (createNodeDataFn) {
-            if ("refObject" in node && node.children === null) {
-                canBeExpanded = true
-            }
-            else if (node.children && Object.values(node.children).length > 0) {
-                canBeExpanded = true
-            }
-        }
-        const branchNeedsLazyLoading = createNodeDataFn && canBeExpanded && !node.children
-
-        const handleOnCollapseCallback = useCallback(async () => {
-            if (!isExpanded && branchNeedsLazyLoading) {
-                setLoading(true)
-                try {
-                    const children = await createNodeDataFn({
-                        key: node.key,
-                        currentPath: node.currentPath,
-                        parentNode: node,
-                        value: node.refObject
-                    })
-                    node.children = children
-                } catch (e) {
-                    console.error("Failed to lazy load tree branch", e)
-                } finally {
-                    setLoading(false)
-                }
-            }
-            setIsExpanded((prev: boolean) => !prev)
-        }, [node, isExpanded, branchNeedsLazyLoading, createNodeDataFn])
-
-
-        return (
-            <>
-                {renderNodeContent &&
-                    renderNodeContent(node, {
-                        NodeTemplate: ({ children, className, listClassNames, ...rest }) => (
-                            <li
-                                role="treeitem"
-                                aria-selected="false"
-                                aria-expanded={isExpanded}
-                                aria-level={level}
-                                tabIndex={-1}
-                                className={listClassNames + " relative w-full"}
-                            >
-                                <div style={{ paddingLeft: `${level * 24}px` }}
-                                    className={classNames(s.listItem, { "py-2": size === "md" }, className,
-                                        `relative w-full flex items-center py-1 gap-2 bg-transparent`)}
-                                    {...rest}
-                                >
-                                    {canBeExpanded ?
-                                        <TreeCollapseButton
-                                            onClick={handleOnCollapseCallback}
-                                            isFinalSibling={isFinalSibling}
-                                            isExpanded={isExpanded}
-                                            level={level}
-                                            size={size}
-                                        />
-                                        :
-                                        <>
-                                            {isFinalSibling ?
-                                                <TreeLineCorner level={level} size={size} />
-                                                :
-                                                <TreeLine level={level} size={size} />
-                                            }
-                                            <TreeLineConnect />
-                                        </>
-                                    }
-                                    {children}
-                                </div>
-
-
-                                {/* Render Children */}
-                                {isExpanded && canBeExpanded && (
-                                    <ul role="group" className='m-0 p-0'>
-                                        {!!node.children && Object.values(node.children).map((child, i) =>
-                                            <TreeNode
-                                                key={`tree-${node.key}-${i}`}
-                                                node={child}
-                                                siblings={Object.values(node.children).length}
-                                                indexToParent={i}
-                                                level={level + 1}
-                                                renderNodeContent={renderNodeContent}
-                                                size={size}
-                                                createNodeDataFn={createNodeDataFn}
-                                                defaultExpandedKeys={defaultExpandedKeys}
-                                            />
-                                        )}
-                                    </ul>
-                                )}
-                            </li >
-                        )
-                    })}
-            </>
-
-        )
-    })
-
-
-const TreeNodeContextMenu = ({ node }: { node: TreeNodeDataType }) => {
-    return (
-        <ContextMenuContent className='gap-1 text-xs max-w-[300px] max-h-[500px] overflow-scroll'>
-            <p className='font-roboto-mono'>Node Object</p>
-            <JsonView className='bg-neutral-900' src={node} collapsed={({ depth }) => depth > 1} />
-        </ContextMenuContent>
-    )
-}

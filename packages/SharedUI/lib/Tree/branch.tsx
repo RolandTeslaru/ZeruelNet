@@ -1,42 +1,6 @@
-import React, { memo, useCallback, useMemo } from 'react'
-import { InternalTreeBranch, DummyTreeBranch, TreeComponentProps, InternalTree, BranchComponentProps } from './types'
-import { getTreeStore, TreeProvider, useBranch, useTree } from './context'
-import { processDummyTree } from './utils'
-import { TreeCollapseButton } from '../Tree/Elements'
-
-const Tree: React.FC<TreeComponentProps> = ({
-    src,
-    className,
-    renderBranch,
-    loadBranchChildren
-}) => {
-    const { processedTree, branchFlatMap } = useMemo(() => processDummyTree(src), [src])
-
-    const firstRootLayer = Object.values(processedTree)
-
-    return (
-        <TreeProvider processedTree={processedTree} branchFlatMap={branchFlatMap}>
-            <ul role='tree'
-                className={`${className} w-full`}
-            >
-                {firstRootLayer.map((branch, i) =>
-                    <BranchComponent
-                        key={branch.currentPath}
-                        siblingsLen={firstRootLayer.length}
-                        indexToParent={i}
-                        level={0}
-                        renderBranch={renderBranch}
-                        loadBranchChildren={loadBranchChildren}
-                        path={branch.currentPath}
-                    />
-                )}
-            </ul>
-        </TreeProvider>
-    )
-}
-
-export default Tree
-
+import { memo, useCallback } from "react";
+import { BranchComponentProps } from "./types";
+import { getTreeStore, useBranch, useTree } from "./context";
 
 
 const BranchComponent: React.FC<BranchComponentProps> = memo(({
@@ -49,17 +13,25 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
 }) => {
     const isFinalSibling = siblingsLen - 1 === indexToParent
     const store = getTreeStore();
-    const branch = useBranch(path);
+    const branch = useBranch(path)
 
-    const branchNeedsLazyLoading = loadBranchChildren && branch.canBeExpanded && !branch.children
+    const branchCanBeLazyLoaded = loadBranchChildren && branch.canBeExpanded && !branch.children
 
-    const handleOnExpandButton = useCallback(() => {
-        if(!branch.isExpanded && branchNeedsLazyLoading){
-            const state = store.getState()
-            const children = loadBranchChildren(branch, state)
-            state.attachLoadedChildren(children, branch.currentPath)
+    const onExpand = useCallback(async () => {
+        if (branch.children || branch.isLoading) return;
+
+        store.getState().setBranchLoading(path, true);
+
+        try {
+            const maybe = loadBranchChildren?.(branch, store.getState())
+            const children = await Promise.resolve(maybe) // handles sync and async
+            store.getState().attachLoadedChildren(children, path)
+        } finally {
+            store.getState().setBranchLoading(path, false)
+            store.getState().setExpanded(true, path)
         }
-    }, [branchNeedsLazyLoading])
+    }, [branchCanBeLazyLoaded])
+
 
     const BranchTemplate = ({ children, className, listClassName, ...rest }) => (
         <li
@@ -80,7 +52,12 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
                 {branch.canBeExpanded ?
                     <BranchCollapseButton
                         isExpanded={branch.isExpanded}
-                        onClick={handleOnExpandButton}
+                        onClick={() => {
+                            if(branch.isExpanded)
+                                store.getState().setExpanded(false, branch.currentPath)
+                            else
+                                onExpand()
+                        }}
                         level={level}
                     />
                     : <>
@@ -167,3 +144,7 @@ export const TreeLineCorner = memo(({ level }: { level: number }) => {
 export const TreeLineConnect = memo(() => {
     return <div className={`ml-2 w-2 min-w-2 h-[1px] content-[" "] bg-neutral-500`}></div>
 })
+
+
+
+export default BranchComponent

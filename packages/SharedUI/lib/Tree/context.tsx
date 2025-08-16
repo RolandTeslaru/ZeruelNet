@@ -19,6 +19,7 @@ type Actions = {
     addBranch: (branch: InternalTreeBranch, parentPaths: string[]) => void
     attachLoadedChildren: (children: Map<string, InternalTreeBranch>, parentPath: string) => void
     eraseBranch: (branchPath: string) => void
+    setBranchLoading: (branchPath: string, value: boolean) => void
 }
 
 export type TreeStore = State & Actions
@@ -31,6 +32,13 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                 treeStucture: {},
                 branchesFlatMap: branchFlatMap,
                 queuedBranches: new Map(),
+                setBranchLoading: (branchPath, value) => set(s => {
+                    const branch = s.branchesFlatMap.get(branchPath)
+                    if(!branch)
+                        return
+
+                    branch.isLoading = true;
+                }),
                 addBranch: (branch, parentPaths) => set(s => {
                     // Ceck for queued branches
                     const queuedBranches = s.queuedBranches.get(branch.currentPath)
