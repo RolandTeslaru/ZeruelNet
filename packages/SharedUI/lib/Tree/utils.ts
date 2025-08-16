@@ -16,9 +16,9 @@ export const processDummyBranch = (key: string, dummyBranch: DummyTreeBranch, br
 
 
     const currentPath = parentInternalBranch ? `${parentInternalBranch.currentPath}.${key}` : key
-    const parentBranches = new Map<string, InternalTreeBranch>();
+    const parentPaths = new Set<string>();
     if (parentInternalBranch)
-        parentBranches.set(parentInternalBranch.currentPath, parentInternalBranch)
+        parentPaths.add(parentInternalBranch.currentPath)
 
 
     const curBranch: InternalTreeBranch = {
@@ -26,7 +26,7 @@ export const processDummyBranch = (key: string, dummyBranch: DummyTreeBranch, br
         currentPath,
         isExpanded: dummyBranch.isExpanded ?? false,
         canBeExpanded: childrenLength > 0 || needsLazyLoading,
-        parentBranches,
+        parentPaths,
         data: dummyBranch.data,
         children: null,
         isLoading: false

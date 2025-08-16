@@ -51,7 +51,7 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                         ])
 
                         queuedBranches.forEach(qBranch => {
-                            qBranch.parentBranches.set(branch.currentPath, branch)
+                            qBranch.parentPaths.add(branch.currentPath)
                         })
 
                         s.queuedBranches.delete(branch.currentPath)
@@ -70,7 +70,7 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
 
                         parentBranch.children.set(branch.currentPath, branch)
                         parentBranch.canBeExpanded = true;
-                        branch.parentBranches.set(parentPath, parentBranch)
+                        branch.parentPaths.add(parentPath)
                     })
                 }),
 
@@ -93,7 +93,8 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                     const branch = s.branchesFlatMap.get(branchPath)
 
                     // Delete every refrence its parents could have
-                    branch.parentBranches.forEach((_parentBranch) => {
+                    branch.parentPaths.forEach((_parentPath) => {
+                        const _parentBranch = s.branchesFlatMap.get(_parentPath)
                         if (!_parentBranch.children) return
                         _parentBranch.children.delete(branch.currentPath)
 
@@ -105,7 +106,7 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                     s.branchesFlatMap.delete(branchPath)
                     branch.children = new Map()
                     branch.data = undefined
-                    branch.parentBranches = new Map()
+                    branch.parentPaths = new Set()
                 })
             }))
     );

@@ -2,7 +2,6 @@ import React, { memo, useCallback, useMemo } from 'react'
 import { InternalTreeBranch, DummyTreeBranch, TreeComponentProps, InternalTree, BranchComponentProps } from './types'
 import { getTreeStore, TreeProvider, useBranch, useTree } from './context'
 import { processDummyTree } from './utils'
-import { TreeCollapseButton } from '../Tree/Elements'
 import BranchComponent from './branch'
 
 const Tree: React.FC<TreeComponentProps> = ({

@@ -50,7 +50,7 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
                 {...rest}
             >
                 {branch.canBeExpanded ?
-                    <BranchCollapseButton
+                    <BranchExpandButton
                         isExpanded={branch.isExpanded}
                         onClick={() => {
                             if(branch.isExpanded)
@@ -94,19 +94,19 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
 })
 
 
-interface BranchCollapseButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+interface BranchExpandButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
     isExpanded: boolean
     level: number
     onClick: () => void
 }
 
-const BranchCollapseButton: React.FC<BranchCollapseButtonProps> = ({
+const BranchExpandButton: React.FC<BranchExpandButtonProps> = ({
     isExpanded,
     ...props
 }) => {
     return (
         <button
-            className="cursor-pointer"
+            className="!cursor-pointer"
             {...props}
             style={{
                 transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",

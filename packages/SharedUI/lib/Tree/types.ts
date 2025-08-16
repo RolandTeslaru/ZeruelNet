@@ -23,7 +23,7 @@ export interface InternalTreeBranch {
     isExpanded: boolean,
     canBeExpanded: boolean
     needsLazyLoading?: boolean
-    parentBranches: Map<string, InternalTreeBranch>
+    parentPaths: Set<string>
     data?: any
     isLoading: boolean
 }
@@ -45,7 +45,7 @@ export type BranchTemplateProps = React.FC<{
 export type LoadBranchChildrenFunction = (
     parentBranch: InternalTreeBranch,
     treeState: TreeStore
-) => Map<string, InternalTreeBranch> 
+) => Map<string, InternalTreeBranch> | Promise<Map<string, InternalTreeBranch>>
 
 export type RenderBranchFunction = (branch: InternalTreeBranch, BranchTemplate: BranchTemplateProps) => React.ReactNode
 export interface BranchComponentProps {

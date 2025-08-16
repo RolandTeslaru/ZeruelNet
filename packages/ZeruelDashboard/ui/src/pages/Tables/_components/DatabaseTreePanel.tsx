@@ -79,90 +79,46 @@ const renderBranchContent: RenderBranchFunction = (branch, BranchTemplate) => {
     )
 }
 
-const loadColumnsDetails: CreateNodeDataFnType = async ({ currentPath, parentNode }) => {
-    if (!parentNode) return {}
-    const tableName = parentNode?.refObject?.tableName
-    if (!tableName) return {}
-    const columns = await fetchTableColumns(tableName)
+const NAME_KEY_MAP: Record<string, string> = {
+    "columns": "column_name",
+    "indexes": "index_name",
+    "triggers": "trigger_name",
+    "constraints": "constraint_name",
+};
 
-    const children: Record<string, TreeNodeDataType> = {}
-    columns.forEach(col => {
-        children[col.column_name] = {
-            key: col.column_name,
-            currentPath: `${currentPath}.${col.column_name}`,
-            children: {},
-            refObject: col
-        }
-    })
-    return children
-}
-
-const loadIndexesDetails: CreateNodeDataFnType = async ({ currentPath, parentNode }) => {
-    if (!parentNode) return {}
-    const tableName = parentNode?.refObject?.tableName
-    if (!tableName) return {}
-    const indexes = await fetchTableIndexes(tableName)
-
-    const children: Record<string, TreeNodeDataType> = {}
-    indexes.forEach(idx => {
-        children[idx.index_name] = {
-            key: idx.index_name,
-            currentPath: `${currentPath}.${idx.index_name}`,
-            children: {},
-            refObject: idx
-        }
-    })
-    return children
-}
-
-const loadTriggersDetails: CreateNodeDataFnType = async ({ currentPath, parentNode }) => {
-    if (!parentNode) return {}
-    const tableName = parentNode?.refObject?.tableName
-    if (!tableName) return {}
-    const triggers = await fetchTableTriggers(tableName)
-
-    const children: Record<string, TreeNodeDataType> = {}
-    triggers.forEach(trg => {
-        children[trg.trigger_name] = {
-            key: trg.trigger_name,
-            currentPath: `${currentPath}.${trg.trigger_name}`,
-            children: {},
-            refObject: trg
-        }
-    })
-    return children
-}
-
-const loadConstraintsDetails: CreateNodeDataFnType = async ({ currentPath, parentNode }) => {
-    if (!parentNode) return {}
-    const tableName = parentNode?.refObject?.tableName
-    if (!tableName) return {}
-    const constraints = await fetchTableConstraints(tableName)
-
-    const children: Record<string, TreeNodeDataType> = {}
-    constraints.forEach(con => {
-        children[con.constraint_name] = {
-            key: con.constraint_name,
-            currentPath: `${currentPath}.${con.constraint_name}`,
-            children: {},
-            refObject: con
-        }
-    })
-    return children
-}
 
 const loadBranchChildren: LoadBranchChildrenFunction = async (parentBranch, state) => {
     const tableName = parentBranch.data?.tableName;
-    const parentKey = parentBranch.key // columns | indexes | triggers | constraints
+    if (!tableName) return new Map();
 
+    const parentKey = parentBranch.key; // columns | indexes | triggers | constraints
     const fetcher = FETCHER_MAP[parentKey];
-    const fetchedData = await fetcher(tableName) as any[]
-    
-    const children: Map<string, InternalTreeBranch> = new Map()
-    fetchedData.map(a => {
-        
-    })
-}
+    const nameKey = NAME_KEY_MAP[parentKey];
+
+    if (!fetcher || !nameKey) return new Map();
+
+    const fetchedData = (await fetcher(tableName)) as any[];
+    const children: Map<string, InternalTreeBranch> = new Map();
+
+    fetchedData.forEach(item => {
+        const key = item[nameKey];
+        if (!key) return;
+
+        const currentPath = `${parentBranch.currentPath}.${key}`;
+        children.set(key, {
+            key,
+            currentPath,
+            children: new Map(), // These are leaf nodes
+            isExpanded: false,
+            canBeExpanded: false,
+            parentPaths: new Set([parentBranch.currentPath]),
+            data: item,
+            isLoading: false
+        });
+    });
+
+    return children;
+};
 
 const FETCHER_MAP: Record<string, any> = {
     "columns": fetchTableColumns,
@@ -179,14 +135,6 @@ const DEFAULT_EXPANDED_KEYS = {
 }
 
 const DatabaseTreePanel = memo(() => {
-    const createNodeDataFn: CreateNodeDataFnType = (props) => {
-        const createFn = LOADERS_MAP[props.key]
-        if (createFn) {
-            return createFn(props)
-        }
-        return {}
-    }
-
 
     return (
         <CollapsiblePanel
