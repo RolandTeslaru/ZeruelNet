@@ -31,7 +31,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         title='ZereulNet DataScraper: Scraping Panel'
         windowClasses=''
         StylingComponent={<BracketsWindowStyling
-          className='  min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 flex flex-col'
+          className='  min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 !pt-0 flex flex-col'
           detachedClassName=''
           show={show}
         />}

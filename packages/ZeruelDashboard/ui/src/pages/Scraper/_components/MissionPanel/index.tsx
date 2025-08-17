@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import SideMissionWindow from './SideMissionWindow'
 import { AnimatePresence, scale } from 'motion/react'
 import { motion } from 'motion/react'
@@ -33,12 +33,15 @@ import { useActiveScraping } from '@/stores/useActiveScraping'
 
 
 
-const MissionPanel = () => {
+const MissionPanel = memo(() => {
 
   const activeScraping = useActiveScraping(state => state.activeScraping)
 
   return (
-    <div className='relative max-h-[80vh] gap-6 p-2 flex flex-wrap mt-2 overflow-y-scroll !overflow-x-visible'>
+    <div className='relative max-h-[80vh] gap-6 p-2  flex flex-wrap overflow-y-scroll !overflow-x-visible'>
+      <p className='text-white/20 font-roboto-mono text-xl font-light'>
+        ACTIVE MISSION  PANEL
+      </p>
       <AnimatePresence mode="popLayout">
         {/* <motion.div
           key={demo_data.job.url} // Using a unique and stable key like jobUrl is important!
@@ -67,6 +70,6 @@ const MissionPanel = () => {
       </AnimatePresence>
     </div>
   )
-}
+})
 
 export default MissionPanel
