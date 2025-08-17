@@ -11,6 +11,7 @@ export type State = {
     setOverrideStage: (stage: WorkflowStatusStage | null) => void
     currentPage: DashboardPages
     isDatabaseReachable: boolean
+    isServiceReachable: boolean
 }
 
 export type Actions = {
@@ -28,41 +29,48 @@ export const useSystem = create<State & Actions>()(
     }))
 )
 
+const POLLING_INTERVAL_MS = 20000; // 20 seconds
 
-const checkIsServiceReachable = async () => {
-    console.log("Checking if service is reachable")
-    const setOverrideStage = useSystem.getState().setOverrideStage;
+const healthCheck = async () => {
+    const { setOverrideStage } = useSystem.getState();
+    const { setPageStage } = useWorkflowStatus.getState();
+
     try {
-        const response = await api.get("/health")
-        if (response.status === 200) {
-            setOverrideStage(null)
+        // Check if the backend service is reachable
+        await api.get("/health");
+        useSystem.setState(s => {s.isServiceReachable = true})
+
+        setOverrideStage(null);
+
+        // Check if database is reachable
+        try {
+            await api.get(`/health/database`);
+            useSystem.setState(s => {s.isDatabaseReachable = true });
+            setPageStage("tables", { type: "SUCCESS", title: "IDLE:  CONNECTED  TO  DATABASE" });
+        } catch (dbError) {
+            useSystem.setState(s => { s.isDatabaseReachable = false });
+            setPageStage("tables", { type: "FAILURE", title: "ERROR:  FAILED  TO  REACH  DATABASE" });
         }
-    } catch (e) {
-        console.log("Service check response ", e)
-        useSystem.setState(s => {s.isDatabaseReachable = false})
-        setOverrideStage({ type: "FAILURE", title: "ERROR:  FAILED  TO  REACH  SERVICE" })
+
+    } catch (serviceError) {
+        // This block runs if the service is down.
+        useSystem.setState(s => {
+            s.isDatabaseReachable = false
+            s.isServiceReachable = false
+        })
+        setOverrideStage({ type: "FAILURE", title: "ERROR:  FAILED  TO  REACH  SERVICE" });
+        // Timeout for retry 
         setTimeout(() => {
-            setOverrideStage({ type: "STANDBY", title: "STANDBY:  RETRYING  SERVICE  IN  20s"})
-        }, 3500)
+            const currentOverride = useSystem.getState().overrideStage;
+            // Only switch to STANDBY if we are still in the failure state.
+            if (currentOverride?.type === 'FAILURE') {
+                setOverrideStage({ type: "STANDBY", title: `STANDBY:  RETRYING  SERVICE  IN  ${POLLING_INTERVAL_MS / 1000}s` });
+            }
+        }, 3500);
     }
-}
+};
 
-checkIsServiceReachable()
-
-const checkIsDatabaseReachable = async () => {
-    console.log("Attempting to communcaite with database")
-    const setPageStage = useWorkflowStatus.getState().setPageStage;
-    try {
-        const response = await api.get(`/health/database`)
-        if (response.status === 200) {
-            setPageStage("tables", { type: "INFO", title: "IDLE:  CONNECTED  TO  DATABASE" })
-            useSystem.setState(s => {s.isDatabaseReachable = true})
-        }
-    } catch (e) {
-        useSystem.setState(s => {s.isDatabaseReachable = false})
-        setPageStage("tables", { type: "FAILURE", title: "ERROR:  FAILED  TO  REACH  DATABASE" })
-        
-    }
-}
-
-checkIsDatabaseReachable()
+// --- Polling Mechanism ---
+// Run the health check once on startup, and then poll on a regular interval.
+healthCheck();
+setInterval(healthCheck, POLLING_INTERVAL_MS);
