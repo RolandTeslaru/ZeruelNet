@@ -46,7 +46,7 @@ const healthCheck = async () => {
         try {
             await api.get(`/health/database`);
             useSystem.setState(s => {s.isDatabaseReachable = true });
-            setPageStage("tables", { type: "SUCCESS", title: "IDLE:  CONNECTED  TO  DATABASE" });
+            setPageStage("tables", { type: "INFO", title: "IDLE:  CONNECTED  TO  DATABASE" });
         } catch (dbError) {
             useSystem.setState(s => { s.isDatabaseReachable = false });
             setPageStage("tables", { type: "FAILURE", title: "ERROR:  FAILED  TO  REACH  DATABASE" });

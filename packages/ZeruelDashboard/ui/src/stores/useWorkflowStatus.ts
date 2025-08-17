@@ -24,15 +24,15 @@ export const useWorkflowStatus = create<State & Actions>()(
         pageStages: {
             scraper : {
                 type: "INFO",
-                title: `IDLE:  CONNECTING  TO  SERVER`, // scraper service
+                title: `IDLE:  AWAITING  SCRAPE  TASK`, // scraper service
             },
             tables : {
                 type: "INFO",
-                title: `IDLE:  CONNECTING  TO  DATABASE`, // postgreSql database
+                title: `IDLE:  CONNECTED  TO  DATABASE`, // postgreSql database
             },
             trendsanalysis : {
                 type: "INFO",
-                title: `IDLE:  CONNECTING  TO  SERVER`, // dashboard service
+                title: `IDLE:  AWAITING  TASK`, // dashboard service
             },
             health : {
                 type: "INFO",
