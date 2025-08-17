@@ -1,8 +1,8 @@
-import { api } from "@/lib/api";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 import { useWorkflowStatus } from "./useWorkflowStatus";
 import { WorkflowStatusStage } from "@zeruel/types";
+import { api } from "@/lib/api";
 
 export type DashboardPages = "scraper" | "tables" | "trendsanalysis" | "health"
 
@@ -70,7 +70,6 @@ const healthCheck = async () => {
     }
 };
 
-// --- Polling Mechanism ---
-// Run the health check once on startup, and then poll on a regular interval.
+// Health Check interval Mechanism
 healthCheck();
 setInterval(healthCheck, POLLING_INTERVAL_MS);

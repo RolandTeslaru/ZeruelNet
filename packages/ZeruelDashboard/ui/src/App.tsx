@@ -15,7 +15,7 @@ function App() {
   return (
     <Layout>
       <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-24 ">
-        <div className=' w-full  '>
+        <div className=' w-full relative '>
 
           {/* <TestChart1/>
           <TestChart2/> */}

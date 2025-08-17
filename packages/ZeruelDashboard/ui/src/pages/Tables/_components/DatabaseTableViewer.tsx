@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table"
 import { useTablesContext } from '../context';
 import { useQuery } from '@tanstack/react-query';
-import { fetchComments, fetchTableSchema, fetchVideoFeatures, fetchVideos } from '@/lib/api';
+import { fetchComments, fetchTableSchema, fetchVideoFeatures, fetchVideos } from '@/lib/api/dashboard';
 import { Checkbox, Spinner } from '@zeruel/shared-ui/foundations';
 import { DataTable } from '@/components/DataTable';
 

@@ -55,7 +55,7 @@ export class TiktokScraper extends AbstractScraper {
 
 
     private broadcast(payload: AbstractScraperPayload) {
-        eventBus.broadcast("active_job_feed", payload)
+        eventBus.broadcast("active_scrape_feed", payload)
     }
 
 

@@ -9,7 +9,7 @@ import DatabaseTreePanel from './_components/DatabaseTreePanel';
 const Tables = React.memo(({ show }: { show: boolean }) => {
     return (
         <TablesProvider>
-            <div className='flex flex-row justify-between size-full w-full h-full'>
+            <div className='absolute top-0 left-0 flex flex-row justify-between size-full w-full h-full'>
                 <VXWindow
                     vxWindowId='ZNDashboardTableInfoWindow'
                     title='ZeruelNet Dashboard: Table Info Window'
