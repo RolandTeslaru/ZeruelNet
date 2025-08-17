@@ -93,3 +93,7 @@ export const useGatewayService = create<State & Actions>()(
         }
     }))
 )
+
+useGatewayService.getState().subscribeToTopic("dashboard_health", () => {
+    
+})

@@ -57,3 +57,8 @@ export async function fetchTableTriggers(tableName: string): Promise<Trigger[]> 
     const { data } = await api.get(`/api/v1/tables/${tableName}/triggers`);
     return data;
 }
+
+export async function fetchDatabaseHealth(): Promise<any> {
+    const {data} = await api.get(`/health/database`)
+    return data
+}

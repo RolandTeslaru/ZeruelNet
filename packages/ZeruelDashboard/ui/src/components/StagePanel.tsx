@@ -6,9 +6,11 @@ import { useWorkflowStatus } from "@/stores/useWorkflowStatus"
 import { useSystem } from '@/stores/useSystem';
 
 const StagePanel = () => {
-    const currentPage = useSystem(state => state.currentPage)
-    const stage = useWorkflowStatus(state => state.pageStages[currentPage]);
+    const [currentPage, overrideStage] = useSystem(state => [state.currentPage, state.overrideStage])
+    const pageStage = useWorkflowStatus(state => state.pageStages[currentPage]);
   
+    const displayedStage = overrideStage || pageStage
+
     return (
       <div className='fixed flex flex-col gap-4 left-7 top-4 w-fit transition-all'>
         <div className='absolute -bottom-5'>
@@ -16,7 +18,7 @@ const StagePanel = () => {
         </div>
         <BracketsWindowStyling className='mr-auto relative'>
           <RotatingText
-            data={stage}
+            data={displayedStage}
             mainClassName="text-2xl px-3 py-1 font-nippo font-light tracking-wider "
             staggerFrom={"first"}
             initial={{ y: "100%" }}

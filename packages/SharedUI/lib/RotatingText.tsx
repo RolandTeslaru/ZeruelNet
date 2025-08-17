@@ -12,6 +12,7 @@ import {
   type Target,
   type TargetAndTransition,
 } from "motion/react";
+import { WorkflowStatusStage } from "@zeruel/types";
 
 function cn(...classes: (string | undefined | null | boolean)[]): string {
   return classes.filter(Boolean).join(" ");
@@ -22,10 +23,7 @@ export interface RotatingTextProps
     React.ComponentPropsWithoutRef<typeof motion.span>,
     "children" | "transition" | "initial" | "animate" | "exit"
   > {
-  data?: {
-    title: string;
-    type: 'INFO' | 'TASK' | 'SUCCESS' | 'FAILURE';
-  };
+  data?: WorkflowStatusStage;
   transition?: any;
   initial?: boolean | Target | VariantLabels;
   animate?: boolean | VariantLabels | TargetAndTransition;
@@ -106,6 +104,10 @@ const RotatingText: React.FC<RotatingTextProps> = (
     TASK: {
       className: 'bg-gradient-to-r from-cyan-200 via-cyan-400 to-cyan-300 bg-clip-text bg-[length:200%_auto] animate-shimmer',
       elementLevelClassName: 'text-cyan-400 group-[.is-settled]:text-transparent',
+    },
+    STANDBY: {
+      className: 'text-amber-300 animate-pulse',
+      elementLevelClassName: '',
     },
     SUCCESS: {
       className: 'text-green-300 animate-pulse',

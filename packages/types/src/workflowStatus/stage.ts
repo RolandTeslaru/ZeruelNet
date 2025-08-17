@@ -1,6 +1,6 @@
 import {z} from "zod"
 
-const WorkflowStatusStepTypeSchema = z.enum(["INFO", "TASK", "SUCCESS", "FAILURE"])
+const WorkflowStatusStepTypeSchema = z.enum(["INFO", "TASK", "SUCCESS", "FAILURE", "STANDBY"])
 export type StepType = z.infer<typeof WorkflowStatusStepTypeSchema>
 
 export const WorkflowStatusStageSchema = z.object({

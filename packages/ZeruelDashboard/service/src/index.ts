@@ -8,12 +8,14 @@ import cors from "cors"
 import v1Routes from "./api/v1/routes"
 import { messageBroker } from './lib/messageBroker';
 import { Logger } from './lib/logger';
+import { getDatabaseHealth } from './api/v1/controllers/health';
 
 const app = express()
 app.use(cors({ origin: '*' }))
 app.use(express.json())
 
 app.get('/health', (_req, res) => res.status(200).send("TrendAnalysis Service is running"))
+app.get('/health/database', getDatabaseHealth)
 app.use("/api/v1", v1Routes)
 
 const PORT = process.env.PORT || 5003

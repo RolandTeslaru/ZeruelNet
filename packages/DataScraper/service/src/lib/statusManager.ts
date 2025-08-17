@@ -1,4 +1,3 @@
-import { T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { eventBus } from './eventBus';
 import { WorkflowStatusStage, WorkflowStatusStep, WorkflowStatusStepStatus, WorkflowStatusSchema, WorkflowStatus } from '@zeruel/types';
 

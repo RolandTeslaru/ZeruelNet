@@ -15,6 +15,7 @@ type State = {
 } 
 
 type Actions = {
+    setPageStage: (page: DashboardPages, stage: WorkflowStatusStage) => void
 }
 
 export const useWorkflowStatus = create<State & Actions>()(
@@ -43,7 +44,11 @@ export const useWorkflowStatus = create<State & Actions>()(
             tables: new Map(),
             trendsanalysis: new Map(),
             health: new Map(),
-        }
+        },
+        setPageStage: (page, stage) => set(s => {
+            if(!s.pageStages[page]) return
+            s.pageStages[page] = stage
+        })
     }))
 )
 
