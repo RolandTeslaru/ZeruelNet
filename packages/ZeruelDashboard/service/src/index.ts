@@ -14,7 +14,7 @@ dotenvFlow.config({ silent: true})
 import express from "express"
 import cors from "cors"
 import v1Routes from "./api/v1/routes"
-import { messageBroker } from './lib/messageBroker';
+import { redisBroker } from './lib/redisBroker';
 import { Logger } from './lib/logger';
 import { getDatabaseHealth } from './api/v1/controllers/health';
 
@@ -29,7 +29,7 @@ app.use("/api/v1", v1Routes)
 const PORT = process.env.ZERUEL_DASHBOARD_SERVICE_PORT
 
 async function startServer() {
-    await messageBroker.connect()
+    await redisBroker.connect()
     app.listen(PORT, () => {
         Logger.info(`Dashboard Service listening on http://localhost:${PORT}`)
     })

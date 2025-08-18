@@ -88,9 +88,6 @@ export const startScrapeWorkflow = async (req: Request, res: Response) => {
 
         await scraper.scrape(scrapeMission)
 
-        // await scraper.work(jobs, batchSize);
-
-
         statusManager.setStage('finalizing');        
 
 

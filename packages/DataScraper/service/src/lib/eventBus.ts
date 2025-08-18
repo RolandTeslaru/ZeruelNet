@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { messageBroker } from './messageBroker';
+import { redisBroker } from './redisBroker';
 
 class EventBus extends EventEmitter {
     constructor() {
@@ -20,7 +20,7 @@ class EventBus extends EventEmitter {
         const message = JSON.stringify(payload);
         
         try {
-            await messageBroker.publish(channel, message);
+            await redisBroker.publish(channel, message);
         } catch (error) {
             // If this fails, we should probably log it, but we don't want to crash the app.
             // The Logger uses the event bus, so we can't use it here to avoid a circular dependency.

@@ -11,7 +11,7 @@ import { DatabaseManager } from '../../lib/DatabaseManager';
 import { AbstractScraper } from '../AbstractScraper';
 import { Page } from 'playwright';
 import { sleep } from './utils';
-import { messageBroker } from '../../lib/messageBroker';
+import { redisBroker } from '../../lib/redisBroker';
 
 type StatusUpdateCallback = (message: any) => void;
 
@@ -135,10 +135,14 @@ export class TiktokScraper extends AbstractScraper {
                 try {
                     const page = await this.browserManager.getPage();
 
+                    // Extract Metadata & comments from the page
                     const videoData = await this.processScrapeSideMission(_sideMission, page, mission.identifier);
+                    
+                    // Save the video to the database
                     await DatabaseManager.saveVideo(videoData);
 
-                    await messageBroker.publish('enrichment_queue', videoData.video_id);
+                    // Publish video to Enrichemnt Service
+                    await redisBroker.publish('enrichment_queue', videoData.video_id);
                     Logger.info(`[Enrichment] Published ${videoData.video_id} to enrichment queue.`);
 
                     statusManager.updateStep("data_persistence", "active", `Saved video ${videoData.video_id} and its ${videoData.comments.length} comments`)

@@ -14,7 +14,7 @@ dotenvFlow.config({ silent: true})
 import express from 'express';
 import cors from 'cors';
 import { Logger } from './lib/logger';
-import { messageBroker } from './lib/messageBroker';
+import { redisBroker } from './lib/redisBroker';
 
 const app = express();
 const PORT = process.env.SCRAPER_SERVICE_PORT;
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 
 
 async function startServer() {
-    await messageBroker.connect();
+    await redisBroker.connect();
     app.listen(PORT, () => {
         Logger.info(`Scraper service listening on http://localhost:${PORT}`);
         // TODO: Whole type sys needs to be migrated to zod

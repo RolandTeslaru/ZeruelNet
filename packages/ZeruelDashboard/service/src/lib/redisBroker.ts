@@ -26,7 +26,7 @@ async function publish(channel: string, message: string) {
     await publisher.publish(channel, message);
 }
 
-export const messageBroker = {
+export const redisBroker = {
     connect,
     disconnect,
     publish,
