@@ -32,17 +32,18 @@ export const VXWindow: FC<VXEngineWindowProps> = memo((props) => {
 
     const Content = useMemo(() => {
         const innerContent = (
-            <AnimatePresence>
+            <>
                 {showControls && <div key="controls"><WindowControlDots /></div>}
                 {children}
-            </AnimatePresence>
+            </>
         );
 
 
         if (StylingComponent) {
             return React.cloneElement(StylingComponent, {
                 isDetached: !vxWindow.isAttached,
-                children: innerContent
+                children: innerContent,
+                id: vxWindowId
             });
         }
         else
@@ -58,7 +59,7 @@ export const VXWindow: FC<VXEngineWindowProps> = memo((props) => {
             {vxWindow.isAttached ? (
                 Content
             ) : (
-                <DetachableWindow vxWindowId={vxWindowId} onClose={handleAttach} title={title} windowClasses={windowClasses}>
+                <DetachableWindow onClose={handleAttach} title={title} windowClasses={windowClasses}>
                     {Content}
                 </DetachableWindow>
             )
@@ -92,7 +93,7 @@ export const ResizableWindowStyling = (props: WindowStylingProps) => {
 
 
 const DetachableWindow: React.FC<DetachableWindowProps> = (props) => {
-    const { children, onClose, vxWindowId, windowClasses, title } = props;
+    const { children, onClose, windowClasses, title } = props;
     const { setExternalContainer } = useWindowContext();
     const containerRef = useRef<HTMLDivElement>(document.createElement('div'));
     const externalWindow = useRef<Window | null>(null);

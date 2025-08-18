@@ -27,7 +27,7 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <div 
+            <div
                 className={classNames(
                     `relative bg-neutral-950 ${theme} ${className}`,
                     // {"!bg-blue-900/20": currentPage === "scraper"}
@@ -36,11 +36,13 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
                 <AuroraBackground asLayer />
                 <div className={classNames(
                     'pointer-events-none absolute inset-0 bg-transparent transition-bg duration-500 ease-in-out',
-                    {"!bg-cyan-900/20": currentPage === "scraper"},
-                    {"!bg-black/60": currentPage === "tables"},
-                    {"!bg-blue-950/20": currentPage === "trendsanalysis"},
-                    {"!bg-indigo-500/10": currentPage === "health"},
-                )}/>
+                    { "!bg-cyan-900/20": currentPage === "scraper" },
+                    { "!bg-black/60": currentPage === "tables" },
+                    { "!bg-blue-950/20": currentPage === "trendsanalysis" },
+                    { "!bg-indigo-500/10": currentPage === "health" },
+                )} 
+                    id="ZN-Layout-BackgroundColor"
+                />
                 {/* Background */}
                 <div
                     className='pointer-events-none absolute inset-0 transition-all duration-700 ease-in-out'
@@ -56,9 +58,9 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
 
                 <UIManagerDialogLayer />
                 <div className='fixed left-1/2 -translate-x-1/2 w-fit z-10 bottom-3'>
-                    <TabSwitcher/>
+                    <TabSwitcher />
                 </div>
-                <StagePanel/>
+                <StagePanel />
                 <MenubarComponent />
                 {children}
             </div>

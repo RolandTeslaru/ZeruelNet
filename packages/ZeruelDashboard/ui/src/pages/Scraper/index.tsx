@@ -9,16 +9,16 @@ import StepperPanel from './_components/StepperPanel'
 
 const Scraper = React.memo(({ show }: { show: boolean }) => {
   return (
-    <div className='absolute top-0 left-0 flex flex-row justify-between size-full w-full h-full'>
+    <div id='ZN-DataScraper' className='absolute top-0 left-0 flex flex-row justify-between size-full w-full h-full'>
       <VXWindow
-        vxWindowId='ZNDataScraperLeftPanel'
+        vxWindowId='ZN-DataScraper-StepperPanel'
         title='ZeruelNet DataHarvester: StepPanel'
         windowClasses='width=310,height=702,left=200,top=200,resizable=0'
         showControls={false}
         StylingComponent={<BracketsWindowStyling
-          className='  min-w-[250px]  px-1 py-0 flex flex-col'
-          detachedClassName=''
           show={show}
+          className='hidden  min-w-[250px]  px-1 py-0 flex-col'
+          detachedClassName=''
         />}
       >
         <StepperPanel/>
@@ -27,26 +27,26 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
 
       {/* Main Panel */}
       <VXWindow
-        vxWindowId='ZNDataScraperScrapingPanel'
+        vxWindowId='ZN-DataScraper-MissionPanel'
         title='ZereulNet DataScraper: Scraping Panel'
         windowClasses=''
         StylingComponent={<BracketsWindowStyling
-          className='  min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 !pt-0 flex flex-col'
-          detachedClassName=''
           show={show}
+          className='hidden  min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 !pt-0 flex-col'
+          detachedClassName=''
         />}
       >
         <MissionPanel />
       </VXWindow>
 
       <VXWindow
-        vxWindowId='ZNDataScraperLeftPanel'
+        vxWindowId='ZN-DataScraper-CommandPanel'
         title='ZeruelNet DataHarvester: RightPanel'
         windowClasses='width=310,height=702,left=200,top=200,resizable=0'
         StylingComponent={<BracketsWindowStyling
-          className='  min-w-[250px] min-h-1/2 p-1 flex flex-col'
-          detachedClassName=''
           show={show}
+          className='hidden  min-w-[250px] min-h-1/2 flex-col'
+          detachedClassName=''
         />}
       >
         <CommandPanel />

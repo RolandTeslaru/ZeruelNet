@@ -31,7 +31,6 @@ export interface WindowContextProps {
 }
 
 export interface DetachableWindowProps {
-    vxWindowId: string
     children: React.ReactNode;
     onClose: () => void;
     windowClasses: string;

@@ -9,13 +9,13 @@ import DatabaseTreePanel from './_components/DatabaseTreePanel';
 const Tables = React.memo(({ show }: { show: boolean }) => {
     return (
         <TablesProvider>
-            <div className='absolute top-0 left-0 flex flex-row justify-between size-full w-full h-full'>
+            <div id="ZN-Tables" className='absolute top-0 left-0 hidden flex-row justify-between size-full w-full h-full'>
                 <VXWindow
-                    vxWindowId='ZNDashboardTableInfoWindow'
+                    vxWindowId='ZN-Dashboard-Database-Tree-Panel'
                     title='ZeruelNet Dashboard: Table Info Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className='   min-w-[250px] max-w-[250px] h-full p-1 flex flex-col'
+                        className='hidden min-w-[250px] max-w-[250px] h-full p-1 flex-col'
                         detachedClassName=''
                         show={show}
                     />}
@@ -23,11 +23,11 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
                     <DatabaseTreePanel />
                 </VXWindow>
                 <VXWindow
-                    vxWindowId='ZNDashboardTabelWindow'
+                    vxWindowId='ZN-Dashboard-Database-Table-Viewer'
                     title='ZereulNet Dashboard: Table Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className=' bg-neutral-950/30 min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 flex flex-col'
+                        className='hidden bg-neutral-950/30 min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 flex-col'
                         detachedClassName=''
                         show={show}
                     />}
@@ -35,11 +35,11 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
                     <DatabaseTableViewer />
                 </VXWindow>
                 <VXWindow
-                    vxWindowId='ZNDashboardTableQueryWindow'
+                    vxWindowId='ZN-Dashboard-Database-Query-Panel'
                     title='ZeruelNet Dashboard: Table Query Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className='  min-w-[250px]  h-full p-1 flex flex-col'
+                        className=' hidden min-w-[250px]  h-full p-1 flex-col'
                         detachedClassName=''
                         show={show}
                     />}

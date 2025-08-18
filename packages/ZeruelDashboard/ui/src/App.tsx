@@ -7,10 +7,18 @@ import Tables from './pages/Tables'
 import Trends from './pages/Trends'
 import SysHealth from './pages/SysHealth'
 import { useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'
+import { useEffect } from 'react'
+import { usePageTransition } from './stores/usePageTransition'
 
 function App() {
 
   const currentPage = useSystem(state => state.currentPage)
+
+  useEffect(() => {
+    usePageTransition.getState().transition({
+      toPage: "scraper",
+    })
+  }, [])
   
   return (
     <Layout>

@@ -36,7 +36,7 @@ const AuroraBackground = ({
         </style>
         <div
           className={cn(
-            "transition-bg pointer-events-none absolute inset-0  overflow-hidden",
+            "background-aurora transition-bg pointer-events-none absolute inset-0  overflow-hidden",
           )}
           style={
             {

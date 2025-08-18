@@ -33,37 +33,16 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
 }
 
 
-const bracketsWindowVariants: Variants = {
-    hidden: {
-        opacity: 0,
-        scale: 0.5,
-
-        transition: {
-            duration: 0.3,
-            ease: 'easeInOut',
-        }
-    },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        display: 'flex',
-        transition: {
-            delay: 0.5,
-            duration: 0.3,
-            ease: "easeInOut",
-        },
-    },
-}
-
-
 export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string, show?: boolean } & HTMLMotionProps<"div">> = ({
     className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, show = true, ...rest
 }) => {
+    if(show === false) return null
+    
     return (
-        <motion.div
+        <div
             className={classNames(
                 isDetached && ['rounded-none', detachedClassName],
-                'relative p-2 flex flex-col gap-2 border border-white/20 h-fit',
+                'relative px-2 pt-1 flex flex-col gap-2 border border-white/20 h-fit',
                 className,
                 { "rounded-none": isDetached },
             )}
@@ -71,27 +50,16 @@ export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClas
                 ...(isDetached ? detachedStyling : {}),
                 ...style,
             }}
-            animate={show ? 'visible' : 'hidden'}
             initial="hidden"
-            variants={bracketsWindowVariants}
-            
             {...rest}
         >
-            {/* <motion.span className="absolute size-full bg-white left-0 top-0 z-10"
-                animate={show ? 'visible' : 'hidden'}
-                variants={{
-                    visible: {
-                        scale:
-                    }
-                }}
-            /> */}
             {isDetached && <DotPattern />}
             <div className={`absolute -top-1 -left-1 w-3 h-3 border-white border-l border-t`} />
             <div className={`absolute -top-1 -right-1 w-3 h-3 border-white border-r border-t`} />
             <div className={`absolute -bottom-1 -left-1 w-3 h-3 border-white border-l border-b`} />
             <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-white border-r border-b`} />
             {children}
-        </motion.div>
+        </div>
     )
 }
 
