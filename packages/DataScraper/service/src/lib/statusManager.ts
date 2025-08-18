@@ -1,3 +1,4 @@
+import { WorkflowStatusPayload } from '@zeruel/scraper-types';
 import { eventBus } from './eventBus';
 import { WorkflowStatusStage, WorkflowStatusStep, WorkflowStatusStepStatus, WorkflowStatusSchema, WorkflowStatus } from '@zeruel/types';
 
@@ -135,7 +136,7 @@ class WorkflowStatusManager {
         return WorkflowStatusManager.instance;
     }
 
-    private broadcast(payload: T_SystemStatusPayload) {
+    private broadcast(payload: WorkflowStatusPayload) {
         eventBus.broadcast("system_status", payload)
     }
 
