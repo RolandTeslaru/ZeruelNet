@@ -50,7 +50,7 @@ const createIntroTimeline = (pageKey: PageKey): GSAPTimeline => {
             return gsap.timeline({ defaults: DEFAULTS })
                 .set(SCRAPER_PAGE_SELECTOR, {
                     display: "flex",
-                    delay: 1,
+                    delay: 0.3,
                     opacity: 0,
                     scale: 0.5
                 })
@@ -61,7 +61,7 @@ const createIntroTimeline = (pageKey: PageKey): GSAPTimeline => {
             return gsap.timeline({ defaults: DEFAULTS })
                 .set(TABLES_PAGE_SELECTOR, {
                     display: "flex",
-                    delay: 1,
+                    delay: 0.3,
                     opacity: 0,
                     scale: 0.5
                 })
@@ -113,7 +113,7 @@ const BACKGROUND_ANIMATION: Record<PageKey, GSAPTimeline> = {
         }),
     "trendsanalysis": gsap.timeline({ defaults: DEFAULTS })
         .to("#ZN-Layout-BackgroundColor", {
-            backgroundColor: "rgba(30, 58, 138, 0.2)", // bg-blue-900/20
+            backgroundColor: "rgba(14, 165, 233, 0.6)", // bg-sky-500/20
         }),
     "health": gsap.timeline({ defaults: DEFAULTS })
         .to("#ZN-Layout-BackgroundColor", {

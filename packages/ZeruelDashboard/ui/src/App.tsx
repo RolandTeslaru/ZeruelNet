@@ -17,6 +17,8 @@ function App() {
   useEffect(() => {
     usePageTransition.getState().transition({
       toPage: "scraper",
+      enterAnimationDelay: false,
+      
     })
   }, [])
   
