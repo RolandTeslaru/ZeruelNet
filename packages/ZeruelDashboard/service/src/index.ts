@@ -18,7 +18,7 @@ app.get('/health', (_req, res) => res.status(200).send("TrendAnalysis Service is
 app.get('/health/database', getDatabaseHealth)
 app.use("/api/v1", v1Routes)
 
-const PORT = process.env.PORT || 5003
+const PORT = process.env.ZERUEL_DASHBOARD_PORT
 app.listen(PORT, () => {
     console.log(`Dashboard Service: listening on localhost:${PORT}`)
 })

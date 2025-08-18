@@ -1,11 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Check, Circle, Minus, X } from './icons';
-import { SystemStep } from '@zeruel/scraper-types';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'motion/react';
+import { WorkflowStatusStep } from '@zeruel/types';
 
 interface StepperVerticalMapProps {
-    steps?: Map<string, SystemStep>
+    steps?: Map<string, WorkflowStatusStep>
     className?: string
     maxHeight?: string
 }
@@ -43,7 +43,7 @@ const StepperVerticalMap = forwardRef<StepperVerticalMapHandles, StepperVertical
         <div className='relative'>
             <div
                 ref={scrollContainerRef}
-                className={`${maxHeight} scroll-smooth !w-full gap-1 pt-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20" `}
+                className={`${maxHeight} scroll-smooth !w-full gap-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20" `}
             >
                 {steps.size === 0 ? (
                     <div className="text-center text-white/40 font-mono text-sm">
@@ -71,7 +71,7 @@ const StepperVerticalMap = forwardRef<StepperVerticalMapHandles, StepperVertical
 
 export default StepperVerticalMap
 
-const Step: React.FC<SystemStep & { index: number, mapLength }> = (props) => {
+const Step: React.FC<WorkflowStatusStep & { index: number, mapLength }> = (props) => {
     return (
         <div
             className={`relative flex items-start transition-all duration-300 ease-out animate-in slide-in-from-bottom-4 fade-in`}

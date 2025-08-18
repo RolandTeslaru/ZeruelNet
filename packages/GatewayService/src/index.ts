@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config({ path: __dirname+'/../.env' });
+
 import express from 'express';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
@@ -14,7 +17,7 @@ const subscriptions = new Map<WebSocket, Set<string>>();
 
 const redisSubscriber = createClient();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.GATEWAY_PORT
 
 app.get('/health', (req, res) => {
     res.status(200).send('Gateway service is running');

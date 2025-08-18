@@ -7,7 +7,7 @@ import { Logger } from './lib/logger';
 import { messageBroker } from './lib/messageBroker';
 
 const app = express();
-const PORT = process.env.SCRAPER_PORT;
+const PORT = process.env.SCRAPER_SERVICE_PORT;
 
 app.use(cors()); 
 app.use(express.json());
