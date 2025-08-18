@@ -1,4 +1,4 @@
-import { z } from "zod" 
+import { z } from "zod"
 import { Platforms, PlatformsSchema } from "@zeruel/types";
 
 export const SourcesSchema = z.enum(["hashtag", "user"])
@@ -17,7 +17,7 @@ export const ScrapeSideMissionSchema = z.object({
 export type ScrapeSideMission = z.infer<typeof ScrapeSideMissionSchema>
 
 export const ScrapeMissionSchema = z.object({
-    sideMissions: z.array(ScrapeSideMissionSchema), 
+    sideMissions: z.array(ScrapeSideMissionSchema),
     limit: z.number(),
     batchSize: z.number(),
     identifier: z.string(),
@@ -34,3 +34,14 @@ export const DiscoveryMissionSchema = z.object({
     limit: z.number().optional()
 })
 export type DiscoverMission = z.infer<typeof DiscoveryMissionSchema>
+
+
+
+
+export const FullScrapeWorkflowSchema = z.object({
+    limit: z.number(),
+    batchSize: z.number(),
+    identifier: z.string(),
+    source: SourcesSchema
+})
+export type FullScrapeWorkflow = z.infer<typeof FullScrapeWorkflowSchema>

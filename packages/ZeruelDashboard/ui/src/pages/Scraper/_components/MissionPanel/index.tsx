@@ -38,36 +38,39 @@ const MissionPanel = memo(() => {
   const activeScraping = useActiveScraping(state => state.activeScraping)
 
   return (
-    <div className='relative max-h-[80vh] gap-6 p-2  flex flex-wrap overflow-y-scroll !overflow-x-visible'>
+    <div className='relative max-h-[80vh] gap-4 p-2  flex flex-col overflow-y-scroll !overflow-x-visible'>
       <p className='text-white/20 font-roboto-mono text-xl font-light'>
         ACTIVE MISSION  PANEL
       </p>
-      <AnimatePresence mode="popLayout">
-        {/* <motion.div
-          key={demo_data.job.url} // Using a unique and stable key like jobUrl is important!
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }} // Add the exit prop for the outro animation
-          transition={{ ease: 'linear', duration: 0.2 }}
-          className="w-auto mx-auto"
-          layout
-        >
-          <JobWindow index={0} job={demo_data.job} metadata={demo_data.metadata} status="SCRAPING" />
-        </motion.div> */}
-        {Array.from(activeScraping).map(([scrapeUrl, sideMission], index) => (
-          <motion.div
-            key={scrapeUrl} // stable key
+      <div className='flex flex-wrap'>
+        <AnimatePresence mode="popLayout">
+          {/* <motion.div
+            key={demo_data.job.url} // Using a unique and stable key like jobUrl is important!
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
+            exit={{ opacity: 0, scale: 0.5 }} // Add the exit prop for the outro animation
             transition={{ ease: 'linear', duration: 0.2 }}
             className="w-auto mx-auto"
             layout
           >
-            <SideMissionWindow index={index} scrapeSideMission={sideMission}/>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+            <JobWindow index={0} job={demo_data.job} metadata={demo_data.metadata} status="SCRAPING" />
+          </motion.div> */}
+          {Array.from(activeScraping).map(([scrapeUrl, sideMission], index) => (
+            <motion.div
+              key={scrapeUrl} // stable key
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ ease: 'linear', duration: 0.2 }}
+              className="w-auto mx-auto"
+              layout
+            >
+              <SideMissionWindow index={index} scrapeSideMission={sideMission}/>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+      </div>
     </div>
   )
 })

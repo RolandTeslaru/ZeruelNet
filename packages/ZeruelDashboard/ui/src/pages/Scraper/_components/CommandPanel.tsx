@@ -2,8 +2,10 @@ import React, { memo, useState } from 'react'
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue, Form, FormField, FormItem, FormLabel, FormControl } from '@zeruel/shared-ui/foundations'
 import { useWorkflowStatus } from '@/stores/useWorkflowStatus'
-import { ScrapeMisson } from '@zeruel/scraper-types'
+import { FullScrapeWorkflow, ScrapeMisson } from '@zeruel/scraper-types'
 import { useForm } from 'react-hook-form'
+import { scraperApi } from '@/lib/api/scraper'
+import { FullScrapeWorkflowSchema } from '@zeruel/scraper-types'
 
 const CommandPanel = memo(() => {
     const form = useForm({
@@ -15,31 +17,23 @@ const CommandPanel = memo(() => {
     })
 
     const onSubmit = async (data: any) => {
-        const mission: Omit<ScrapeMisson, "sideMissions"> = {
+        const request: FullScrapeWorkflow = {
             source: 'hashtag',
             identifier: data.hashtag,
             limit: Number(data.limit),
             batchSize: Number(data.batchSize)
         };
-
-        try {
-            const response = await fetch('http://localhost:3001/api/v1/harvest', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(mission),
-            });
-
-            const responseData = await response.json();
-
-            if (!response.ok) {
-                throw new Error(responseData.message || 'An error occurred.');
+        const parsed = FullScrapeWorkflowSchema.safeParse(request)
+        if(parsed.success){
+            try {
+                const { data } = await scraperApi.post("/api/v1/workflow/full-scrape", parsed.data)
+            } catch (error: any) {
+                console.error(error)
             }
-
-        } catch (error: any) {
-            console.error(error)
+        } else {
+            console.error("Zod Error", parsed.error)
         }
+
     };
 
 

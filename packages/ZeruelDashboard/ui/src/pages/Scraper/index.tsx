@@ -3,13 +3,11 @@ import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import React from 'react'
 import MissionPanel from './_components/MissionPanel'
 import CommandPanel from './_components/CommandPanel'
-import { WindowControlDots } from '@zeruel/shared-ui/VXWindow/WindowControlDots'
-import { LogPanel } from './_components/LogPanel'
 import StepperPanel from './_components/StepperPanel'
 
 const Scraper = React.memo(({ show }: { show: boolean }) => {
   return (
-    <div id='ZN-DataScraper' className='absolute top-0 left-0 flex flex-row justify-between size-full w-full h-full'>
+    <div id='ZN-DataScraper' className='absolute gap-8 top-0 left-0 flex flex-row justify-between size-full w-full h-full'>
       <VXWindow
         vxWindowId='ZN-DataScraper-StepperPanel'
         title='ZeruelNet DataHarvester: StepPanel'
@@ -17,7 +15,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         showControls={false}
         StylingComponent={<BracketsWindowStyling
           show={show}
-          className='hidden  min-w-[250px]  px-1 py-0 flex-col'
+          className='hidden  min-w-[350px]  px-1 py-0 flex-col'
           detachedClassName=''
         />}
       >
@@ -32,7 +30,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         windowClasses=''
         StylingComponent={<BracketsWindowStyling
           show={show}
-          className='hidden  min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] p-1 !pt-0 flex-col'
+          className='hidden  min-h-full max-h-full w-full p-1 !pt-0 flex-col'
           detachedClassName=''
         />}
       >

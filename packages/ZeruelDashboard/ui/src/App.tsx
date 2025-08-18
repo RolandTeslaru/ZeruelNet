@@ -8,6 +8,9 @@ import Trends from './pages/Trends'
 import SysHealth from './pages/SysHealth'
 import { useEffect } from 'react'
 import { usePageTransition } from './stores/usePageTransition'
+import { useGatewayService } from './stores/useGatewayService'
+
+useGatewayService.getState().connect()
 
 function App() {
 

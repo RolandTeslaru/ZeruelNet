@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 
-const WS_URL = 'ws://localhost:4000';
+const GATEWAY_PORT = import.meta.env.VITE_GATEWAY_PORT
+
+const WS_URL = `ws://localhost:${GATEWAY_PORT}`;
 
 export const webSocketEvents = new EventTarget();
 
@@ -47,6 +49,8 @@ export const useGatewayService = create<State & Actions>()(
                 set(state => { state.subscriptionQueue = [] });
 
                 webSocketEvents.dispatchEvent(new Event("open"));
+
+                console.log("useGatewayService: WebSocket connection established")
             };
         
             ws.onclose = () => set((state) => {
@@ -79,6 +83,7 @@ export const useGatewayService = create<State & Actions>()(
         subscribeToTopic: (topic, callback) => {
             const socket = get().socket;
             if (socket === null || socket.readyState !== WebSocket.OPEN) {
+                console.error("useGatewayService: socket is null. make sure to connect")
                 // Queue subscription if socket isnt ready
                 set(state => {
                     state.subscriptionQueue.push({ topic, callback });

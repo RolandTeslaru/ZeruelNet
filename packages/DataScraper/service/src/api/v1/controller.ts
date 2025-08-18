@@ -3,7 +3,7 @@ import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
 import { statusManager } from '../../lib/statusManager';
 import { TiktokScraper } from "../../scrapers/tiktok"
-import { DiscoverMission, ScrapeSideMission, ScrapeWorkflowRequest } from '@zeruel/scraper-types';
+import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapeWorkflowRequest } from '@zeruel/scraper-types';
 
 let isScraperRunning = false;
 
@@ -78,6 +78,15 @@ export const startScrapeWorkflow = async (req: Request, res: Response) => {
                 scrapeSideMissions.push(sideMission)
             }
         }
+
+        const scrapeMission: ScrapeMisson = {
+            ...workflow,
+            sideMissions: scrapeSideMissions,
+            limit: workflow.limit ?? 10,
+            batchSize: workflow.batchSize ?? 4
+        }
+
+        await scraper.scrape(scrapeMission)
 
         // await scraper.work(jobs, batchSize);
 

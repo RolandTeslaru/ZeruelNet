@@ -52,7 +52,11 @@ export const useWorkflowStatus = create<State & Actions>()(
     }))
 )
 
+console.log("HELLO ")
+
 function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: DashboardPages) {
+    console.log("HANDLING SOCKET MESSAGE ", payload, currentPage)
+    
     switch (payload.action) {
         case "UPDATE_STEP":
             useWorkflowStatus.setState(state => {
@@ -103,8 +107,8 @@ function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: Dashbo
 }
 
 
-useGatewayService.getState().subscribeToTopic("scraper_system_status", payload =>  handleSocketMessage(payload, "scraper"))
-useGatewayService.getState().subscribeToTopic("dashboard_system_status",  payload =>  handleSocketMessage(payload, 'trendsanalysis'))
+useGatewayService.getState().subscribeToTopic("scraper_system_status", (payload) => {handleSocketMessage(payload, "scraper")})
+useGatewayService.getState().subscribeToTopic("dashboard_system_status", (payload) => {handleSocketMessage(payload, 'trendsanalysis')})
 // webSocketEvents.addEventListener("open", () => {
 //     setTimeout(() => {
 //         useWorkflowStatus.setState(state => {
