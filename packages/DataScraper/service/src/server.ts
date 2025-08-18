@@ -1,5 +1,15 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: __dirname+'/../.env' });
+import dotenvFlow from 'dotenv-flow';
+import path from "path"
+
+// Load monorepo env vars
+dotenvFlow.config({
+    path: path.resolve(__dirname, "../../../../"),
+    node_env: process.env.NODE_ENV,
+    silent: true
+})
+
+// Override with local envs if present
+dotenvFlow.config({ silent: true})
 
 import express from 'express';
 import cors from 'cors';

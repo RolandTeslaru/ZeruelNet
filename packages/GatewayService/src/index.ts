@@ -1,5 +1,15 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: __dirname+'/../.env' });
+import dotenvFlow from 'dotenv-flow';
+import path from "path"
+
+// Load monorepo env vars
+dotenvFlow.config({
+    path: path.resolve(__dirname, "../../../"),
+    node_env: process.env.NODE_ENV,
+    silent: true
+})
+
+// Override with local envs if present
+dotenvFlow.config({ silent: true})
 
 import express from 'express';
 import http from 'http';
@@ -12,7 +22,7 @@ app.use(cors({ origin: '*' })); // Allow all origins for simplicity
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-// All webscoekts that are subscribed to the GatewayService ( scraper_, dashboard_, enrichment_ ....)
+// All websockets that are subscribed to the GatewayService ( scraper_, dashboard_, enrichment_ ....)
 const subscriptions = new Map<WebSocket, Set<string>>();
 
 const redisSubscriber = createClient();
