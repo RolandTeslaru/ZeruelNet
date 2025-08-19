@@ -17,7 +17,7 @@ const Enrichment = React.memo(({ show }: { show: boolean }) => {
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
                         show={show}
-                        className='hidden  min-h-full max-h-full w-1/2 p-1 !pt-0 flex-col'
+                        className='hidden  min-h-full max-h-full w-[calc(50%_-_16px)] !px-0 !pt-0 flex-col'
                         detachedClassName=''
                     />}
                 >
@@ -29,7 +29,7 @@ const Enrichment = React.memo(({ show }: { show: boolean }) => {
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
                         show={show}
-                        className='hidden  min-h-full max-h-full w-1/2 !p-0 flex-col'
+                        className='hidden  min-h-full max-h-full !p-0 flex-col'
                         detachedClassName=''
                     />}
                 >

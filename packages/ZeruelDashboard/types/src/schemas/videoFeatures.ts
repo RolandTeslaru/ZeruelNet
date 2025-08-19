@@ -8,6 +8,7 @@ export const IdentifiedSubjectScehma = z.object({
 })
 
 export const VideoFeaturesQuerySchema = baseParams.extend({
+    video_id: z.string().optional(),
     detected_language: z.string().regex(/^[a-z]{2}$/, "Invalid language code").optional(),
     enrichment_status: z.enum(["completed", "failed"]).optional(),
     // -1 means very pro russia while 1 means pro western

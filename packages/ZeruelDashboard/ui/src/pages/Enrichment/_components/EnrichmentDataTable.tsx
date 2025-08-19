@@ -1,14 +1,16 @@
 import { fetchTableSchema, fetchVideoFeatures } from '@/lib/api/dashboard';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, getCoreRowModel, PaginationState, useReactTable } from '@tanstack/react-table';
-import { Spinner } from '@zeruel/shared-ui/foundations';
+import { Input, Spinner } from '@zeruel/shared-ui/foundations';
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { DataTable } from '@/components/DataTable';
 import { useEnrichmentViewer } from '../context';
+import Search from '@zeruel/shared-ui/Search';
 
 const EMPTY_DATA: any[] = []
 
 const EnrichmentDataTable = memo(() => {
+    const [searchVideoId, setSearchVideoId] = useState<string | undefined>();
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 25,
@@ -23,9 +25,13 @@ const EnrichmentDataTable = memo(() => {
 
     // Fetch the selected table
     const { data, isLoading: isDataLoading } = useQuery({
-        queryKey: ['video_features', { pageIndex, pageSize }],
+        queryKey: ['video_features', { pageIndex, pageSize, video_id: searchVideoId }],
         queryFn: () => {
-            const baseParams = { limit: pageSize, offset: pageIndex * pageSize };
+            const baseParams = {
+                limit: pageSize,
+                offset: pageIndex * pageSize,
+                video_id: searchVideoId,
+            };
             return fetchVideoFeatures(baseParams);
         },
         // Only run this query if the schema has been successfully loaded
@@ -87,7 +93,7 @@ const EnrichmentDataTable = memo(() => {
 
     useEffect(() => {
         setRowSelection({ 0: true })
-        if(data){
+        if(data?.items[0]){
             setSelectedVideoId(data.items[0].video_id)
             setSelectedVideoData(data.items[0])
         }
@@ -98,11 +104,22 @@ const EnrichmentDataTable = memo(() => {
     }
 
     return (
-        <DataTable
-            data={data ? data.items : EMPTY_DATA}
-            columns={columns}
-            table={table}
-        />
+        <>
+            <Input
+                placeholder='search video id'
+                className='w-[200px] ml-2'
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        setSearchVideoId(e.currentTarget.value || undefined);
+                    }
+                }}
+            />
+            <DataTable
+                data={data ? data.items : EMPTY_DATA}
+                columns={columns}
+                table={table}
+            />
+        </>
     );
 })
 

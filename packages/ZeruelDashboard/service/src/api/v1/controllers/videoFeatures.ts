@@ -10,7 +10,7 @@ export async function getVideoFeatures(req: Request, res: Response) {
 
     const { limit, offset, since, until, detected_language, enrichment_status,
             min_alignment, max_alignment, min_polarity, max_polarity, 
-            identified_subjects, timestamp, sort
+            identified_subjects, timestamp, sort, video_id
     } = parsed.data
 
     const orderByWhitelist = {
@@ -32,7 +32,8 @@ export async function getVideoFeatures(req: Request, res: Response) {
         max_polarity ?? null,       // $8
         identified_subjects ? JSON.stringify(identified_subjects) : null, // $9
         limit,                      // $10
-        offset                      // $11
+        offset,                      // $11
+        video_id ?? null            // $12
     ];
 
     const query = `--sql
@@ -67,6 +68,7 @@ export async function getVideoFeatures(req: Request, res: Response) {
                 )
             ) = (SELECT COUNT(*) FROM search_criteria)
         )
+        AND ($12::text IS NULL OR vf.video_id = $12)
         ORDER BY ${orderBy} ${direction}
         LIMIT $10 OFFSET $11;
     `;
