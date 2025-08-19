@@ -68,7 +68,7 @@ export function DataTable<TData>({
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
-                                    className="group select-none  hover:bg-gray-500/40"
+                                    className="group hover:bg-gray-500/40"
                                 >
                                     {row.getVisibleCells().map((cell, index) => (
                                         <TableCell

@@ -9,6 +9,7 @@ import SysHealth from './pages/SysHealth'
 import { useEffect } from 'react'
 import { usePageTransition } from './stores/usePageTransition'
 import { useGatewayService } from './stores/useGatewayService'
+import Enrichment from './pages/Enrichment'
 
 useGatewayService.getState().connect()
 
@@ -31,6 +32,7 @@ function App() {
           {/* <TestChart1/>
           <TestChart2/> */}
           <Scraper show={currentPage === "scraper"}/>
+          <Enrichment show={currentPage === "enrichment"}/>
           <Tables show={currentPage === "tables"}/>
           <Trends show={currentPage === "trendsanalysis"}/>
           <SysHealth show={currentPage === "health"}/>

@@ -15,8 +15,6 @@ import { redisBroker } from '../../lib/redisBroker';
 
 type StatusUpdateCallback = (message: any) => void;
 
-const PROCESS_LIMIT = 20
-
 export class TiktokScraper extends AbstractScraper {
     public readonly platform: 'tiktok' = 'tiktok';
     protected browserManager: BrowserManager;
@@ -29,7 +27,7 @@ export class TiktokScraper extends AbstractScraper {
     constructor(browserManager: BrowserManager) {
         super();
         this.browserManager = browserManager;
-        // Set concurrency to the number of CPU cores, or a default of 4
+        // Set concurrency to the number of CPU cores or a default of 4
         this.maxConcurrentWorkers = os.cpus().length || 4;
     }
 

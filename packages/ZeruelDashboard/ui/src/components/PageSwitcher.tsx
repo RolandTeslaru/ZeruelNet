@@ -1,7 +1,7 @@
 import React from 'react'
 import { Tabs, TabsList, TabsTrigger } from '@zeruel/shared-ui/foundations'
 import { DashboardPages, useSystem } from '@/stores/useSystem'
-import { Activity, Bot, Health, Table } from '@zeruel/shared-ui/icons'
+import { Activity, Bot, Health, Sparkles, Table } from '@zeruel/shared-ui/icons'
 import { usePageTransition } from '@/stores/usePageTransition'
 
 const PageSwitcher = () => {
@@ -28,6 +28,10 @@ const PageSwitcher = () => {
                     <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="scraper">
                         <Bot strokeWidth={1.5} size={20}/>
                         SCRAPER
+                    </TabsTrigger>
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="enrichment">
+                        <Sparkles strokeWidth={1.5} size={20}/>
+                        ENRICHMENT
                     </TabsTrigger>
                     <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="tables">
                         <Table strokeWidth={1.5} size={20}/>

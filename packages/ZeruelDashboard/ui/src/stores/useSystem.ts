@@ -4,7 +4,7 @@ import { useWorkflowStatus } from "./useWorkflowStatus";
 import { WorkflowStatusStage } from "@zeruel/types";
 import { api } from "@/lib/api";
 
-export type DashboardPages = "scraper" | "tables" | "trendsanalysis" | "health"
+export type DashboardPages = "scraper" | "enrichment" | "tables" | "trendsanalysis" | "health"
 
 export type State = {
     overrideStage: WorkflowStatusStage | null
@@ -15,7 +15,7 @@ export type State = {
 }
 
 export type Actions = {
-    setCurrentPage: (value: "scraper" | "tables" | "trendsanalysis" | "health") => void
+    setCurrentPage: (value: DashboardPages) => void
 }
 
 export const useSystem = create<State & Actions>()(

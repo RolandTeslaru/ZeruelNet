@@ -26,6 +26,10 @@ export const useWorkflowStatus = create<State & Actions>()(
                 type: "INFO",
                 title: `IDLE:  AWAITING  SCRAPE  TASK`, // scraper service
             },
+            enrichment: {
+                type: "INFO",
+                title: "IDLE:  AWAITING  TASK"
+            },
             tables : {
                 type: "INFO",
                 title: `IDLE:  CONNECTED  TO  DATABASE`, // postgreSql database
@@ -41,6 +45,7 @@ export const useWorkflowStatus = create<State & Actions>()(
         },
         pageSteps: {
             scraper: new Map(),
+            enrichment: new Map(),
             tables: new Map(),
             trendsanalysis: new Map(),
             health: new Map(),
