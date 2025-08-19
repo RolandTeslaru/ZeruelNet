@@ -73,7 +73,7 @@ const TabsList = ({
       <div
         ref={indicatorRef}
         style={indicatorStyle}
-        className={indicatorClassname + " " + "absolute top-[1px] z-[0] bg-primary-opaque border border-neutral-600 rounded-full transition-all duration-300 ease-out"}
+        className={indicatorClassname + " " + "absolute top-[1px] z-[0] !pointer-events-none bg-primary-opaque border border-neutral-600 rounded-full transition-all duration-300 ease-out"}
       />
     </div>
   )

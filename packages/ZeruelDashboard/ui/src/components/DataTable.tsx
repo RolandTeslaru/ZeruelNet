@@ -30,11 +30,14 @@ interface DataTableProps<TData> {
     data: TData[]
     onRowClick?: (row: Row<TData>) => void
     table: ReturnType<typeof useReactTable<TData>>
+    showBulkEditor?: boolean
 }
 
 export function DataTable<TData>({
     columns,
     table,
+    onRowClick,
+    showBulkEditor
 }: DataTableProps<TData>) {
     return (
         <>
@@ -69,6 +72,12 @@ export function DataTable<TData>({
                                 <TableRow
                                     key={row.id}
                                     className="group hover:bg-gray-500/40"
+                                    onClick={(e) => {
+                                        // First toggle TanStack selection state
+                                        row.getToggleSelectedHandler()(e)
+                                        // Then forward the row to external callback (if any)
+                                        onRowClick?.(row)
+                                    }}
                                 >
                                     {row.getVisibleCells().map((cell, index) => (
                                         <TableCell
@@ -105,7 +114,9 @@ export function DataTable<TData>({
                     </TableBody>
                 </Table>
             </div>
-            <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection} />
+            {showBulkEditor &&
+                <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection} />
+            }
             <DataTablePagination table={table} />
         </>
     )

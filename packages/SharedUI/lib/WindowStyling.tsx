@@ -12,7 +12,7 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
         <div
             className={classNames(
                 isDetached && ['rounded-none', detachedClassName],
-                'p-2 flex flex-col gap-2 border border-white/20',
+                'p-2 relative flex flex-col gap-2 border border-white/20',
                 className,
                 { "rounded-none": isDetached },
             )}
@@ -23,10 +23,10 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
             {...rest}
         >
             {isDetached && <DotPattern />}
-            <Icon className={classNames("absolute h-3 w-3 top-0 left-0 transform -translate-x-1/2 -translate-y-1/2", crossesClassName)} />
-            <Icon className={classNames("absolute h-3 w-3 top-0 right-0 transform translate-x-1/2 -translate-y-1/2", crossesClassName)} />
-            <Icon className={classNames("absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2", crossesClassName)} />
-            <Icon className={classNames("absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2", crossesClassName)} />
+            <CrossIcon className={classNames("absolute h-3 w-3 top-0 left-0 transform -translate-x-1/2 -translate-y-1/2", crossesClassName)} />
+            <CrossIcon className={classNames("absolute h-3 w-3 top-0 right-0 transform translate-x-1/2 -translate-y-1/2", crossesClassName)} />
+            <CrossIcon className={classNames("absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2", crossesClassName)} />
+            <CrossIcon className={classNames("absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2", crossesClassName)} />
             {children}
         </div>
     )
@@ -90,7 +90,7 @@ export const StandardWindowStyling = (props: WindowStylingProps) => {
 
 
 
-export const Icon = ({ className, ...rest }: any) => {
+export const CrossIcon = ({ className, ...rest }: any) => {
     return (
         <div
             className={className}

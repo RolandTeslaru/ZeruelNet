@@ -3,7 +3,7 @@ import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 import React from 'react'
 import { EnrichmentViewerProvider } from './context'
 import EnrichmentDataTable from './_components/EnrichmentDataTable'
-
+import VideoFeaturesViewer from "./_components/VideoFeaturesViewer"
 
 const Enrichment = React.memo(({ show }: { show: boolean }) => {
     return (
@@ -29,11 +29,11 @@ const Enrichment = React.memo(({ show }: { show: boolean }) => {
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
                         show={show}
-                        className='hidden  min-h-full max-h-full w-1/2 p-1 !pt-0 flex-col'
+                        className='hidden  min-h-full max-h-full w-1/2 !p-0 flex-col'
                         detachedClassName=''
                     />}
                 >
-                    <p>dasdas</p>
+                    <VideoFeaturesViewer/>
                 </VXWindow>
 
 
