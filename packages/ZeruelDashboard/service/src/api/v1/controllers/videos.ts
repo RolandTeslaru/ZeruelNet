@@ -41,7 +41,7 @@ export async function getVideos(req: Request, res: Response) {
           AND ($2::timestamptz IS NULL OR v.created_at < $2)
           AND (
             $3::text IS NULL
-            OR v.searched_hashtag = $3 -- the searched_hashtag is the single hashtahg used by the scraper when search for the videos
+            OR v.searched_hashtag = $3
             OR $3 = ANY(v.extracted_hashtags)
           )
         ORDER BY ${orderBy} ${direction}
@@ -55,5 +55,19 @@ export async function getVideos(req: Request, res: Response) {
     } catch (e) {
         console.error(e);
         res.status(500).json({ error: "videos query_faled. See Server log", })
+    }
+}
+
+export async function getAllVideoIds(req: Request, res: Response) {
+    const query = `--sql
+        SELECT id FROM public.videos
+    `;
+    try {
+        const { rows } = await pool.query(query);
+        const ids = rows.map(row => row.id);
+        res.json(ids);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Failed to fetch all video IDs" });
     }
 }

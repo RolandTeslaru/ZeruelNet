@@ -18,6 +18,11 @@ export async function fetchVideoFeatures(params: VideoFeaturesQueryParams): Prom
     return data;
 }
 
+export async function fetchAllVideoIds(): Promise<string[]> {
+    const { data } = await api.get("/api/v1/videos/ids");
+    return data;
+}
+
 export async function fetchComments(params: CommentQueryParams): Promise<CommentsResponse>{
     const { data } = await api.get("/api/v1/comments", { params })
     return data
