@@ -28,7 +28,7 @@ def process(video_id: str, db_conn):
         negative_sentiment = text_sentiment_analysis["negative"]
         neutral_sentiment = text_sentiment_analysis["neutral"]
 
-        polarity = positive_sentiment - neutral_sentiment
+        polarity = positive_sentiment - negative_sentiment
 
         llm_summary = analysis_result_json["summary"]
         identified_subjects = analysis_result_json["identified_subjects"] 
@@ -102,7 +102,7 @@ UPSERT_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
     ) VALUES (
         %s, %s, %s, %s, CURRENT_TIMESTAMP,
         %s, %s, %s, %s,
-        %s, %s, %s
+        %s, %s, %s, %s
     )
     ON CONFLICT (video_id) DO UPDATE SET
         transcript = EXCLUDED.transcript,
