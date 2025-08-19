@@ -1,23 +1,23 @@
 import subprocess
 import logging
 import os
-import yt_dlp
 import requests
 from urllib.parse import urlencode, urlparse, parse_qs, urlunparse
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# ------------------------------
-# helpers
-
-
-
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 audio_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/audio"))
 video_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/video"))
+
+class VideoUnavailableError(Exception):
+    pass
+
+class RapidAPITiktokDownloaderError(Exception):
+    pass
 
 # Uses a rapid api tiktok downloader instead of the youtubeDL
 def tiktok_api_video(video_id: str):
@@ -34,14 +34,19 @@ def tiktok_api_video(video_id: str):
     resp.raise_for_status()
 
     try:
+        response_video_id = "id" in resp.json()
+        if not response_video_id:
+            raise VideoUnavailableError(f"Video {video_id} is unavailable: {resp.text}")
+
         mp4_url = resp.json()['downloadUrl']
-        # Ensure the nested videoUrl param is URL-encoded
         parsed = urlparse(mp4_url)
         qs = parse_qs(parsed.query)
+
         if 'videoUrl' in qs:
             original = qs['videoUrl'][0]
             encoded = urlencode({'videoUrl': original})
             mp4_url = urlunparse(parsed._replace(query=encoded))
+
     except (KeyError, TypeError, ValueError):
         raise RuntimeError('Failed to get downloadUrl from RapidAPI response')
 

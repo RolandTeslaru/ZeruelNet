@@ -4,6 +4,7 @@ import redis
 import os
 import json
 from utils import download
+from utils.download import RapidAPITiktokDownloaderError, VideoUnavailableError
 from VideoProcessor.gemini import GEMINI_MODEL_NAME
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - [EnrichmentWorker] - %(message)s')
@@ -45,6 +46,20 @@ def process(video_id: str, db_conn):
             )
             db_conn.commit()
             logging.info(f"Successfully comitted to database")
+
+    # if video is deleted from tiktok set the status to "deleted"
+    except VideoUnavailableError as e:
+        logging.warning(f"{e}")
+        db_conn.rollback()
+        with db_conn.cursor() as cur:
+            cur.execute(UPDATE_ENRICHMENT_STATUS_ON_FAILURE_QUERY, (video_id, 'deleted'))
+            db_conn.commit()
+    
+    # If the api is down or there are issues with api key
+    # except RapidAPITiktokDownloaderError as e:
+    #     logging.error(f"{e}")
+    #     db_conn.rollback()
+
 
     except Exception as e:
         logging.error(f"Enrichment failed for video_id: {video_id} with error: {e}")
