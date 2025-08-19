@@ -1,40 +1,60 @@
-import { Page } from 'playwright';
-import { chromium } from 'playwright-extra';
-import stealthPlugin from 'puppeteer-extra-plugin-stealth';
+import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
+import readline from 'readline';
 
-// Use stealth plugin
-chromium.use(stealthPlugin());
+import { BrowserManager } from './lib/browserManager';
 
-const USER_DATA_DIR = path.join(__dirname, '..', 'tiktok_user_data');
+const OUTPUT = path.join(__dirname, '..', 'cookies.txt');
 
 async function main() {
-  console.log(chalk.blue(`Using persistent session from: ${USER_DATA_DIR}`));
+  const browserManager = new BrowserManager();
+  await browserManager.init();
 
-  const context = await chromium.launchPersistentContext(USER_DATA_DIR, {
-    headless: false,
-    locale: 'en-US',
-    timezoneId: 'America/New_York',
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
-    viewport: { width: 1920, height: 1080 },
-  });
+  const page = await browserManager.getPage();
 
-  const page: Page = context.pages().length ? context.pages()[0] : await context.newPage();
-
+  // Navigate to login page
   await page.goto('https://www.tiktok.com/login/phone-or-email/email');
 
-  console.log(chalk.yellow.bold('Please log in to your TikTok account in the browser window.'));
-  console.log(chalk.yellow('Once you are logged in and see the main feed, you can CLOSE THE BROWSER.'));
-  console.log(chalk.yellow('Your session will be saved automatically for the scraper to use.'));
+  console.log(chalk.yellow.bold('\nPlease sign in to TikTok in the opened browser window.'));
+  console.log(chalk.yellow('After you see your feed, press ENTER here to continue.\n'));
 
+  // Wait for the user to login
   await new Promise<void>(resolve => {
-    // Wait for the browser to be closed
-    context.on('close', () => {
-      console.log(chalk.green.bold('Browser closed. Login session saved.'));
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    rl.question('', () => {
+      rl.close();
       resolve();
     });
   });
+
+  // redirect to tag/fyp to load cookies
+  console.log(chalk.blue('Navigating to https://www.tiktok.com/tag/fyp …'));
+  await page.goto('https://www.tiktok.com/tag/fyp', { waitUntil: 'networkidle' });
+
+  // extract cookies from context
+  const cookies = (await browserManager.getCookies()).filter(c => /(tiktok|tiktokv)\.com$/i.test(c.domain));
+
+  const lines = [
+    '# Netscape HTTP Cookie File',
+    '# Created by tiktok_login.ts',
+  ];
+
+  for (const c of cookies) {
+    const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+    const include = 'TRUE';
+    const pathStr = c.path;
+    const secure = c.secure ? 'TRUE' : 'FALSE';
+    const expiry = Math.floor(c.expires || 0);
+    lines.push([domain, include, pathStr, secure, expiry, c.name, c.value].join('\t'));
+  }
+
+  fs.writeFileSync(OUTPUT, lines.join('\n'));
+  console.log(chalk.green(`\nSaved ${cookies.length} TikTok cookies to ${OUTPUT}`));
+
+  await browserManager.close();
+
+  console.log(chalk.yellow('Browser closed. You can rerun the scraper now.'));
 }
 
 main().catch(err => {

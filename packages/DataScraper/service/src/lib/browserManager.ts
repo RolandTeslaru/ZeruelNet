@@ -1,6 +1,6 @@
 import { chromium } from 'playwright-extra';
 import stealthPlugin from 'puppeteer-extra-plugin-stealth';
-import type { Browser, BrowserContext, Page } from 'playwright';
+import type { Browser, BrowserContext, Cookie, Page } from 'playwright';
 import path from 'path';
 import { Logger } from './logger';
 
@@ -24,49 +24,44 @@ export class BrowserManager {
             return;
         }
         
-        const timezoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/NewYork"
+        const timezoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York"
 
         Logger.info(`Initializing chromium browser with persistent context with timezone ${timezoneId}`);
         this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
-            headless: false, // Keep it visible for now to handle logins/CAPTCHAs
+            headless: false,
             args: [
-                '--disable-blink-features=AutomationControlled', // General stealth
-                '--start-maximized', // Mimic user behavior
+                '--disable-blink-features=AutomationControlled',
+                '--start-maximized',
             ], 
-            viewport: null, // Use the maximized viewport
-            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', // Realistic User-Agent for Mac
+            viewport: null,
+            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 
             locale: 'en-US',
             timezoneId
         });
         
-        // This is a bit of a hack to access the underlying browser object
-        // which launchPersistentContext doesn't directly return.
         this.browser = this.context.browser()!; 
         
-        if (!this.browser) {
+        if (!this.browser)
             throw new Error("Failed to initialize browser from persistent context.");
-        }
         
         console.log('Browser initialized successfully.');
     }
 
-    /**
-     * Gets a new, clean page from the browser context.
-     * @returns A new Page object.
-     */
+    async getCookies(): Promise<Cookie[]>{
+        const cookies = await this.context.cookies()
+
+        return cookies
+    }
+
     async getPage(): Promise<Page> {
         if (!this.context) {
             throw new Error('Browser not initialized. Call init() first.');
         }
         const page = await this.context.newPage();
-        // Set a dark color scheme to better match user preferences and avoid simple detection
         await page.emulateMedia({ colorScheme: 'dark' });
         return page;
     }
 
-    /**
-     * Closes the browser and all its pages.
-     */
     async close(): Promise<void> {
         if (this.browser) {
             console.log('Closing browser...');
