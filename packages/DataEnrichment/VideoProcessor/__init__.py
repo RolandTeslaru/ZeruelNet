@@ -1,11 +1,11 @@
 from .gemini import gemini
 import logging
 
-def process(video_path: str):
+def process(video_path: str, transcript: str, sentiment: dict, description: str):
     logging.info(f"Starting video processing for {video_path}")
 
     try:
-        analysis_result = gemini.analyze(video_path)
+        analysis_result = gemini.analyze(video_path, transcript, sentiment, description)
 
         logging.info(f"VIDEO Analysis result {analysis_result}")
 

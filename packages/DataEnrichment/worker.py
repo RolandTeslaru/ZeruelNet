@@ -3,9 +3,11 @@ import logging
 import redis
 import os
 import json
+from utils.get_video_description import get_video_description
 from utils import download
 from utils.download import RapidAPITiktokDownloaderError, VideoUnavailableError
 from VideoProcessor.gemini import GEMINI_MODEL_NAME
+import AlignmentCalculator
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - [EnrichmentWorker] - %(message)s')
 
@@ -23,7 +25,10 @@ def process(video_id: str, db_conn):
 
         # Run the Processors
         transcript, lang, text_sentiment_analysis = AudioProcessor.process(audio_path)
-        analysis_result_json = VideoProcessor.process(video_path)
+
+        description = get_video_description(video_id, db_conn)
+
+        analysis_result_json = VideoProcessor.process(video_path, transcript, text_sentiment_analysis, description)
 
         positive_sentiment = text_sentiment_analysis["positive"]
         negative_sentiment = text_sentiment_analysis["negative"]
@@ -33,14 +38,16 @@ def process(video_id: str, db_conn):
 
         llm_summary = analysis_result_json["summary"]
         identified_subjects = analysis_result_json["identified_subjects"] 
-        alignment = analysis_result_json["overall_alignment"]
+        llm_overall_alignment = analysis_result_json["overall_alignment"]
+
+        final_alignment, deterministic_alignment, alignment_conflict = AlignmentCalculator.calculate(identified_subjects, llm_overall_alignment, alpha=0.5)
 
         # Upload to database
         with db_conn.cursor() as cur:
             cur.execute(UPSERT_SUCCESSFUL_ENRICHMENT_QUERY,
                 (
                     video_id, transcript, lang, 'completed',
-                    llm_summary, json.dumps(identified_subjects), alignment, GEMINI_MODEL_NAME,
+                    llm_summary, json.dumps(identified_subjects), llm_overall_alignment, GEMINI_MODEL_NAME,
                     positive_sentiment, negative_sentiment, neutral_sentiment, polarity
                 )
             )

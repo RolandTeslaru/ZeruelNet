@@ -18,21 +18,21 @@ VIDEO_ANALYSIS_SCHEMA = {
     "properties": {
         "summary": {
             "type": "STRING",
-            "description": "A brief, neutral, one-paragraph summary of the video's content, covering the main visual and audio elements."
+            "description": "A brief, neutral, one-paragraph summary of the video's content. CRITICAL: Must frame unsubstantiated claims as allegations made by the speaker (e.g., 'The speaker claims...', 'The video alleges...')."
         },
         "identified_subjects": {
             "type": "ARRAY",
-            "description": "A list of subjects, people, or concepts discussed or shown in the video.",
+            "description": "A list of the key political, geopolitical, or ideological subjects that are explicitly present in the video.",
             "items": {
                 "type": "OBJECT",
                 "properties": {
                     "subject": {
                         "type": "STRING",
-                        "description": "The name of the identified subject (e.g., 'NATO', 'Vladimir Putin', 'Traditional Values')."
+                        "description": "The name of the identified subject (e.g., 'NATO', 'Călin Georgescu', 'National Sovereignty')."
                     },
                     "stance": {
                         "type": "NUMBER",
-                        "description": "The video's sentiment towards this subject, on a scale of -1.0 (very negative) to 1.0 (very positive)."
+                        "description": "The video's specific opinion of this subject, from -1.0 to 1.0. This score MUST be derived ONLY from the video's content and rhetorical framing (sarcasm, scapegoating, etc.). It MUST NOT be influenced by the 'alignment_tendency' from the knowledge base."
                     }
                 },
                 "required": ["subject", "stance"]
@@ -40,7 +40,7 @@ VIDEO_ANALYSIS_SCHEMA = {
         },
         "overall_alignment": {
             "type": "NUMBER",
-            "description": "An overall score from -1.0 (Pro-Russian/Anti-Western Narrative) to 1.0 (Pro-Western/Anti-Russian Narrative), based on the subjects and stances identified."
+            "description": "The video's final geopolitical alignment score (-1.0 Pro-Russian to 1.0 Pro-Western). This score is a SYNTHESIS of the subject's 'stance' and its 'alignment_tendency' from the knowledge base. The sign (+/-) of this score is PRIMARILY determined by the video's stance on Russia and Ukraine."
         }
     },
     "required": ["summary", "identified_subjects", "overall_alignment"]
@@ -48,9 +48,10 @@ VIDEO_ANALYSIS_SCHEMA = {
 
 
 VIDEO_ANALYSIS_PROMPT_TEMPLATE = """
-You are an expert geopolitical analyst specializing in detecting propaganda, disinformation, and nuanced sentiment in short-form video content. Your task is to analyze the provided video's visual and audio components and produce a structured JSON output.
+You are an expert geopolitical analyst specializing in detecting propaganda, disinformation, and nuanced sentiment in short-form video content. Your task is to analyze the provided evidence and produce a single, valid JSON object as output.
 
 --- EVIDENCE FILE ---
+This is your primary source of truth.
 
 1.  **VIDEO DESCRIPTION (Creator's Intent):**
     "{description}"
@@ -60,40 +61,59 @@ You are an expert geopolitical analyst specializing in detecting propaganda, dis
 
 3.  **INDEPENDENT SENTIMENT ANALYSIS (External Tool):**
     {sentiment}
-    *Interpretation: This score indicates the text has an overwhelmingly negative and critical emotional tone.*
 
---- CORE REASONING PRINCIPLES ---
-
-1.  **HOLISTIC ANALYSIS:** Your final judgment must be based on the totality of the evidence. The creator's description and the overwhelming sentiment score are strong clues to the video's true intent. Use them to interpret the visual and spoken content.
-
-2.  **DETERMINE TRUE INTENT:** Do not always take statements at face value. A speaker's true stance is revealed by the overall context.
-    *   **Rhetorical Devices:** Be aware that speakers may use sarcasm or irony to mock an opposing viewpoint. For example, if the sentiment is highly negative, a seemingly positive statement like "Let Russia save us" is likely sarcastic, especially if followed by criticism of Russia.
-    *   **Negative Context vs. Stance:** Differentiate between a negative situation and the speaker's stance. A sad tone about war in Ukraine implies a positive (sympathetic) stance towards "Ukraine" and a negative stance towards the "War".
-
-Use the following knowledge base to help identify key entities.
+Use this reference data to understand the geopolitical context of identified subjects.
 --- KNOWLEDGE BASE START ---
 {knowledge_base}
 --- KNOWLEDGE BASE END ---
 
---- ANALYTICAL METHODOLOGY ---
 
-Follow this three-step process precisely:
+--- ANALYTICAL METHODOLOGY ---
+Follow this unified analysis process to calculate all final JSON values.
 
 **Step 1: Summarize**
-*   Create a brief, neutral summary of the video's literal content, covering the main visual and audio elements.
+* Produce a brief, neutral one-paragraph summary.  
+* Frame unverified claims as allegations (e.g. “The video alleges …”).
 
-**Step 2: Determine Local Stance**
-*   Identify all key subjects from the evidence. For each subject, determine the video's specific opinion of it to assign a `stance`.
-*   **CRITICAL RULE:** This `stance` score MUST be derived *only* from the video's content (visuals, audio, description). It is a measure of the video's opinion alone. **Do not let the `alignment_tendency` from the knowledge base influence this step in any way.**
+**Step 2: Identify Subjects and Determine Local Stance**
+*   **A. Identify Subjects:** Read through the evidence and identify all key subjects. A subject is valid only if it is explicitly mentioned or depicted.
+    *   **Alias Resolution:** Before adding a subject to your list, check if it matches an `alias` in the `KNOWLEDGE BASE`. If it does, use its canonical name (the main key). For example, if you see "gs", identify the subject as "george simion".
 
-**Step 3: Synthesize Overall Alignment**
-*   Calculate the final `overall_alignment` score. To do this, you must synthesize the `stance` values from Step 2 with the `alignment_tendency` values from the knowledge base.
-    *   **Logic:** The final alignment is a combination of the video's opinion and the subject's known geopolitical position.
-    *   **Example 1:** A positive `stance` on a subject with a negative `alignment_tendency` (e.g., praising Putin) results in a negative `overall_alignment`.
-    *   **Example 2:** A negative `stance` on a subject with a negative `alignment_tendency` (e.g., criticizing Putin) results in a positive `overall_alignment`.
-    *   Weight your calculation based on the strength of the stances and the importance of the subjects.
-    
-Your output must be a valid JSON object that adheres to the provided schema. Do not include any text, explanations, or formatting outside of the JSON object.
+*   **B. Determine Stance:** For each identified subject, assign a `stance` score from -1.0 to 1.0. This score MUST be derived *only* from the video's content and the 'Advanced Narrative Analysis' rules below. **It is forbidden to be influenced by the `alignment_tendency` from the knowledge base during this step.**
+
+*   **C. Advanced Narrative Analysis (For Stance Calculation):**
+    *   **Sarcasm:** A positive statement in a negative context is sarcasm (e.g., "Let Russia save us" when criticizing Russia).
+    *   **The 'Scapegoat':** Blaming a subject for a negative outcome means the stance is **negative**.
+    *   **The 'Defended Concept':** Presenting a concept as under threat means the stance is **positive**.
+    *   **'Coded Language':** Framing a figure with heroic archetypes ('The Emperor', 'fighter against the system') means the stance is **positive**.
+
+**Step 3: Calculate Overall Alignment**
+*   You will now perform a precise, weighted calculation to determine the final `overall_alignment`. You must show your work in a private scratchpad.
+
+*   **A. The Calculation Formula:**
+    1.  For each subject you identified that exists in the `KNOWLEDGE BASE`:
+        *   `contribution = stance × alignment_tendency × weight`
+    2.  Calculate the `raw_total` by summing all individual `contribution` values.
+    3.  Calculate the `weight_total` by summing the absolute value of (`alignment_tendency × weight`) for all subjects.
+    4.  `final_alignment = raw_total / weight_total` (If `weight_total` is 0, the result is 0.0).
+    5.  Clamp the `final_alignment` to be strictly within the range of [-1.0, 1.0].
+
+
+*   **B. The Anchor Rule (Final Sign Check):**
+    *   This is a final check to prevent logical errors. After you have your clamped `final_alignment`:
+    *   If any subject in {{`Russia`, `Vladimir Putin`, `traditional values`, etc.}} has a `stance` > 0.3, the final score **MUST be negative**.
+    *   If any subject in {{`Ukraine`, `NATO`, `EU`, etc.}} has a `stance` > 0.3 (and the Russia/Putin rule is not met), the final score **MUST be positive**.
+    *   If the rules conflict or don't apply, your calculated score stands.
+
+──────────────────────────────
+---
+**INTERNAL SCRATCHPAD (for your use only, erase before final output):**
+*   List identified subjects: subject | stance | tendency | weight | contribution
+*   Show calculations: raw_total, weight_total, final_alignment, anchor check result
+---
+
+
+Your final output must be a single, valid JSON object conforming to the schema. Do not include any other text or the scratchpad.
 """
 
 class _GeminiProcessor:
