@@ -10,13 +10,13 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 whisper_cpp_dir = os.path.abspath(os.path.join(script_dir, "support", "whisper.cpp"))
 models_dir = os.path.join(whisper_cpp_dir, "models")
 
-DEFAULT_MODEL_NAME = "ggml-base.bin"
+DEFAULT_MODEL_NAME = "ggml-large-v3.bin"
 
 def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
     model_path = os.path.join(models_dir, model_name)
     executable_path = os.path.join(whisper_cpp_dir, "build", "bin", "whisper-cli")
     
-    logging.info(f"Starting transcriber for audio in {audio_path}")
+    logging.info(f"Starting transcriber model {model_name} for audio in {audio_path}")
 
     command = [
         executable_path,

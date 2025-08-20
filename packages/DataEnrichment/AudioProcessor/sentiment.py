@@ -21,7 +21,7 @@ class _SentimentAnalyzer:
             'en': 'cardiffnlp/twitter-roberta-base-sentiment-latest',
             'de': 'oliverguhr/german-sentiment-bert',
             'fr': 'cmarkea/distilcamembert-base-sentiment',
-            'ro': 'ldincov/roberta-base-romanian-sentiment-analysis'
+            'ro': 'DGurgurov/xlm-r_romanian_sentiment',
         }
         self.id2label_maps = {}
         self.label_translation_map = {
@@ -40,10 +40,9 @@ class _SentimentAnalyzer:
                 'negative': 'negative'
                 # This model does not have a neutral label
             },
-            'ldincov/roberta-base-romanian-sentiment-analysis': {
+            'DGurgurov/xlm-r_romanian_sentiment': {
                 'LABEL_0': 'negative',
-                'LABEL_1': 'neutral',
-                'LABEL_2': 'positive'
+                'LABEL_1': 'positive'
             },
         }
 
@@ -59,7 +58,7 @@ class _SentimentAnalyzer:
         model_name = self.model_map[lang]
 
         if model_name not in self.loaded_models:
-            logging.info(f"Loading mode {self.model_map[lang]} for language {lang}")
+            logging.info(f"Loading model {self.model_map[lang]} for language {lang}")
             try:
                 self.loaded_tokenizers[model_name] = AutoTokenizer.from_pretrained(model_name)
                 model = AutoModelForSequenceClassification.from_pretrained(model_name)
