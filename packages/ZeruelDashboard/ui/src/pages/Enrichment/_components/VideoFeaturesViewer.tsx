@@ -4,6 +4,7 @@ import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import { CrossesWindowStyling, CrossIcon } from '@zeruel/shared-ui/WindowStyling'
 import { z } from "zod"
+import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 
 
 
@@ -97,6 +98,9 @@ const VideoFeaturesViewer = () => {
                     </div>
                 </div>
             </CrossesWindowStyling>
+            <CollapsiblePanel title="JSON Data" contentClassName='overflow-y-scroll'>
+                <JsonView src={parsedData}/>
+            </CollapsiblePanel>
         </div>
     )
 }
