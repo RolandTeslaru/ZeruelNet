@@ -13,18 +13,20 @@ const VideoFeaturesViewer = () => {
 
     const parsedData = useMemo(() => {
         const result = EnrichedVideoSchema.safeParse(selectedVideoData)
-        if(result.success)
+        if (result.success)
             return result.data
         else {
             console.error("Result Error ", z.treeifyError(result.error))
             return null
         }
-    },[selectedVideoData, selectedVideoId])
+    }, [selectedVideoData, selectedVideoId])
 
     if (!parsedData) return null
 
     return (
         <div className='relative flex flex-col gap-4 overflow-y-scroll px-2 py-2'>
+            
+            
             <CrossesWindowStyling className='bg-black/20'>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
                     <p>video_id:</p>
@@ -43,13 +45,34 @@ const VideoFeaturesViewer = () => {
                     <p>{parsedData.total_count}</p>
                 </div>
             </CrossesWindowStyling>
-            <CrossesWindowStyling className='bg-black/20'>
+            
+            
+            <CollapsiblePanel title="Alignment" contentClassName='overflow-y-scroll gap-2'>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>transcript:&nbsp;</p>
-                    <p>{parsedData.transcript}</p>
+                    <p>final_alignment</p>
+                    <p>{parsedData.final_alignment}</p>
                 </div>
-            </CrossesWindowStyling>
-            <CrossesWindowStyling className='bg-black/20'>
+                <div className='text-xs font-roboto-mono flex text-white justify-between'>
+                    <p>llm_overall_alignment</p>
+                    <p>{parsedData.llm_overall_alignment}</p>
+                </div>
+                <div className='text-xs font-roboto-mono flex text-white justify-between'>
+                    <p>deterministic_alignment</p>
+                    <p>{parsedData.deterministic_alignment}</p>
+                </div>
+                <div className='text-xs font-roboto-mono flex text-white justify-between'>
+                    <p>alignment_conflict</p>
+                    <p>{parsedData.alignment_conflict}</p>
+                </div>
+            </CollapsiblePanel>
+            
+
+            <CollapsiblePanel title="Transcript" contentClassName='overflow-y-scroll gap-2'>
+                <p className='text-neutral-100 text-xs font-roboto-mono'>{parsedData.transcript}</p>
+            </CollapsiblePanel>
+            
+            
+            <CollapsiblePanel title="Sentiment Analysis" contentClassName='overflow-y-scroll gap-2'>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
                     <p>polarity:&nbsp;</p>
                     <p>{parsedData.polarity}</p>
@@ -66,8 +89,10 @@ const VideoFeaturesViewer = () => {
                     <p>text_sentiment_neutral:&nbsp;</p>
                     <p>{parsedData.text_sentiment_neutral}</p>
                 </div>
-            </CrossesWindowStyling>
-            <CrossesWindowStyling className='bg-black/20'>
+            </CollapsiblePanel>
+            
+            
+            <CollapsiblePanel title="LLM Analysis" contentClassName='overflow-y-scroll gap-2'>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
                     <p>llm_model_name:&nbsp;</p>
                     <p>{parsedData.llm_model_name}</p>
@@ -89,7 +114,7 @@ const VideoFeaturesViewer = () => {
                             <CrossIcon className={"absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2"} />
                             <CrossIcon className={"absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2"} />
                             {parsedData.llm_identified_subjects.map((obj, index) => (
-                                <div className={`relative px-1 py-3 flex justify-between ${index !== 0 && selectedVideoData.llm_identified_subjects.length -1 !== 0 && "border-t border-white/20"}`}>
+                                <div className={`relative px-1 py-3 flex justify-between ${index !== 0 && selectedVideoData.llm_identified_subjects.length - 1 !== 0 && "border-t border-white/20"}`}>
                                     <p>subject: {obj.subject}</p>
                                     <p>stance: {obj.stance}</p>
                                 </div>
@@ -97,9 +122,11 @@ const VideoFeaturesViewer = () => {
                         </div>
                     </div>
                 </div>
-            </CrossesWindowStyling>
+            </CollapsiblePanel>
+
+
             <CollapsiblePanel title="JSON Data" contentClassName='overflow-y-scroll'>
-                <JsonView src={parsedData}/>
+                <JsonView src={parsedData} />
             </CollapsiblePanel>
         </div>
     )

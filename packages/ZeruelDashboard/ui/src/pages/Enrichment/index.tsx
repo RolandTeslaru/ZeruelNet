@@ -29,7 +29,7 @@ const Enrichment = React.memo(({ show }: { show: boolean }) => {
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
                         show={show}
-                        className='hidden  min-h-full max-h-full !p-0 flex-col'
+                        className='hidden  w-[calc(50%_-_16px)] min-h-full max-h-full !p-0 flex-col'
                         detachedClassName=''
                     />}
                 >

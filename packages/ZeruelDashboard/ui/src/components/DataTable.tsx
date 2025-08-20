@@ -31,13 +31,15 @@ interface DataTableProps<TData> {
     onRowClick?: (row: Row<TData>) => void
     table: ReturnType<typeof useReactTable<TData>>
     showBulkEditor?: boolean
+    children?: React.ReactNode
 }
 
 export function DataTable<TData>({
     columns,
     table,
     onRowClick,
-    showBulkEditor
+    showBulkEditor,
+    children
 }: DataTableProps<TData>) {
     return (
         <>
@@ -114,6 +116,7 @@ export function DataTable<TData>({
                     </TableBody>
                 </Table>
             </div>
+            {children}
             {showBulkEditor &&
                 <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection} />
             }
@@ -121,3 +124,4 @@ export function DataTable<TData>({
         </>
     )
 }
+

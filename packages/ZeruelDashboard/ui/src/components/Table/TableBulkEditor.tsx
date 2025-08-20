@@ -9,7 +9,7 @@ import {
 } from "@zeruel/shared-ui/foundations/commandBar"
 import { RowSelectionState, Table } from "@tanstack/react-table"
 
-type DataTableBulkEditorProps<TData> = {
+export type DataTableBulkEditorProps<TData> = {
   table: Table<TData>
   rowSelection: RowSelectionState
 }

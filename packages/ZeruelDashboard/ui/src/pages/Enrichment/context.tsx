@@ -14,8 +14,12 @@ export const EnrichedVideoSchema = z.object({
     
     llm_summary: z.string(),
     llm_identified_subjects: z.array(llm_identified_subject),
-    llm_overall_alignment: z.number().min(-1).max(1),
     llm_model_name: z.string(),
+    llm_overall_alignment: z.number().min(-1).max(1),
+    deterministic_alignment: z.number().min(-1).max(1),
+    final_alignment: z.number().min(-1).max(1),
+    alignment_conflict: z.number().min(-1).max(2),
+
 
     text_sentiment_positive: z.number().min(-1).max(1),
     text_sentiment_negative: z.number().min(-1).max(1),

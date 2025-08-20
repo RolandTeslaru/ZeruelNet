@@ -1,11 +1,12 @@
 import { fetchTableSchema, fetchVideoFeatures } from '@/lib/api/dashboard';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, getCoreRowModel, PaginationState, useReactTable } from '@tanstack/react-table';
-import { Input, Spinner } from '@zeruel/shared-ui/foundations';
+import { CommandBar, CommandBarBar, CommandBarCommand, CommandBarSeperator, CommandBarValue, Input, Spinner } from '@zeruel/shared-ui/foundations';
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import { DataTable } from '@/components/DataTable';
 import { useEnrichmentViewer } from '../context';
 import Search from '@zeruel/shared-ui/Search';
+import { DataTableBulkEditorProps } from '@/components/Table/TableBulkEditor';
 
 const EMPTY_DATA: any[] = []
 
@@ -68,7 +69,7 @@ const EnrichmentDataTable = memo(() => {
 
         setRowSelection(newSelection);
         const newSelectedId = Object.keys(newSelection)[0];
-        
+
         setSelectedVideoData(data.items?.[newSelectedId])
 
         setSelectedVideoId(newSelectedId);
@@ -93,7 +94,7 @@ const EnrichmentDataTable = memo(() => {
 
     useEffect(() => {
         setRowSelection({ 0: true })
-        if(data?.items[0]){
+        if (data?.items[0]) {
             setSelectedVideoId(data.items[0].video_id)
             setSelectedVideoData(data.items[0])
         }
@@ -118,9 +119,34 @@ const EnrichmentDataTable = memo(() => {
                 data={data ? data.items : EMPTY_DATA}
                 columns={columns}
                 table={table}
-            />
+            >
+                <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection}/>
+            </DataTable >
         </>
     );
 })
 
 export default EnrichmentDataTable
+
+const DataTableBulkEditor: React.FC<DataTableBulkEditorProps<any>> = ({ table, rowSelection }) => {
+    const { selectedVideoId } = useEnrichmentViewer()
+    return (
+        <CommandBar open={!!selectedVideoId}>
+            <CommandBarBar>
+                <CommandBarValue className="text-nowrap text-xs text-neutral-300 font-roboto-mono px-1">
+                    {Object.keys(rowSelection).length} selected
+                </CommandBarValue>
+                <CommandBarSeperator />
+                <CommandBarCommand
+                    label="Run Enrichment"
+                    action={() => {
+                        console.log("Edit")
+                    }}
+                    shortcut={{ shortcut: "r" }}
+                />
+                <CommandBarSeperator />
+             
+            </CommandBarBar>
+        </CommandBar>
+    )
+}
