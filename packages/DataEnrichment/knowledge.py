@@ -129,9 +129,9 @@ MODEL_KNOWLEDGE = {
     "renew europe":                                     {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.8,"weight":1.0, "aliases": ["renew"]},
     "european people's party":                          {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.4,"weight":1.0, "aliases": ["epp"]},
     "progressive alliance of socialists and democrats": {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.4,"weight":1.0, "aliases": ["s&d"]},
-    "european conservitives and reformists":            {"category":"EP Group", "country_code": "eu", "alignment_tendency":-0.7,"weight":1.0, "aliases": ["ecr"]},
-    "patriots.eu":                                      {"category":"EP Group", "country_code": "eu", "alignment_tendency":-0.7,"weight":1.0},
-    "europe of severeign nations":                      {"category":"EP Group", "country_code": "eu", "alignment_tendency":-0.7,"weight":1.0, "aliases": ["esn"]},
+    "european conservitives and reformists":            {"category":"EP Group", "country_code": "eu", "alignment_tendency":-1.0,"weight":1.7, "aliases": ["ecr"]},
+    "patriots.eu":                                      {"category":"EP Group", "country_code": "eu", "alignment_tendency":-1.0,"weight":1.8},
+    "europe of severeign nations":                      {"category":"EP Group", "country_code": "eu", "alignment_tendency":-1.0,"weight":1.8, "aliases": ["esn"]},
     
 
     "psd":                      {"category":"Party", "country_code": "ro", "alignment_tendency":+0.3,"weight":1.0},

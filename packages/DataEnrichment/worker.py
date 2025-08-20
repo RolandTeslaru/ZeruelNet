@@ -17,6 +17,7 @@ ENRICHMENT_QUEUE_CHANNEL = "enrichment_queue"
 
 def process(video_id: str, db_conn):
     video_path, audio_path = None, None
+    cleanup_files = True  # Delete temp files only if processing succeeds
     try:
         logging.info("Starting data enrichment process for video_id: %s", video_id)
 
@@ -62,6 +63,7 @@ def process(video_id: str, db_conn):
         with db_conn.cursor() as cur:
             cur.execute(UPDATE_ENRICHMENT_STATUS_ON_FAILURE_QUERY, (video_id, 'deleted'))
             db_conn.commit()
+        cleanup_files = False  # Skip cleanup to retain files for debugging
     
     # If the api is down or there are issues with api key
     # except RapidAPITiktokDownloaderError as e:
@@ -75,17 +77,21 @@ def process(video_id: str, db_conn):
         with db_conn.cursor() as cur:
             cur.execute(UPDATE_ENRICHMENT_STATUS_ON_FAILURE_QUERY, (video_id, 'failed'))
             db_conn.commit()
+        cleanup_files = False  # Skip cleanup to retain files for debugging
     finally:
-        # Remove the temporary audio and video files
-        try:
-            if video_path and os.path.exists(video_path):
-                os.remove(video_path)
-                logging.info(f"Deleted temporary video file: {video_path}")
-            if audio_path and os.path.exists(audio_path):
-                os.remove(audio_path)
-                logging.info(f"Deleted temporary audio file: {audio_path}")
-        except OSError as e:
-            logging.error(f"Error removing temporary files: {e}")
+        # Remove the temporary audio and video files only if processing succeeded
+        if cleanup_files:
+            try:
+                if video_path and os.path.exists(video_path):
+                    os.remove(video_path)
+                    logging.info(f"Deleted temporary video : {video_id}")
+                if audio_path and os.path.exists(audio_path):
+                    os.remove(audio_path)
+                    logging.info(f"Deleted temporary audio: {video_id}")
+            except OSError as e:
+                logging.error(f"Error removing temporary files: {e}")
+        else:
+            logging.info(f"Skipping cleanup becuase the enrichment failed for video {video_id}")
 
 def main():
     logging.info("Data Enrichment is starting up")

@@ -66,8 +66,7 @@ def tiktok_api_video(video_id: str):
 
 def tiktok_full(video_id: str):
     video_url = f"https://www.tiktok.com/@placeholder/video/{video_id}"
-    video_path = ""
-
+    
     try:
         # My ip got banned so i cant use youtubeDL to download the mp4
 
@@ -88,10 +87,12 @@ def tiktok_full(video_id: str):
         #     else:
         #         logging.info(f"Video {video_id} is already downloaded to {video_path}. Skipping")
 
-
-        # Fetch video via RapidAPI helper
-        video_path = tiktok_api_video(video_id)
-
+        
+        video_path = os.path.join(video_output_dir, f"{video_id}.mp4")
+        if not os.path.exists(video_path):
+            # Fetch video via RapidAPI helper
+            video_path = tiktok_api_video(video_id)
+    
         # Extract audio from the local file
         audio_path = os.path.join(audio_output_dir, f"{video_id}.wav")
         

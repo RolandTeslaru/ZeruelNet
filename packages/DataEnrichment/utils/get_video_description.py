@@ -7,7 +7,7 @@ def get_video_description(video_id: str, db_conn):
 
     try:
         with db_conn.cursor() as cur:
-            cur.execute(VIDEO_DESCRIPTION_QUERY, (video_id,))
+            cur.execute(VIDEO_DESCRIPTION_QUERY, (str(video_id),))
             result = cur.fetchone()
             if result:
                 return result[0]
