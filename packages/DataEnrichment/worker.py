@@ -44,10 +44,11 @@ def process(video_id: str, db_conn):
 
         # Upload to database
         with db_conn.cursor() as cur:
-            cur.execute(UPSERT_SUCCESSFUL_ENRICHMENT_QUERY,
+            cur.execute(UPDATE_SUCCESSFUL_ENRICHMENT_QUERY,
                 (
                     video_id, transcript, lang, 'completed',
                     llm_summary, json.dumps(identified_subjects), llm_overall_alignment, GEMINI_MODEL_NAME,
+                    final_alignment, deterministic_alignment, alignment_conflict,
                     positive_sentiment, negative_sentiment, neutral_sentiment, polarity
                 )
             )
@@ -116,14 +117,16 @@ if __name__ == "__main__":
 
 
 # Query that runs if the DataEnrichment process is successfull 
-UPSERT_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
+UPDATE_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
     INSERT INTO video_features (
         video_id, transcript, detected_language, enrichment_status, last_enriched_at,
         llm_summary, llm_identified_subjects, llm_overall_alignment, llm_model_name,
+        final_alignment, deterministic_alignment, alignment_conflict,
         text_sentiment_positive, text_sentiment_negative, text_sentiment_neutral, polarity
     ) VALUES (
         %s, %s, %s, %s, CURRENT_TIMESTAMP,
         %s, %s, %s, %s,
+        %s, %s, %s,
         %s, %s, %s, %s
     )
     ON CONFLICT (video_id) DO UPDATE SET
@@ -135,12 +138,14 @@ UPSERT_SUCCESSFUL_ENRICHMENT_QUERY = """--sql
         llm_identified_subjects = EXCLUDED.llm_identified_subjects,
         llm_overall_alignment = EXCLUDED.llm_overall_alignment,
         llm_model_name = EXCLUDED.llm_model_name,
+        final_alignment = EXCLUDED.final_alignment,
+        deterministic_alignment = EXCLUDED.deterministic_alignment,
+        alignment_conflict = EXCLUDED.alignment_conflict,
         text_sentiment_positive = EXCLUDED.text_sentiment_positive,
         text_sentiment_negative = EXCLUDED.text_sentiment_negative,
         text_sentiment_neutral = EXCLUDED.text_sentiment_neutral,
         polarity = EXCLUDED.polarity;
 """
-
 
 
 # Querry that runs if its unsucessfull
