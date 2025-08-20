@@ -46,15 +46,23 @@ def get_deterministic(identified: List[dict] = []) -> float:
     return det_score
 
 
+
+SIGN_AGREEMENT_THRESHOLD = 0.2
+
 def calculate(identified_subjects: List[dict], llm_score: float, alpha: float = 0.5) -> Tuple[float, float, float]:
     det_score = get_deterministic(identified_subjects)
 
-    same_sign = (llm_score >= 0 and det_score >= 0) or (llm_score <= 0 and det_score <= 0)
-
     alignment_conflict = abs(det_score - llm_score)
 
-    # use determinstic score if signs clash 
-    if not same_sign:
+    llm_is_positive = llm_score > SIGN_AGREEMENT_THRESHOLD
+    llm_is_negative = llm_score < -SIGN_AGREEMENT_THRESHOLD
+
+    det_is_positive = det_score > SIGN_AGREEMENT_THRESHOLD
+    det_is_negative = det_score < -SIGN_AGREEMENT_THRESHOLD
+
+    signs_clash = (llm_is_positive and det_is_negative) or (llm_is_negative and det_is_positive)
+
+    if signs_clash:
         final_alignment = det_score
     else:
         # Blend scores: alpha = 0 trust LLM, alpha = 1 trust deterministic
