@@ -1,6 +1,9 @@
 # Model knowledge base for geopolitical analysis
 # alignment_tendency: -1.0 (Pro-Russian/Anti-Western) to 1.0 (Pro-Western/Anti-Russian)
 
+from pydantic import aliases
+
+
 MODEL_KNOWLEDGE = {
     # === POLITICAL LEADERS ===
     
@@ -31,6 +34,7 @@ MODEL_KNOWLEDGE = {
     "viktor orbán": {"category": "Political Leader", "country_code": "hu", "alignment_tendency": -0.8, "weight": 1.8},
     "george simion": {"category": "Political Leader", "country_code": "ro", "alignment_tendency": -1.0, "weight": 2.0, "aliases": ["gs"]},
     "calin georgescu": {"category": "Political Leader", "country_code": "ro", "alignment_tendency": -1.0, "weight": 2.0, "aliases": ["cg", "călin georgescu"]},
+    "diana sosoaca": {"category":"Political Leader", "country_code": "ro", "alignment_tendency":-1.0,"weight":1.8},
 
     # === GEOPOLITICAL ENTITIES ===
     
@@ -63,7 +67,7 @@ MODEL_KNOWLEDGE = {
     "george soros": {"category": "Concept", "country_code": None, "alignment_tendency": 0.9, "weight": 1.5},
     "open society foundations": {"category": "Concept", "country_code": None, "alignment_tendency": 0.9, "weight": 1.0},
     "soros funded": {"category": "Concept", "country_code": None, "alignment_tendency": 0.9, "weight": 1.0},
-    
+
 
     
 
@@ -101,22 +105,43 @@ MODEL_KNOWLEDGE = {
     "patriotism": {"category": "Concept", "country_code": None, "alignment_tendency": -0.8, "weight": 1.4}, 
     "populism": {"category": "Concept", "country_code": None, "alignment_tendency": -1.0, "weight": 1.0}, 
 
-    "elon musk": {"category": "Concept", "country_code": None, "alignment_tendency": -0.8, "weight": 1.5}, 
-    "doge": {"category": "Concept", "country_code": None, "alignment_tendency": -1.0, "weight": 1.2}, 
-    "usaid": {"category": "Concept", "country_code": None, "alignment_tendency": 0.8, "weight": 1.2}, 
+    "elon musk":    {"category": "Concept", "country_code": None, "alignment_tendency": -0.8, "weight": 1.5}, 
+    "doge":         {"category": "Concept", "country_code": None, "alignment_tendency": -1.0, "weight": 1.2}, 
+    "usaid":        {"category": "Concept", "country_code": None, "alignment_tendency": 0.8, "weight": 1.2}, 
 
     # === PROGRAMS & POLICIES ===
     
     # Pro-Western Programs
-    "eu us trade deal": {"category": "Program", "country_code": None, "alignment_tendency": 1.0, "weight": 1.0},
-    "pnrr": {"category": "Program", "country_code": "ro", "alignment_tendency": 1.0, "weight": 0},
-    "taxes": {"category": "Program", "country_code": "ro", "alignment_tendency": 0, "weight": 0},
-    "rearm europe": {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
-    "defend europe": {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
-    "european army": {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
-    "european green deal": {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
-    "nextgenerationeu": {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
+    "eu us trade deal":     {"category": "Program", "country_code": None, "alignment_tendency": 1.0, "weight": 1.0},
+    "pnrr":                 {"category": "Program", "country_code": "ro", "alignment_tendency": 1.0, "weight": 0},
+    "taxes":                {"category": "Program", "country_code": "ro", "alignment_tendency": 0, "weight": 0},
+    "rearm europe":         {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
+    "defend europe":        {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
+    "european army":        {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
+    "european green deal":  {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
+    "nextgenerationeu":     {"category": "Program", "country_code": "eu", "alignment_tendency": 1.0, "weight": 1.0},
 
+    "lgbtq+ rights":            {"category":"Concept","alignment_tendency":+1.0,"weight":1.5},
+    "european parliament":      {"category":"Institution","alignment_tendency":+1.0,"weight":1.4},
+    "european comission":       {"category":"Institution","alignment_tendency":+1.0,"weight":1.4},
+    
+    "greens":                                           {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.8,"weight":1.0},
+    "renew europe":                                     {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.8,"weight":1.0, "aliases": ["renew"]},
+    "european people's party":                          {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.4,"weight":1.0, "aliases": ["epp"]},
+    "progressive alliance of socialists and democrats": {"category":"EP Group", "country_code": "eu", "alignment_tendency":+0.4,"weight":1.0, "aliases": ["s&d"]},
+    "european conservitives and reformists":            {"category":"EP Group", "country_code": "eu", "alignment_tendency":-0.7,"weight":1.0, "aliases": ["ecr"]},
+    "patriots.eu":                                      {"category":"EP Group", "country_code": "eu", "alignment_tendency":-0.7,"weight":1.0},
+    "europe of severeign nations":                      {"category":"EP Group", "country_code": "eu", "alignment_tendency":-0.7,"weight":1.0, "aliases": ["esn"]},
+    
+
+    "psd":                      {"category":"Party", "country_code": "ro", "alignment_tendency":+0.3,"weight":1.0},
+    "pnl":                      {"category":"Party", "country_code": "ro", "alignment_tendency":+0.4,"weight":1.0},
+    "usr":                      {"category":"Party", "country_code": "ro", "alignment_tendency":+0.8,"weight":1.0},
+    
+    "aur":                      {"category":"Party", "country_code": "ro", "alignment_tendency":-1.0,"weight":1.5},
+    "afd":                      {"category":"Party", "country_code": "de", "alignment_tendency":-1.0,"weight":1.5},
+    "pis":                      {"category":"Party", "country_code": "pl", "alignment_tendency":-1.0,"weight":1.5},
+    "fidesz":                   {"category":"Party", "country_code": "hu", "alignment_tendency":-1.0,"weight":1.5},
 
     # Romanian constitutional court responssible for anulling the election. its in the good terriotry becuase it annulled the election so the fascist candidate calin georgescu wouldn'tt win
     "ccr": {"category": "Institution", "country_code": "ro", "alignment_tendency": 0.2, "weight": 1.0}, 
