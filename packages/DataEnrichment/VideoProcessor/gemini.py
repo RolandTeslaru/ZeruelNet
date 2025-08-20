@@ -28,7 +28,7 @@ VIDEO_ANALYSIS_SCHEMA = {
                 "properties": {
                     "subject": {
                         "type": "STRING",
-                        "description": "The name of the identified subject (e.g., 'NATO', 'Călin Georgescu', 'National Sovereignty')."
+                        "description": "The canonical name of the identified subject (e.g., 'nato', 'vladimir putin', 'globalists', 'property tax')."
                     },
                     "stance": {
                         "type": "NUMBER",
@@ -40,7 +40,7 @@ VIDEO_ANALYSIS_SCHEMA = {
         },
         "overall_alignment": {
             "type": "NUMBER",
-            "description": "The video's final geopolitical alignment score (-1.0 Pro-Russian to 1.0 Pro-Western). This score is a SYNTHESIS of the subject's 'stance' and its 'alignment_tendency' from the knowledge base. The sign (+/-) of this score is PRIMARILY determined by the video's stance on Russia and Ukraine."
+            "description": "The video's final geopolitical alignment score (-1.0 Pro-Russian to 1.0 Pro-Western). This is a HOLISTIC DEDUCTION based on the alignment of the video's 'heroes' (praised subjects) and 'villains' (criticized subjects). A video praising anti-Western figures/concepts will have a negative score."
         }
     },
     "required": ["summary", "identified_subjects", "overall_alignment"]
@@ -76,42 +76,61 @@ Follow this unified analysis process to calculate all final JSON values.
 * Frame unverified claims as allegations (e.g. “The video alleges …”).
 
 **Step 2: Identify Subjects and Determine Local Stance**
+
 *   **A. Identify Subjects:** Read through the evidence and identify all key subjects. A subject is valid only if it is explicitly mentioned or depicted.
+    *   First, read through the evidence and identify all key subjects that are explicitly mentioned or depicted.
     *   **Alias Resolution:** Before adding a subject to your list, check if it matches an `alias` in the `KNOWLEDGE BASE`. If it does, use its canonical name (the main key). For example, if you see "gs", identify the subject as "george simion".
 
-*   **B. Determine Stance:** For each identified subject, assign a `stance` score from -1.0 to 1.0. This score MUST be derived *only* from the video's content and the 'Advanced Narrative Analysis' rules below. **It is forbidden to be influenced by the `alignment_tendency` from the knowledge base during this step.**
+*   **B. Determine Stance for All Subjects:**
+    *   For every subject you identified in Step A, you will now assign a `stance` score from -1.0 to 1.0.
 
-*   **C. Advanced Narrative Analysis (For Stance Calculation):**
-    *   **Sarcasm:** A positive statement in a negative context is sarcasm (e.g., "Let Russia save us" when criticizing Russia).
-    *   **The 'Scapegoat':** Blaming a subject for a negative outcome means the stance is **negative**.
-    *   **The 'Defended Concept':** Presenting a concept as under threat means the stance is **positive**.
-    *   **'Coded Language':** Framing a figure with heroic archetypes ('The Emperor', 'fighter against the system') means the stance is **positive**.
+    *   **The Core Question:** This score MUST answer the question: **"How does this specific video portray this subject?"**
 
-**Step 3: Calculate Overall Alignment**
-*   You will now perform a precise, weighted calculation to determine the final `overall_alignment`. You must show your work in a private scratchpad.
+    *   **CRITICAL - The Golden Rule:** The `stance` is a measure of the video's internal opinion ONLY. It is **absolutely forbidden** to let the `alignment_tendency` from the knowledge base influence this calculation.
 
-*   **A. The Calculation Formula:**
-    1.  For each subject you identified that exists in the `KNOWLEDGE BASE`:
-        *   `contribution = stance × alignment_tendency × weight`
-    2.  Calculate the `raw_total` by summing all individual `contribution` values.
-    3.  Calculate the `weight_total` by summing the absolute value of (`alignment_tendency × weight`) for all subjects.
-    4.  `final_alignment = raw_total / weight_total` (If `weight_total` is 0, the result is 0.0).
-    5.  Clamp the `final_alignment` to be strictly within the range of [-1.0, 1.0].
+    *   **Score Definitions & Analytical Rules:** To determine the correct score, you MUST apply the following rules:
 
+        1.  **Identify the Narrative's Focus:**
+            *   First, determine if the video has a clear persuasive or emotional focus.
+            *   If the video is **praising or defending** a subject, this is the 'Positive Focus' and it receives a **positive stance**.
+            *   If the video is **criticizing or mocking** a subject, this is the 'Negative Focus' and it receives a **negative stance**.
+            *   **If the video is a neutral, factual report** (like a news story about weather or policy), it does not have a 'Positive/Negative Focus'. In this case, the stance for most subjects will be **neutral (`0.0`)**, unless a specific subject is described with explicitly positive or negative consequences (e.g., 'property damage' is negative, 'emergency services helping' is positive).
 
-*   **B. The Anchor Rule (Final Sign Check):**
-    *   This is a final check to prevent logical errors. After you have your clamped `final_alignment`:
-    *   If any subject in {{`Russia`, `Vladimir Putin`, `traditional values`, etc.}} has a `stance` > 0.3, the final score **MUST be negative**.
-    *   If any subject in {{`Ukraine`, `NATO`, `EU`, etc.}} has a `stance` > 0.3 (and the Russia/Putin rule is not met), the final score **MUST be positive**.
-    *   If the rules conflict or don't apply, your calculated score stands.
+        2.  **Infer Stances for Concepts:** The stance for abstract concepts is inferred from their relationship to the focus.
+            *   **CRITICAL SUB-RULE:** If a concept like `national sovereignty` or `patriotism` is used to support the 'Positive Focus', its stance **MUST BE POSITIVE**, overriding any default model bias.
 
-──────────────────────────────
----
-**INTERNAL SCRATCHPAD (for your use only, erase before final output):**
-*   List identified subjects: subject | stance | tendency | weight | contribution
-*   Show calculations: raw_total, weight_total, final_alignment, anchor check result
----
+        3.  **Detect Sarcasm (Rule of Contradiction):** If spoken words are positive but visuals or context are negative, the true stance is negative. This identifies the real 'Negative Focus'.
+            *   *Example:* Saying "Russia is a liberator" while showing destruction means Russia's stance is **-1.0**.
 
+        4.  **Detect Scapegoating:** If a subject is blamed for a problem (e.g., 'selling our port to help Ukraine'), it is part of the 'Negative Focus' and its stance is **negative**.
+
+        5.  **Detect Coded Endorsement:** Framing a figure with heroic archetypes ('The Emperor') makes them the 'Positive Focus' and their stance is **positive**.
+    
+**Step 3: Estimate Overall Alignment (Holistic Synthesis)**
+*   This score represents the video's overall position on the Pro-Russian/Anti-Western spectrum. To determine this score, you are not performing a calculation. Instead, you are making a **logical deduction** by following these principles:
+
+*   **1. Identify the Narrative's 'Heroes' and 'Villains':**
+    *   First, look at the subjects you identified and their stances. Who is the video praising, defending, or framing as a hero? These are the **'Protagonists'**.
+    *   Who is the video criticizing, mocking, or framing as a villain/scapegoat? These are the **'Antagonists'**.
+
+*   **2. Consider the Known Alignments of the Key Players:**
+    *   Now, consider the `alignment_tendency` of these Protagonists and Antagonists from the `KNOWLEDGE BASE`. This provides the geopolitical context for their roles in the narrative.
+
+*   **3. Synthesize the Final Score based on this Logic:**
+    *   **The Core Principle: A video's alignment is defined by the alignment of its heroes.**
+    *   If the video's main Protagonists are figures and concepts with a **negative `alignment_tendency`**, then the video is telling an anti-Western story. The `overall_alignment` **must be negative**.
+    *   If the video's main Protagonists are figures and concepts with a **positive `alignment_tendency`**, then the video is telling a pro-Western story. The `overall_alignment` **must be positive**.
+    *   If the video has no clear Protagonists or Antagonists on the geopolitical spectrum (e.g., a report on a local storm), the `overall_alignment` **must be neutral (0.0)**.
+
+*   **Example Applications:**
+    *   **Scenario 1 (Anti-Western Narrative):** A video praises `Viktor Orbán` (Protagonist) for defending his country against `Globalists` (Antagonists).
+        *   *Reasoning:* The video's hero is Orbán. Orbán has a strong negative `alignment_tendency` in the knowledge base. Therefore, the video is promoting an anti-Western hero. The final `overall_alignment` must be strongly negative (e.g., -0.8).
+
+    *   **Scenario 2 (Pro-Western Narrative):** A video praises `Volodymyr Zelenskyy` (Protagonist) for defending Ukraine against `Russian Aggression` (Antagonist).
+        *   *Reasoning:* The video's hero is Zelenskyy. Zelenskyy has a strong positive `alignment_tendency`. Therefore, the video is promoting a pro-Western hero. The final `overall_alignment` must be strongly positive (e.g., +0.9).
+    
+    *   **Scenario 3 (Neutral Narrative):** A video reports on a local storm (Antagonist) and praises the `emergency services` (Protagonists).
+        *   *Reasoning:* The video's protagonists and antagonists are geopolitically neutral; they are not in the knowledge base or have a `0.0` tendency. Therefore, the video has no geopolitical alignment. The final `overall_alignment` must be `0.0`.
 
 Your final output must be a single, valid JSON object conforming to the schema. Do not include any other text or the scratchpad.
 """
