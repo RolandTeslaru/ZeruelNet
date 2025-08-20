@@ -48,21 +48,52 @@ VIDEO_ANALYSIS_SCHEMA = {
 
 
 VIDEO_ANALYSIS_PROMPT_TEMPLATE = """
-You are an expert analyst specializing in detecting geopolitical propaganda and disinformation in short-form video content. Your task is to analyze the provided video and produce a structured JSON output.
+You are an expert geopolitical analyst specializing in detecting propaganda, disinformation, and nuanced sentiment in short-form video content. Your task is to analyze the provided video's visual and audio components and produce a structured JSON output.
 
-Use the following knowledge base to help identify key entities and their inherent ideological alignment. The alignment score is from -1.0 (pro-Russian) to 1.0 (pro-Western).
+--- EVIDENCE FILE ---
 
+1.  **VIDEO DESCRIPTION (Creator's Intent):**
+    "{description}"
+
+2.  **AUDIO TRANSCRIPT (High-Accuracy):**
+    "{transcript}"
+
+3.  **INDEPENDENT SENTIMENT ANALYSIS (External Tool):**
+    {sentiment}
+    *Interpretation: This score indicates the text has an overwhelmingly negative and critical emotional tone.*
+
+--- CORE REASONING PRINCIPLES ---
+
+1.  **HOLISTIC ANALYSIS:** Your final judgment must be based on the totality of the evidence. The creator's description and the overwhelming sentiment score are strong clues to the video's true intent. Use them to interpret the visual and spoken content.
+
+2.  **DETERMINE TRUE INTENT:** Do not always take statements at face value. A speaker's true stance is revealed by the overall context.
+    *   **Rhetorical Devices:** Be aware that speakers may use sarcasm or irony to mock an opposing viewpoint. For example, if the sentiment is highly negative, a seemingly positive statement like "Let Russia save us" is likely sarcastic, especially if followed by criticism of Russia.
+    *   **Negative Context vs. Stance:** Differentiate between a negative situation and the speaker's stance. A sad tone about war in Ukraine implies a positive (sympathetic) stance towards "Ukraine" and a negative stance towards the "War".
+
+Use the following knowledge base to help identify key entities.
 --- KNOWLEDGE BASE START ---
 {knowledge_base}
 --- KNOWLEDGE BASE END ---
 
-Analyze the video's visual elements, spoken words, text overlays, and music to identify the key subjects being discussed or referenced. These subjects may or may not be in the knowledge base.
+--- ANALYTICAL METHODOLOGY ---
 
-For each subject, determine the video's stance towards it on a scale from -1.0 (highly negative/critical) to 1.0 (highly positive/supportive).
+Follow this three-step process precisely:
 
-Based on the combination of subjects and their stances, determine the video's overall ideological alignment. Use a scale where -1.0 represents a strong pro-Russian and/or anti-Western narrative, and 1.0 represents a strong pro-Western and/or anti-Russian narrative. A score of 0.0 is neutral.
+**Step 1: Summarize**
+*   Create a brief, neutral summary of the video's literal content, covering the main visual and audio elements.
 
-Your output must be a valid JSON object that adheres to the provided schema. Do not include any text or formatting outside of the JSON object.
+**Step 2: Determine Local Stance**
+*   Identify all key subjects from the evidence. For each subject, determine the video's specific opinion of it to assign a `stance`.
+*   **CRITICAL RULE:** This `stance` score MUST be derived *only* from the video's content (visuals, audio, description). It is a measure of the video's opinion alone. **Do not let the `alignment_tendency` from the knowledge base influence this step in any way.**
+
+**Step 3: Synthesize Overall Alignment**
+*   Calculate the final `overall_alignment` score. To do this, you must synthesize the `stance` values from Step 2 with the `alignment_tendency` values from the knowledge base.
+    *   **Logic:** The final alignment is a combination of the video's opinion and the subject's known geopolitical position.
+    *   **Example 1:** A positive `stance` on a subject with a negative `alignment_tendency` (e.g., praising Putin) results in a negative `overall_alignment`.
+    *   **Example 2:** A negative `stance` on a subject with a negative `alignment_tendency` (e.g., criticizing Putin) results in a positive `overall_alignment`.
+    *   Weight your calculation based on the strength of the stances and the importance of the subjects.
+    
+Your output must be a valid JSON object that adheres to the provided schema. Do not include any text, explanations, or formatting outside of the JSON object.
 """
 
 class _GeminiProcessor:
@@ -101,7 +132,7 @@ class _GeminiProcessor:
         self.knowledge_string = json.dumps(MODEL_KNOWLEDGE, indent=2)
 
 
-    def analyze(self, video_path: str):
+    def analyze(self, video_path: str, transcript: str, sentiment: dict, description: str):
         with open(video_path, "rb") as f:
             video_bytes = f.read()
 
@@ -113,7 +144,14 @@ class _GeminiProcessor:
         )
 
         try:
-            final_prompt = VIDEO_ANALYSIS_PROMPT_TEMPLATE.format(knowledge_base=self.knowledge_string)
+            sentiment_str = json.dumps(sentiment, indent=4)
+
+            final_prompt = VIDEO_ANALYSIS_PROMPT_TEMPLATE.format(
+                description=description,
+                transcript=transcript,
+                sentiment=sentiment_str,
+                knowledge_base=self.knowledge_string
+            )
 
             response = self.client.models.generate_content(
                 model=self.model_name,
