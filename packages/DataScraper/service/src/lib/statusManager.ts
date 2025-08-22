@@ -1,6 +1,7 @@
 import { WorkflowStatusPayload } from '@zeruel/scraper-types';
 import { eventBus } from './eventBus';
 import { WorkflowStatusStage, WorkflowStatusStep, WorkflowStatusStepStatus, WorkflowStatusSchema, WorkflowStatus } from '@zeruel/types';
+import { Logger } from './logger';
 
 
 const DEFAULT_STEPS: Record<string, Record<string, WorkflowStatusStep>> = {
@@ -140,6 +141,11 @@ class WorkflowStatusManager {
         eventBus.broadcast("system_status", payload)
     }
 
+
+    public get log(){
+        return Logger
+    }
+
     public setStage(stageKey: keyof typeof this.stages) {
         if (this.stages[stageKey]) {
             this.currentStatus = JSON.parse(JSON.stringify(this.stages[stageKey])); // Deep copy to prevent mutation
@@ -149,6 +155,7 @@ class WorkflowStatusManager {
                 steps: this.stages[stageKey].steps
             });
         }
+        return this
     }
 
     public updateStep(stepId: string, status: WorkflowStatusStepStatus, description?: string) {
@@ -170,6 +177,7 @@ class WorkflowStatusManager {
         else {
             console.error("Could not update step", stepId, ". No such step exists");
         }
+        return this
     }
 
     public removeStep(stepId: string, status: WorkflowStatusStepStatus, description?: string, delayMs?: number){
@@ -185,6 +193,7 @@ class WorkflowStatusManager {
         } else {
             console.error(`Remove Step `)
         }
+        return this
     }
 }
 

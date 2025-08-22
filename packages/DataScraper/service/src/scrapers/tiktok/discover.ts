@@ -11,11 +11,9 @@ const MAX_VIDEOS_TO_FIND = 100
 export const discoverVideos = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
     const url = `https://www.tiktok.com/tag/${identifier}`;
 
-    
-    Logger.info(`Starting discovery for hashtag: #${identifier}`);
-    statusManager.updateStep('navigation', 'active', `Navigating to "tiktok.com/tag/${identifier}"`);
-    Logger.info(`Navigating to ${url}`);
-    
+    statusManager
+        .updateStep('navigation', 'active', `Navigating to "tiktok.com/tag/${identifier}"`)
+        .log.info(`Navigating to ${url}`);
 
     try {
         await page.goto(url, { waitUntil: 'networkidle' });
@@ -36,8 +34,10 @@ export const discoverVideos = async (identifier: string, limit: number, page: Pa
     }
 
     if (!activeLayout) {
-        Logger.error(`Failed to detect a known discovery page layout for ${url}.`);
-        statusManager.updateStep('navigation', 'failed', "Could not find a layout for this page");
+        statusManager
+            .updateStep('navigation', 'failed', "Could not find a layout for this page")
+            .log.error(`Failed to detect a known discovery page layout for ${url}.`)
+
         throw new Error('Could not detect discovery page layout.');
     }
     
@@ -48,8 +48,9 @@ export const discoverVideos = async (identifier: string, limit: number, page: Pa
     let videoUrls = new Set<string>();
 
 
-    statusManager.updateStep('scroll_automation', 'active', "Scrolling to load video cards");
-    Logger.info(`Scrolling to find up to ${numVideosToFind} video URLs...`);
+    statusManager
+        .updateStep('scroll_automation', 'active', "Scrolling to load video cards")
+        .log.info(`Scrolling to find up to ${numVideosToFind} video URLs...`)
 
 
     let retries = 10;
@@ -71,15 +72,15 @@ export const discoverVideos = async (identifier: string, limit: number, page: Pa
             statusManager.updateStep("scroll_automation", "active", `Found ${videoUrls.size} hrefs`)
 
         } catch (e){
-            Logger.error("Could not extract video cards ", e);
-            statusManager.updateStep('url_extraction', "failed", "Failed to extract refs")
+            statusManager
+                .updateStep('url_extraction', "failed", "Failed to extract refs")
+                .log.error("Could not extract video cards ", e)
         }
     }
 
-
-    statusManager.updateStep('scroll_automation', 'completed', `Found ${videoUrls.size} unique videos to scrape`);
-    Logger.success(`Found ${videoUrls.size} unique video URLs.`);
-
+    statusManager
+        .updateStep('scroll_automation', 'completed', `Found ${videoUrls.size} unique videos to scrape`)
+        .log.success(`Found ${videoUrls.size} unique video URLs.`);
 
     return Array.from(videoUrls);
 }; 

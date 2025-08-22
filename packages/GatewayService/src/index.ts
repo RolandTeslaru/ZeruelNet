@@ -40,7 +40,6 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message.toString());
-            console.log('Received message from client:', data);
 
             const subs = subscriptions.get(ws);
             if (!subs) return;
@@ -87,8 +86,6 @@ startServer();
 
 
 const pubSubListenerCallback = (message: string, channel: string) => {
-    console.log(`Received message from ${channel}: ${message}`);
-
     wss.clients.forEach(client => {
         const subs = subscriptions.get(client)
         if (subs && subs.has(channel) && client.readyState === client.OPEN){

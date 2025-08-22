@@ -2,6 +2,14 @@ import { DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedVideo } 
 import { BrowserManager } from "../lib/browserManager";
 import { Page } from "playwright";
 
+export type ScrapeReport = {
+    newVideosScraped: number,
+    videosUpdated: number,
+    updatedVideoIds: string[],
+    totalCommentsScraped: number,
+    failedSideMissions: number
+}
+
 export abstract class AbstractScraper {
     readonly abstract platform: 'tiktok' | 'facebook' | 'x'
     protected abstract browserManager: BrowserManager;
@@ -19,7 +27,7 @@ export abstract class AbstractScraper {
      * @param {ScrapeJob[]} jobs - The list of scrape jobs to process.
      * @returns {Promise<void>} A promise that resolves when all jobs are processed.
     */
-    abstract scrape(mission: ScrapeMisson): Promise<void>
+    abstract scrape(mission: ScrapeMisson): Promise<ScrapeReport>
     
     /**
      * Processes a single scrape job, extracting video data and comments.

@@ -8,12 +8,14 @@ import os from 'os';
 import chalk from 'chalk';
 import { statusManager } from '../../lib/statusManager';
 import { DatabaseManager } from '../../lib/DatabaseManager';
-import { AbstractScraper } from '../AbstractScraper';
+import { AbstractScraper, ScrapeReport } from '../AbstractScraper';
 import { Page } from 'playwright';
 import { sleep } from './utils';
 import { redisBroker } from '../../lib/redisBroker';
 
 type StatusUpdateCallback = (message: any) => void;
+
+
 
 export class TiktokScraper extends AbstractScraper {
     public readonly platform: 'tiktok' = 'tiktok';
@@ -93,18 +95,21 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    public async scrape(mission: ScrapeMisson): Promise<void> {
+    public async scrape(mission: ScrapeMisson): Promise<ScrapeReport> {
         const sideMissions = mission.sideMissions
-        statusManager.setStage("scraping");
-        Logger.info(`Starting to process ${sideMissions.length} scrape jobs with a more human-like, rate-limited pattern.`);
-        statusManager.updateStep('batch_processing', 'active', `Processing ${sideMissions.length} videos in batches of ${sideMissions}.`);
 
+        statusManager
+            .setStage("scraping")
+            .updateStep('batch_processing', 'active', `Processing ${sideMissions.length} videos in batches of ${sideMissions}.`);
+
+        Logger.info(`Starting scrape missions for ${sideMissions.length} videos (scrape sidemissions).`);
 
         const report = {
             newVideosScraped: 0,
             videosUpdated: 0,
             updatedVideoIds: [] as string[],
             totalCommentsScraped: 0,
+            failedSideMissions: 0
         };
 
         const totalBatches = Math.ceil(sideMissions.length / mission.batchSize);
@@ -113,9 +118,9 @@ export class TiktokScraper extends AbstractScraper {
             const batch = sideMissions.slice(i, i + mission.batchSize);
             const currentBatch = Math.floor(i / mission.batchSize) + 1;
 
-
-            statusManager.updateStep('batch_processing', 'active', `Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
-            Logger.info(`Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
+            statusManager
+                .updateStep('batch_processing', 'active', `Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`)
+                .log.info(`Processing batch ${currentBatch} of ${totalBatches} (size: ${batch.length})`);
         
             this.broadcast({
                 action: "SET_CURRENT_BATCH" as const,
@@ -141,11 +146,12 @@ export class TiktokScraper extends AbstractScraper {
 
                     // Publish video to Enrichemnt Service
                     await redisBroker.publish('enrichment_queue', videoData.video_id);
-                    Logger.info(`[Enrichment] Published ${videoData.video_id} to enrichment queue.`);
 
-                    statusManager.updateStep("data_persistence", "active", `Saved video ${videoData.video_id} and its ${videoData.comments.length} comments`)
-
-                    // Update report and emit rich event
+                    statusManager
+                        .updateStep("data_persistence", "active", `Saved video ${videoData.video_id} and its ${videoData.comments.length} comments`)
+                        .log.info(`[Enrichment] Published ${videoData.video_id} to enrichment queue.`)
+                    
+                        // Update report and emit rich event
                     if (_sideMission.policy === 'full') {
                         report.newVideosScraped++;
                         report.totalCommentsScraped += videoData.comments.length;
@@ -160,30 +166,37 @@ export class TiktokScraper extends AbstractScraper {
                         sideMission: _sideMission,
                     })
                 } catch (error) {
-                    Logger.error(`Job failed for URL ${_sideMission.url}`, error);
                     this.broadcast({
                         action: "FINALISE_SIDE_MISSION" as const,
                         type: "error",
                         sideMission: _sideMission,
                         error: JSON.stringify(error)
                     })
+
+                    report.failedSideMissions ++;
+                    statusManager
+                        .updateStep("data_persistence", "failed")
+                        .log.error(`Job failed for URL ${_sideMission.url}`, error);
                 }
             });
             await Promise.all(batchPromises);
             if (i + mission.batchSize < sideMissions.length) {
                 const batchDelay = Math.random() * 5000 + 2500;
                 const waitTime = Math.round(batchDelay / 1000);
-                statusManager.updateStep('rate_limit_delays', 'active', `Waiting for ${waitTime}s before next batch...`);
-                Logger.info(`Batch complete. Waiting for ${waitTime}s before next batch...`);
+
+                statusManager
+                    .updateStep('rate_limit_delays', 'active', `Waiting for ${waitTime}s before next batch...`)
+                    .log.info(`Batch complete. Waiting for ${waitTime}s before next batch...`)
 
                 await sleep(batchDelay);
                 statusManager.updateStep('rate_limit_delays', 'pending');
             }
         }
 
-        statusManager.removeStep('rate_limit_delays', "completed");
-        statusManager.updateStep("batch_processing", "completed", `All ${totalBatches} batches have been processed`);
-        statusManager.updateStep("data_persistence", "completed", `Data has been saved to the database`)
+        statusManager
+            .removeStep('rate_limit_delays', "completed")
+            .updateStep("batch_processing", "completed", `All ${totalBatches} batches have been processed`)
+            .updateStep("data_persistence", "completed", `Data has been saved to the database`)
 
         // Publish the final report as a rich event
         eventBus.broadcast("summary", {
@@ -191,6 +204,8 @@ export class TiktokScraper extends AbstractScraper {
             report
         })
         Logger.success("----------------- SCRAPE COMPLETE -----------------");
+
+        return report
     }
 
 
@@ -257,7 +272,8 @@ export class TiktokScraper extends AbstractScraper {
                 comments,
             };
             return videoData;
-        } finally {
+        } 
+        finally {
             await page.close();
         }
     }

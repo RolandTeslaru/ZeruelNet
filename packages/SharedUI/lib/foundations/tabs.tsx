@@ -61,6 +61,7 @@ const TabsList = ({
     <div className="relative">
       <TabsPrimitive.List
         ref={listRef}
+        data-slot="tabs-list"
         className={cn(
           "inline-flex h-auto items-center justify-center rounded-3xl bg-tertiary-opaque border border-secondary-opaque text-muted-foreground relative",
           className
@@ -72,8 +73,11 @@ const TabsList = ({
       {/* Animated indicator */}
       <div
         ref={indicatorRef}
-        style={indicatorStyle}
-        className={indicatorClassname + " " + "absolute top-[1px] z-[0] !pointer-events-none bg-primary-opaque border border-neutral-600 rounded-full transition-all duration-300 ease-out"}
+        style={{
+          boxShadow: "0px 0px 4px 1px oklch(0.623 0.214 259.815",
+          ...indicatorStyle,
+        }}
+        className={indicatorClassname + " " + "absolute top-[1px] z-[0] !pointer-events-none border bg-blue-500 border-blue-400 rounded-full transition-all duration-300 ease-out"}
       />
     </div>
   )
@@ -94,6 +98,7 @@ function TabsTrigger({
 
   return (
     <TabsPrimitive.Trigger
+      data-slot="tabs-trigger"
       className={cn(
         `inline-flex items-center z-10 justify-center whitespace-nowrap rounded-2xl px-3 py-[3px] text-xs font-roboto-mono !text-label-primary font-medium ring-offset-background transition-all 
         border border-transparent cursor-pointer
@@ -113,8 +118,10 @@ function TabsContent({
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
+      data-slot="tabs-content"
       className={cn(
         "mt-2 ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "data-[state=inactive]:hidden",
         className
       )}
       {...props}

@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { startScrapeWorkflow } from './controller';
+import { scrapeByHashtagWorkflow } from './controllers/scrapeByHashtag';
+import { scrapeByVideoIdWorkflow } from './controllers/scrapeByVideoId';
 
 const router = Router();
 
-// This is the endpoint our frontend will call to start a new workflow.
-router.post('/workflow/full-scrape', startScrapeWorkflow);
+router.post('/workflow/scrape-by-hashtag', scrapeByHashtagWorkflow);
+router.post('/workflow/scrape-by-video-id', scrapeByVideoIdWorkflow);
 
 export default router; 
