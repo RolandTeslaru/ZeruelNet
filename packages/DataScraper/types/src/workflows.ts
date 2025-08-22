@@ -2,13 +2,28 @@ import { z } from "zod";
 import { SourcesSchema } from "./missions";
 import { WorkflowStatusStageSchema, WorkflowStatusStepSchema, WorkflowStatusStepStatusSchema } from "@zeruel/types";
 
-export const ScrapeWorkflowRequestSchema = z.object({
-    source: SourcesSchema,
+export const ScrapeByHashtagWorkflowSchema = z.object({
+    limit: z.number(),
+    batchSize: z.number(),
     identifier: z.string(),
-    limit: z.number().min(1).optional(),
-    batchSize: z.number().min(1).optional(),
-});
-export type ScrapeWorkflowRequest = z.infer<typeof ScrapeWorkflowRequestSchema>;
+    source: SourcesSchema
+})
+export type ScrapeByHashtagWorkflow = z.infer<typeof ScrapeByHashtagWorkflowSchema>
+
+
+export const ScrapeByVideoIdWorkflowSchema = z.object({
+    videoId: z.string().regex(/^\d+$/, "videoId must be a numeric string")
+})
+
+export type ScrapeByVideoIdWorkflow = z.infer<typeof ScrapeByVideoIdWorkflowSchema>
+
+
+
+
+
+
+
+
 
 export const WorkflowStatusActionsSchema = z.enum([
     "UPDATE_STEP",

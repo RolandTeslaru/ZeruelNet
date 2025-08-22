@@ -23,7 +23,7 @@ const PageSwitcher = () => {
                     })
                 }}
             >
-                <TabsList className='gap-2 !bg-neutral-800/40 !border-primary-thin' indicatorClassname='!bg-blue-500 !border-blue-500' indicatorStyle={{boxShadow: "0px 0px 10px 3px oklch(0.623 0.214 259.815" }}
+                <TabsList className='gap-2 !bg-neutral-800/40 !border-primary-thin' indicatorClassname='!bg-blue-500 !border-blue-400' indicatorStyle={{boxShadow: "0px 0px 10px 3px oklch(0.623 0.214 259.815" }}
                 >
                     <TabsTrigger className=' px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="scraper">
                         <Bot strokeWidth={1.5} size={20}/>
