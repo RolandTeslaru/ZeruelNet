@@ -1,4 +1,5 @@
 "use client"
+import Layout from "@/components/Layout";
 import Enrichment from "@/components/pages/Enrichment";
 import Scraper from "@/components/pages/Scraper";
 import SysHealth from "@/components/pages/SysHealth";
@@ -24,19 +25,21 @@ export default function Home() {
   }, [])
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-24 ">
-        <div className=' w-full relative '>
+    <Layout>
+      <QueryClientProvider client={queryClient}>
+        <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-24 ">
+          <div className=' w-full relative '>
 
-          {/* <TestChart1/>
-            <TestChart2/> */}
-          <Scraper show={currentPage === "scraper"} />
-          <Enrichment show={currentPage === "enrichment"} />
-          <Tables show={currentPage === "tables"} />
-          <Trends show={currentPage === "trendsanalysis"} />
-          <SysHealth show={currentPage === "health"} />
+            {/* <TestChart1/>
+              <TestChart2/> */}
+            <Scraper show={currentPage === "scraper"} />
+            <Enrichment show={currentPage === "enrichment"} />
+            <Tables show={currentPage === "tables"} />
+            <Trends show={currentPage === "trendsanalysis"} />
+            <SysHealth show={currentPage === "health"} />
+          </div>
         </div>
-      </div>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </Layout>
   );
 }

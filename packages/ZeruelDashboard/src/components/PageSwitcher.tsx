@@ -30,7 +30,7 @@ const PageSwitcher = () => {
                         SCRAPER
                     </TabsTrigger>
                     <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="enrichment">
-                        <Sparkles strokeWidth={1.5} size={20}/>
+                        <Sparkles size={20}/>
                         ENRICHMENT
                     </TabsTrigger>
                     <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="tables">

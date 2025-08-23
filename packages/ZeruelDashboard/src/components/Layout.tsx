@@ -1,18 +1,18 @@
 "use client"
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import VexrLogo from '@zeruel/shared-ui/VexrLogo'
 import MenubarComponent from './MenubarComponent'
 import { DotPattern } from '@zeruel/shared-ui/DotPattern'
 import { useUIManagerAPI } from '@zeruel/shared-ui/UIManager/store'
 import AuroraBackground from "./AuroraBackground"
 import { UIManagerDialogLayer } from '@zeruel/shared-ui/UIManager/ui'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StarsBackground } from './StarsBackground'
 import { cn } from '@zeruel/shared-ui/utils/cn'
 import TabSwitcher from './PageSwitcher'
 import { useSystem } from '@/stores/useSystem'
 import classNames from 'classnames'
 import StagePanel from './StagePanel'
+import { useGatewayService } from '@/stores/useGatewayService'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
     children?: React.ReactNode
@@ -21,6 +21,9 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
     const theme = useUIManagerAPI(state => state.theme)
+    useEffect(() => {
+        useGatewayService.getState().connect();
+    }, []);
 
     const currentPage = useSystem(state => state.currentPage)
 
