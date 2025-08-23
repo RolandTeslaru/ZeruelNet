@@ -13,9 +13,8 @@ const CommandPanel = memo(() => {
             <div className='flex flex-row w-full'>
                 <Tabs defaultValue='hashtag' className='w-full !gap-0'>
 
-
                     <div className='flex flex-col w-full gap-1.5'>
-                        <p className='h-auto my-auto text-xs font-roboto-mono text-white'>Scrape by</p>
+                        <p className='h-auto my-auto text-xs font-medium font-roboto-mono text-white'>Scrape by</p>
 
                         <div className='flex flex-row relative w-full'>
                             <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
@@ -71,13 +70,12 @@ const VideoIDSeach = () => {
                     name="videoId"
                     render={({ field }) => (
                         <FormItem className='gap-1.5'>
-                            <FormLabel className='h-auto my-auto font-light'>Video Id</FormLabel>
+                            <FormLabel className='h-auto my-auto'>Video Id</FormLabel>
                             <FormItem className='relative'>
                                 <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
                                 <FormControl>
                                     <Input
                                         className='text-xs !w-42 ml-auto'
-                                        placeholder='7538880118765194510'
                                         inputMode="numeric"
                                         pattern="[0-9]*"
                                         {...field}

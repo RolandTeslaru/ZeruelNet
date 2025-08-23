@@ -49,13 +49,20 @@ const TabsList = ({
   })
 
   useEffect(() => {
-    const activeTab = listRef?.current?.querySelector('[data-state="active"]') as HTMLElement
-    if (activeTab && indicatorRef.current) {
-      indicatorRef.current.style.width = `${activeTab.clientWidth}px`
-      indicatorRef.current.style.height = `${activeTab.clientHeight + 2}px`
-      indicatorRef.current.style.left = `${activeTab.offsetLeft + 2}px`
-    }
-  }, [])
+    // requestAnimationFrame ensures this code runs after the browser has calculated the final layout.
+    // This is the most reliable way to get accurate dimensions for an element on initial render.
+    const frameId = requestAnimationFrame(() => {
+      const activeTab = listRef.current?.querySelector('[data-state="active"]') as HTMLElement;
+      console.log("Active Tab client ", activeTab.clientHeight, activeTab.clientWidth)
+      if (activeTab && indicatorRef.current) {
+        indicatorRef.current.style.width = `${activeTab.clientWidth}px`;
+        indicatorRef.current.style.height = `${activeTab.clientHeight + 2}px`;
+        indicatorRef.current.style.left = `${activeTab.offsetLeft + 2}px`;
+      }
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, []); // The empty dependency array ensures this runs only once on mount.
 
   return (
     <div className="relative">
@@ -100,7 +107,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        `inline-flex items-center z-10 justify-center whitespace-nowrap rounded-2xl px-3 py-[3px] text-xs font-roboto-mono !text-label-primary font-medium ring-offset-background transition-all 
+        `inline-flex items-center z-10 justify-center whitespace-nowrap rounded-2xl px-3 py-[3px] text-xs font-medium font-roboto-mono !text-label-primary ring-offset-background transition-all 
         border border-transparent cursor-pointer
        focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 
       `,

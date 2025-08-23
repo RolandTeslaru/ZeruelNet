@@ -15,7 +15,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         showControls={false}
         StylingComponent={<BracketsWindowStyling
           show={show}
-          className='hidden  min-w-[350px]  px-1 py-0 flex-col'
+          className='opacity-0 min-w-[350px]  px-1 py-0 flex-col'
           detachedClassName=''
         />}
       >
@@ -30,7 +30,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         windowClasses=''
         StylingComponent={<BracketsWindowStyling
           show={show}
-          className='hidden  min-h-full max-h-full w-full p-1 !pt-0 flex-col'
+          className='opacity-0  min-h-full max-h-full w-full p-1 !pt-0 flex-col'
           detachedClassName=''
         />}
       >
@@ -43,7 +43,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         windowClasses='width=310,height=702,left=200,top=200,resizable=0'
         StylingComponent={<BracketsWindowStyling
           show={show}
-          className='hidden  min-w-[250px] min-h-1/2 flex-col'
+          className='opacity-0 min-w-[250px] min-h-1/2 flex-col'
           detachedClassName=''
         />}
       >

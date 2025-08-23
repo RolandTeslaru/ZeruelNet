@@ -67,7 +67,7 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
 
         const report = await scraper.scrape(scrapeMission)
 
-        await shutdownBrowser(browserManager);
+        // await shutdownBrowser(browserManager);
 
         if(report.failedSideMissions === 1){
             statusManager.setStage("error")

@@ -120,7 +120,7 @@ const EnrichmentDataTable = memo(() => {
                 columns={columns}
                 table={table}
             >
-                <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection}/>
+                {/* <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection}/> */}
             </DataTable >
         </>
     );

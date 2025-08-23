@@ -93,7 +93,7 @@ class WorkflowStatusManager {
 
     private stages: Record<string, { stage: WorkflowStatusStage; steps: Record<string, WorkflowStatusStep> }> = {
         idle: {
-            stage: { title: 'IDLE:  AWAITING  TASK  WORK', type: 'INFO' },
+            stage: { title: 'IDLE:  AWAITING  WORKFLOW  REQUEST', type: 'INFO' },
             steps: DEFAULT_STEPS["idle"]
         },
         initialization: {
@@ -117,11 +117,11 @@ class WorkflowStatusManager {
             steps: DEFAULT_STEPS["finalizing"]
         },
         success: {
-            stage: { title: 'FINSHED:  TASK  WORK  SUCCESSFUL', type: 'SUCCESS' },
+            stage: { title: 'FINSHED:  WORKFLOW  SUCCESSFUL', type: 'SUCCESS' },
             steps: DEFAULT_STEPS["success"]
         },
         error: {
-            stage: { title: 'ERROR:  TASK  WORK  FAILED', type: 'FAILURE' },
+            stage: { title: 'ERROR:  WORKFLOW  FAILED', type: 'FAILURE' },
             steps: DEFAULT_STEPS["error"]
         }
     };

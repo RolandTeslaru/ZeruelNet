@@ -19,8 +19,8 @@ const VideoFeaturesViewer = () => {
         const result = EnrichedVideoSchema.safeParse(selectedVideoData)
         if (result.success)
             return result.data
-        else {
-            console.error("Result Error ", z.treeifyError(result.error))
+        else if(result.error){
+            console.log("Result Error ", z.treeifyError(result.error))
             return null
         }
     }, [selectedVideoData, selectedVideoId])

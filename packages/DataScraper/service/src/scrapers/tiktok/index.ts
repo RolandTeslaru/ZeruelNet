@@ -220,6 +220,9 @@ export class TiktokScraper extends AbstractScraper {
             const videoJson = JSON.parse(sigiState);
             const videoInfo = videoJson["__DEFAULT_SCOPE__"]["webapp.video-detail"]["itemInfo"]["itemStruct"];
 
+            console.log("PROCESS SCRAPE SIDE MISSION ", videoInfo)
+
+
             const description = videoInfo.desc as string;
             const hashtagRegex = /#(\p{L}+)/gu;
             const extracted_hashtags = Array.from(description.matchAll(hashtagRegex), match => match[1]);
@@ -274,7 +277,7 @@ export class TiktokScraper extends AbstractScraper {
             return videoData;
         } 
         finally {
-            await page.close();
+            // await page.close();
         }
     }
 }

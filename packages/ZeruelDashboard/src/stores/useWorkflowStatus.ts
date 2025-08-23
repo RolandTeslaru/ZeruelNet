@@ -24,7 +24,7 @@ export const useWorkflowStatus = create<State & Actions>()(
         pageStages: {
             scraper : {
                 type: "INFO",
-                title: `IDLE:  AWAITING  SCRAPE  TASK`, // scraper service
+                title: `IDLE:  AWAITING  WORKFLOW  REQUEST`, // scraper service
             },
             enrichment: {
                 type: "INFO",
