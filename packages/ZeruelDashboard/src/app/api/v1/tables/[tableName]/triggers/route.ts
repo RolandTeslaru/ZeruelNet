@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
 export async function GET(
-  request: Request,
-  { params }: { params: { tableName: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ tableName: string }> }
 ) {
-  const { tableName } = params;
+  const { tableName } = await params;
   try {
     const triggers = await pool.query(
         `SELECT trigger_name, event_manipulation, action_timing FROM information_schema.triggers WHERE event_object_table = $1;`,

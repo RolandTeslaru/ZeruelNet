@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
 export async function GET(
-  request: Request,
-  { params }: { params: { tableName: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ tableName: string }> }
 ) {
-  const { tableName } = params;
+  const { tableName } = await params;
   try {
     const indexes = await pool.query(
         `SELECT indexname AS index_name, indexdef AS index_definition FROM pg_indexes WHERE tablename = $1;`,

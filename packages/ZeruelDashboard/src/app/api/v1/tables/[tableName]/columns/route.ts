@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
 export async function GET(
-  request: Request,
-  { params }: { params: { tableName: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ tableName: string }> }
 ) {
-  const { tableName } = params;
+  const { tableName } = await params;
   try {
     const columns = await pool.query(
         `SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1;`,
