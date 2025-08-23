@@ -7,7 +7,7 @@
     "packages/DataScraper/*",
     "packages/SharedUI",
     "packages/types",
-    "packages/ZeruelDashboard/*"
+    "packages/ZeruelDashboard"
   ],
   "scripts": {
     "gateway:start": "npm run start --workspace=@zeruel/gateway-service",

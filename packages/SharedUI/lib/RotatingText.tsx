@@ -224,7 +224,7 @@ const RotatingText: React.FC<RotatingTextProps> = (
               onAnimationStart={(definition) => {
                 if (definition === "enter") {
                   if (dummyTextRef.current) {
-                    setWidth(dummyTextRef.current.clientWidth + 25);
+                    setWidth(dummyTextRef.current.clientWidth);
                   }
                 }
               }}

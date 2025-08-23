@@ -41,17 +41,18 @@ export const VXWindow: FC<VXEngineWindowProps> = memo((props) => {
 
         if (StylingComponent) {
             return React.cloneElement(StylingComponent, {
-                isDetached: !vxWindow.isAttached,
+                isDetached: !vxWindow?.isAttached,
                 children: innerContent,
                 id: vxWindowId
             });
         }
         else
             return innerContent
-    }, [StylingComponent, children, vxWindow.isAttached, showControls])
+    }, [StylingComponent, children, vxWindow?.isAttached, showControls])
 
     if (isStoreHydrated === false) return null;
 
+    if(!vxWindow) return
     if (vxWindow.isOpen === false) return null;
 
     return (
