@@ -72,7 +72,7 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
         if(report.failedSideMissions === 1){
             statusManager.setStage("error")
         } else {
-            statusManager.setStage("error")
+            statusManager.setStage("success")
         }
 
 

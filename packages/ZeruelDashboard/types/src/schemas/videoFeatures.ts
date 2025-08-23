@@ -21,7 +21,7 @@ export const VideoFeaturesQuerySchema = baseParams.extend({
     timestamp: z.enum(["last_enriched_at", "polarity", "llm_overall_alignment"]).default("last_enriched_at").optional(),
     sort: z.enum(["asc", "desc"]).default("desc").optional(),
 
-    identified_subjects: z.array(IdentifiedSubjectScehma).min(1).optional()
+    identified_subjects: z.array(IdentifiedSubjectScehma).optional()
 })
 
 export type VideoFeaturesQueryParams = z.infer<typeof VideoFeaturesQuerySchema>

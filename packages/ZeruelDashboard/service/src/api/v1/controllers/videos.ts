@@ -12,7 +12,7 @@ export async function getVideos(req: Request, res: Response) {
         return res.status(400).json({ error: z.treeifyError(parsed.error) })
     }
 
-    const { limit, offset, since, until, hashtag, sort_dir, sort_by } = parsed.data
+    const { limit, offset, since, until, hashtag, sort_dir, sort_by, video_id } = parsed.data
     
     const orderByWhitelist = {
         "created_at": "v.created_at",
@@ -31,7 +31,8 @@ export async function getVideos(req: Request, res: Response) {
         until ?? null,    // 2
         hashtag ?? null,  // 3
         limit,            // 4 
-        offset            // 5
+        offset,           // 5
+        video_id ?? null  // 6
     ]
 
     const query = `--sql
@@ -44,6 +45,7 @@ export async function getVideos(req: Request, res: Response) {
             OR v.searched_hashtag = $3
             OR $3 = ANY(v.extracted_hashtags)
           )
+        AND ($6::text is NULL OR v.video_id = $6)
         ORDER BY ${orderBy} ${direction}
         LIMIT $4 OFFSET $5
     `;
