@@ -14,7 +14,10 @@ const wss = new WebSocketServer({ server });
 const subscriptions = new Map<WebSocket, Set<string>>();
 
 const redisSubscriber = createClient({
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL,
+    socket: {
+        family: 0  // Enable dual-stack DNS lookup for Railway's IPv6 network
+    }
 });
 
 const PORT = process.env.PORT ||
