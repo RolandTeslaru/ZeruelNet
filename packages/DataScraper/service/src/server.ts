@@ -1,30 +1,28 @@
-import dotenvFlow from 'dotenv-flow';
-import path from "path"
+import path from 'path';
+import dotenv from 'dotenv';
 
-// Load monorepo env vars
-dotenvFlow.config({
-    path: path.resolve(__dirname, "../../../../"),
-    node_env: process.env.NODE_ENV,
-    silent: true
-})
-
-// Override with local envs if present
-dotenvFlow.config({ silent: true})
-
+// load ../../.env (same directory as THIS file)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// or simply put .env beside package.json and do:
+dotenv.config();         // looks in current working directory
 import express from 'express';
 import cors from 'cors';
 import { Logger } from './lib/logger';
 import { redisBroker } from './lib/redisBroker';
+import v1Routes from './api/v1/routes';
+
 
 const app = express();
-const PORT = process.env.SCRAPER_SERVICE_PORT;
+
+const PORT = process.env.PORT ||                        // railway injected env
+             process.env.SCRAPER_SERVICE_LOCAL_PORT ||  // used for local development
+             3001
+
+
 
 app.use(cors()); 
 app.use(express.json());
 
-// Routes
-import v1Routes from './api/v1/routes';
-import { eventBus } from './lib/eventBus';
 app.use('/api/v1', v1Routes);
 
 app.get('/', (req, res) => {
@@ -36,8 +34,6 @@ async function startServer() {
     await redisBroker.connect();
     app.listen(PORT, () => {
         Logger.info(`Scraper service listening on http://localhost:${PORT}`);
-        // TODO: Whole type sys needs to be migrated to zod
-        // eventBus.broadcast("status", { isConnected: true })
     });
 }
 

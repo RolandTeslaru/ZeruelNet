@@ -17,7 +17,7 @@
     "@zeruel/scraper-types": "1.0.0",
     "chalk": "^4.1.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
     "pg": "^8.11.5",

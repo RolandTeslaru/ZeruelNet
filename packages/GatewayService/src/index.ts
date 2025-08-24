@@ -13,9 +13,13 @@ const wss = new WebSocketServer({ server });
 // All websockets that are subscribed to the GatewayService ( scraper_, dashboard_, enrichment_ ....)
 const subscriptions = new Map<WebSocket, Set<string>>();
 
-const redisSubscriber = createClient();
+const redisSubscriber = createClient({
+    url: process.env.REDIS_URL
+});
 
-const PORT = process.env.GATEWAY_PORT
+const PORT = process.env.PORT ||
+             process.env.LOCAL_GATEWAY_PORT ||
+             4001
 
 app.get('/health', (req, res) => {
     res.status(200).send('Gateway service is running');

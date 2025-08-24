@@ -1,7 +1,9 @@
 import { createClient } from 'redis';
 import { Logger } from './logger';
 
-const publisher = createClient();
+const publisher = createClient({
+    url: process.env.REDIS_URL
+});
 
 publisher.on('error', (err) => Logger.error('Redis Publisher Error', err));
 
