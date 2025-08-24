@@ -2,7 +2,10 @@ import { createClient } from 'redis';
 import { Logger } from './logger';
 
 const publisher = createClient({
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL,
+    socket: {
+        family: 0  // Enable dual-stack DNS lookup for Railway IPv6 network
+    }
 });
 
 publisher.on('error', (err) => Logger.error('Redis Publisher Error', err));
