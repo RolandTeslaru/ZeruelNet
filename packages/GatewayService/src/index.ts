@@ -8,7 +8,7 @@ import { isOriginAllowed } from './originGuard';
 const app = express();
 app.use(cors({ origin: '*' })); // Allow all origins for simplicity
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server, path: "/ws" });
 
 // All websockets that are subscribed to the GatewayService ( scraper_, dashboard_, enrichment_ ....)
 const subscriptions = new Map<WebSocket, Set<string>>();
