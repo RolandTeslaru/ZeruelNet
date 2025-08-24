@@ -31,7 +31,7 @@ export const TiktokScrapedVideoMetadataSchema = z.object({
     author_username: z.string(),
     video_description: z.string(),
     extracted_hashtags: z.array(z.string()),
-    platform: PlatformsSchema,
+    platform: z.enum(["tiktok", "facebook", "x"]),
     stats: TiktokScrapedVideoStatsSchema,
 })
 export type TiktokScrapedVideoMetadata = z.infer<typeof TiktokScrapedVideoMetadataSchema>
