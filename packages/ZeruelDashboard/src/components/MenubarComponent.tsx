@@ -9,10 +9,10 @@ const LOG_MODULE = "VXMenubar"
 const MenubarComponent = () => {
     return (
         <BracketsWindowStyling
-            className='!fixed !w-fit left-1/2 -translate-x-1/2 top-4 z-10 px-3! py-0! text-white'
+            className='2xl:block hidden !fixed !w-fit left-1/2 -translate-x-1/2 top-4 z-10 px-3! py-0! text-white' 
             id="VXEngineMenubar"
         >
-            <div className='my-auto-fit text-white! font-roboto-mono flex flex-row text-sm'>
+            <div className='my-auto-fit text-white! font-roboto-mono flex flex-row text-sm 2xl:flex'>
                 <Menubar className=' h-auto'>
                     {/* <LogoButton /> */}
                     <FileButton />

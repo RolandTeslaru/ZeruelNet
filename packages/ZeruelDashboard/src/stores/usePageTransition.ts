@@ -162,7 +162,7 @@ const playBackgroundTimeline = (page: PageKey) => {
             break;
         case "enrichment":
             gsap.to("#ZN-Layout-BackgroundColor",{
-                backgroundColor: "rgba(22, 78, 99, 0.2)", // bg-cyan-900/20
+                backgroundColor: "rgba(0, 0, 0, 0.6)", // bg-cyan-900/20
             })
             break;
         case "tables":

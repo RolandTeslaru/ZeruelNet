@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
+import { useSystem } from "./useSystem";
 
 export const webSocketEvents = new EventTarget();
 
@@ -36,6 +37,10 @@ export const useGatewayService = create<State & Actions>()(
             const ws = new WebSocket(process.env.NEXT_PUBLIC_GATEWAY_WEBSOCKET_URL);
 
             ws.onopen = () => {
+                useSystem.getState().setOverrideStage({
+                    type: "SUCCESS",
+                    title: "GATEWAY  WS  CONNECTION  ESTABLISHED"
+                }, 3000)
                 set((state) => {
                     state.isConnected = true;
                     state.socket = ws
@@ -54,11 +59,17 @@ export const useGatewayService = create<State & Actions>()(
                 console.log("useGatewayService: WebSocket connection established")
             };
         
-            ws.onclose = () => set((state) => {
+            ws.onclose = (error) => set((state) => {
                 state.isConnected = false
                 state.socket = null;
 
                 webSocketEvents.dispatchEvent(new Event("close"));
+                
+                useSystem.getState().setOverrideStage({
+                    type: "FAILURE",
+                    title: `CLOSED  ${error.code}:  GATEWAY  WEBSOCKET`
+                })
+                console.log("WS Closed with error", error)
             });
 
             ws.onmessage = (event: MessageEvent<any>) => {
@@ -74,6 +85,10 @@ export const useGatewayService = create<State & Actions>()(
                 if (callback) {
                     callback(innerPayload);
                 }
+            }
+
+            ws.onerror = e => {
+                
             }
         },
         disconnect: () => {

@@ -276,7 +276,7 @@ export class TiktokScraper extends AbstractScraper {
             return videoData;
         } 
         finally {
-            // await page.close();
+            await page.close();
         }
     }
 }
