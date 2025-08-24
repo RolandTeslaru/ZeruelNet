@@ -1,10 +1,10 @@
 import { z } from "zod"
 import { Platforms, PlatformsSchema } from "@zeruel/types";
 
-export const SourcesSchema = z.enum(["hashtag", "user", "url"])
+export const SourcesSchema = z.enum(["hashtag", "user", "url"]).default("hashtag")
 export type Sources = z.infer<typeof SourcesSchema>
 
-export const ScrapePolicySchema = z.enum(["full", "metadata_only"])
+export const ScrapePolicySchema = z.enum(["metadata+comments", "metadata"]).default("metadata+comments")
 export type ScrapePolicy = z.infer<typeof ScrapePolicySchema>
 
 // SCRAPE MISSION ( contains multiple scrape sideMissions)
@@ -18,10 +18,11 @@ export type ScrapeSideMission = z.infer<typeof ScrapeSideMissionSchema>
 
 export const ScrapeMissionSchema = z.object({
     sideMissions: z.array(ScrapeSideMissionSchema),
-    limit: z.number(),
-    batchSize: z.number(),
+    limit: z.int().min(1).default(10),
+    batchSize: z.int().max(10).min(1).default(4),
     identifier: z.string(),
-    source: SourcesSchema
+    source: SourcesSchema,
+    scrapeCommentsLen: z.int().min(0).max(200).default(100),
 })
 export type ScrapeMisson = z.infer<typeof ScrapeMissionSchema>
 

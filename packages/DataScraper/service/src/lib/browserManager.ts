@@ -27,8 +27,9 @@ export class BrowserManager {
         const timezoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York"
 
         Logger.info(`Initializing chromium browser with persistent context with timezone ${timezoneId}`);
+
         this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
-            headless: true,
+            headless: false,
             args: [
                 '--disable-blink-features=AutomationControlled',
                 '--start-maximized',

@@ -12,6 +12,7 @@ export type ZodStringObject = {
     type: "string",
     format?: "date-time",
     enum?: string[],
+    default?: string
 }
 
 export type ZodArrayObject = {

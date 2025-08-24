@@ -100,9 +100,8 @@ export class TiktokScraper extends AbstractScraper {
 
         statusManager
             .setStage("scraping")
-            .updateStep('batch_processing', 'active', `Processing ${sideMissions.length} videos in batches of ${sideMissions}.`);
-
-        Logger.info(`Starting scrape missions for ${sideMissions.length} videos (scrape sidemissions).`);
+            .updateStep('batch_processing', 'active', `Processing ${sideMissions.length} videos in batches of ${sideMissions}.`)
+            .log.info(`Starting scrape missions for ${sideMissions.length} videos (scrape sidemissions).`)
 
         const report = {
             newVideosScraped: 0,
@@ -152,7 +151,7 @@ export class TiktokScraper extends AbstractScraper {
                         .log.info(`[Enrichment] Published ${videoData.video_id} to enrichment queue.`)
                     
                         // Update report and emit rich event
-                    if (_sideMission.policy === 'full') {
+                    if (_sideMission.policy === "metadata+comments") {
                         report.newVideosScraped++;
                         report.totalCommentsScraped += videoData.comments.length;
                     } else {
@@ -250,11 +249,11 @@ export class TiktokScraper extends AbstractScraper {
 
             let comments: TiktokScrapedComment[] = [];
             // Only do a full comment scrape if the policy is 'full' and there are comments to scrape
-            if (sideMission.policy === 'full' && videoInfo.stats.commentCount > 0) {
-                Logger.info(`[Policy: Full] Scraping comments for video ${videoInfo.id}`);
+            if (sideMission.policy === "metadata+comments" && videoInfo.stats.commentCount > 0) {
+                Logger.info(`[Policy: <Metadata+Comments>] Scraping comments for video ${videoInfo.id}`);
                 comments = await scrapeComments(page, 200);
             } else if (videoInfo.stats.commentCount > 0) {
-                Logger.warn(`[Policy: Metadata-Only] Skipping comments for video ${videoInfo.id}`);
+                Logger.warn(`[Policy: Metadata] Skipping comments for video ${videoInfo.id}`);
             }
 
             const videoData: TiktokScrapedVideo = {

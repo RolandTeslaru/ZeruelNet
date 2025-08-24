@@ -1,24 +1,33 @@
 import { z } from "zod";
-import { SourcesSchema } from "./missions";
+import { ScrapeMissionSchema, ScrapePolicySchema, SourcesSchema } from "./missions";
 import { WorkflowStatusStageSchema, WorkflowStatusStepSchema, WorkflowStatusStepStatusSchema } from "@zeruel/types";
 
-export const ScrapeByHashtagWorkflowSchema = z.object({
-    limit: z.number(),
-    batchSize: z.number(),
-    identifier: z.string(),
-    source: SourcesSchema
+export const ScrapeByHashtagWorkflowSchema = ScrapeMissionSchema.omit({
+    sideMissions: true
 })
 export type ScrapeByHashtagWorkflow = z.infer<typeof ScrapeByHashtagWorkflowSchema>
 
 
 export const ScrapeByVideoIdWorkflowSchema = z.object({
-    videoId: z.string().regex(/^\d+$/, "videoId must be a numeric string")
+    videoId: z.string().regex(/^\d+$/, "videoId must be a numeric string"),
+    scrapeCommentsLen: z.number().min(0).max(200).default(100),
+    policy: ScrapePolicySchema
 })
 
 export type ScrapeByVideoIdWorkflow = z.infer<typeof ScrapeByVideoIdWorkflowSchema>
 
+export const ScrapeWorkflowSchema = z.discriminatedUnion("type", [
+    z.object({
+        type: z.literal("hashtag"),
+        workflow: ScrapeByHashtagWorkflowSchema
+    }),
+    z.object({
+        type: z.literal("videoId"),
+        workflow: ScrapeByVideoIdWorkflowSchema
+    })
+])
 
-
+export type ScrapeWorkflow = z.infer<typeof ScrapeWorkflowSchema>
 
 
 
