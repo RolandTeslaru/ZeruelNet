@@ -21,9 +21,6 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
     const theme = useUIManagerAPI(state => state.theme)
-    useEffect(() => {
-        useGatewayService.getState().connect();
-    }, []);
 
     const currentPage = useSystem(state => state.currentPage)
 

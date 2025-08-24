@@ -3,8 +3,9 @@ import { BrowserManager } from '../../../lib/browserManager';
 import { Logger } from '../../../lib/logger';
 import { statusManager } from '../../../lib/statusManager';
 import { TiktokScraper } from "../../../scrapers/tiktok"
-import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapeByHashtagWorkflowSchema } from '@zeruel/scraper-types';
+import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapeByHashtagWorkflowSchema, ScrapeByHashtagWorkflow } from '@zeruel/scraper-types';
 import {z} from "zod"
+import { Platforms } from '@zeruel/types';
 let isScraperRunning = false;
 
 export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
@@ -53,36 +54,11 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
         };
         const {newVideoUrls, existingVideoUrls} = await scraper.discover(discoveryMission);
 
-        const scrapeSideMissions: ScrapeSideMission[] = []
-
-        // Prioritise the new videos which are not in the database
-        for (const url of newVideoUrls){
-            const sideMission: ScrapeSideMission = {
-                platform: scraper.platform,
-                url,
-                policy: "full",
-            }
-            scrapeSideMissions.push(sideMission)
-        }
-        // Fill the remaining slots with the urls already in the database 
-        // (these will only have their metadata updated)
-        const remainingSlots = workflow.limit - scrapeSideMissions.length // only filled with the new urls at this point
-        if(remainingSlots > 0){
-            const validUrls = existingVideoUrls.slice(0, remainingSlots)
-            for (const url of validUrls){
-                const sideMission: ScrapeSideMission = {
-                    platform: scraper.platform,
-                    url,
-                    policy: "metadata_only",
-                }
-                scrapeSideMissions.push(sideMission)
-            }
-        }
+        const scrapeSideMissions: ScrapeSideMission[] = organiseSideMissions(newVideoUrls, existingVideoUrls, workflow, scraper.platform)
 
         const scrapeMission: ScrapeMisson = {
             ...workflow,
             sideMissions: scrapeSideMissions,
-            limit: workflow.limit ?? 10,
             batchSize: workflow.batchSize ?? 4
         }
 
@@ -107,3 +83,43 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
         // Set back to idle after a short delay to allow final messages to be sent.
     }
 }; 
+
+
+
+
+
+
+export const organiseSideMissions = (
+    newVideoUrls: string[], 
+    existingVideoUrls: string[], 
+    workflow: ScrapeByHashtagWorkflow,
+    platform: Platforms
+): ScrapeSideMission[] => {
+    const scrapeSideMissions: ScrapeSideMission[] = []    
+    
+    // Prioritise the new videos which are not in the database
+    for (const url of newVideoUrls) {
+        const sideMission: ScrapeSideMission = {
+            platform: platform,
+            url,
+            policy: "metadata+comments",
+        }
+        scrapeSideMissions.push(sideMission)
+    }
+    // Fill the remaining slots with the urls already in the database 
+    // (these will only have their metadata updated)
+    const remainingSlots = workflow.limit - scrapeSideMissions.length // only filled with the new urls at this point
+    if (remainingSlots > 0) {
+        const validUrls = existingVideoUrls.slice(0, remainingSlots)
+        for (const url of validUrls) {
+            const sideMission: ScrapeSideMission = {
+                platform: platform,
+                url,
+                policy: "metadata",
+            }
+            scrapeSideMissions.push(sideMission)
+        }
+    }
+
+    return scrapeSideMissions
+}

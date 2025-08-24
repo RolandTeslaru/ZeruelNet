@@ -22,7 +22,7 @@ export const useGatewayService = create<State & Actions>()(
         socket: null,
         isConnected: false,
         subscriptionQueue: [],
-        connect: () => {
+        connect: async () => {
             console.log("Establashing connection to GatewayService")
             if (get().socket) {
                 console.warn("Web Scoket already exists.");
@@ -99,9 +99,6 @@ export const useGatewayService = create<State & Actions>()(
         }
     }))
 )
-
-useGatewayService.getState().connect()
-
 useGatewayService.getState().subscribeToTopic("dashboard_health", () => {
     
 })

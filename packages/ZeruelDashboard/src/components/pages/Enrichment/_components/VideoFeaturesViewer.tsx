@@ -118,7 +118,7 @@ const VideoFeaturesViewer = () => {
                             <CrossIcon className={"absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2"} />
                             <CrossIcon className={"absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2"} />
                             {parsedData.llm_identified_subjects.map((obj, index) => (
-                                <div className={`relative px-1 py-3 flex justify-between ${index !== 0 && selectedVideoData.llm_identified_subjects.length - 1 !== 0 && "border-t border-white/20"}`}>
+                                <div key={index} className={`relative px-1 py-3 flex justify-between ${index !== 0 && selectedVideoData.llm_identified_subjects.length - 1 !== 0 && "border-t border-white/20"}`}>
                                     <p>subject: {obj.subject}</p>
                                     <p>stance: {obj.stance}</p>
                                 </div>

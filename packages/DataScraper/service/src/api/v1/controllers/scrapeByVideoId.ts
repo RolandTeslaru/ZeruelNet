@@ -50,17 +50,15 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
             
         const url = `https://www.tiktok.com/@placeholder/video/${workflow.videoId}`
 
-        console.log("URL", url)
-
         const scrapeMission: ScrapeMisson = {
             identifier: `${workflow.videoId}`,
             source: 'url',
             sideMissions: [{
                 platform: scraper.platform,
                 url: url,
-                policy: "full",
-            }
-            ],
+                policy: workflow.policy,
+            }],
+            scrapeCommentsLen: workflow.scrapeCommentsLen,
             limit: 1,
             batchSize: 1
         }
