@@ -1,12 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 
-const GATEWAY_PORT = process.env.NEXT_PUBLIC_GATEWAY_PORT
-
-const WS_URL = `ws://localhost:${GATEWAY_PORT}`;
-
-console.log("WS URL ")
-
 export const webSocketEvents = new EventTarget();
 
 type State = {
@@ -35,8 +29,11 @@ export const useGatewayService = create<State & Actions>()(
                 return;
             }
 
+            const gatewayWebsocketUrl = process.env.NEXT_PUBLIC_GATEWAY_WEBSOCKET_URL
+            if(!gatewayWebsocketUrl)
+                console.error("Public GatewayService Websocket Url has not been provided in the env")
 
-            const ws = new WebSocket(WS_URL);
+            const ws = new WebSocket(process.env.NEXT_PUBLIC_GATEWAY_WEBSOCKET_URL);
 
             ws.onopen = () => {
                 set((state) => {

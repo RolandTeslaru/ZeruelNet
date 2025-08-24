@@ -3,6 +3,7 @@ import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { createClient } from 'redis';
 import cors from 'cors';
+import { isOriginAllowed } from './originGuard';
 
 const app = express();
 app.use(cors({ origin: '*' })); // Allow all origins for simplicity
@@ -20,8 +21,14 @@ app.get('/health', (req, res) => {
     res.status(200).send('Gateway service is running');
 });
 
-wss.on('connection', (ws) => {
-    console.log('Client connected');
+wss.on('connection', (ws, req) => {
+    const origin = req.headers.origin as string | undefined
+    if (!isOriginAllowed(origin)){
+        ws.close(4003, "forbidden origin")
+        return;
+    }
+
+    console.log('Origin connected');
     subscriptions.set(ws, new Set());
 
     ws.on('message', (message) => {
