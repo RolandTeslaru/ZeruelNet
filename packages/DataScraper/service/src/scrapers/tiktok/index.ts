@@ -1,5 +1,5 @@
-import {  DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedComment, TiktokScrapedVideo, AbstractScraperPayload } from '@zeruel/scraper-types';
-import { discoverVideos } from './discover';
+import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapedComment, ScrapedVideo, AbstractScraperPayload } from '@zeruel/scraper-types';
+import { discoverVideos, extractVideoIdFromUrl } from './discover';
 import { scrapeComments } from './parsers';
 import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
@@ -64,16 +64,14 @@ export class TiktokScraper extends AbstractScraper {
     public async discover(mission: DiscoverMission): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}> {
         statusManager.setStage("discovery");
 
-
         const page = await this.browserManager.getPage();
         const allFoundUrls = await discoverVideos(mission.identifier, mission.limit, page);
 
-        const videoIds = allFoundUrls.map(url => url.split('/').pop() as string);
+        const videoIds = allFoundUrls.map(url => extractVideoIdFromUrl(url));
         const existingIds = await DatabaseManager.getStoredVideoIds(videoIds);
 
 
         Logger.warn(`Found ${existingIds.size} videos that already exist in the database.`);
-
 
         // Separate new videos from existing ones
         const newVideoUrls: string[] = [];
@@ -210,7 +208,11 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    protected async processScrapeSideMission(sideMission: ScrapeSideMission, page: Page, identifier: string): Promise<TiktokScrapedVideo> {
+    protected async processScrapeSideMission(
+        sideMission: ScrapeSideMission, 
+        page: Page, 
+        identifier: string
+    ): Promise<ScrapedVideo> {
         try {
             await page.goto(sideMission.url, { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]', { state: 'attached', timeout: 30000 });
@@ -219,13 +221,12 @@ export class TiktokScraper extends AbstractScraper {
             const videoJson = JSON.parse(sigiState);
             const videoInfo = videoJson["__DEFAULT_SCOPE__"]["webapp.video-detail"]["itemInfo"]["itemStruct"];
 
-            console.log("PROCESS SCRAPE SIDE MISSION ", videoInfo)
-
-
             const description = videoInfo.desc as string;
             const hashtagRegex = /#(\p{L}+)/gu;
             const extracted_hashtags = Array.from(description.matchAll(hashtagRegex), match => match[1]);
 
+            const upload_timestamp = Number(videoInfo.createTime) * 1000
+            const upload_date_iso = new Date(upload_timestamp).toISOString()
 
             this.broadcast({
                 action: "ADD_VIDEO_METADATA",
@@ -236,6 +237,7 @@ export class TiktokScraper extends AbstractScraper {
                     author_username: videoInfo.author.uniqueId,
                     video_description: description,
                     extracted_hashtags,
+                    upload_date: upload_date_iso,
                     platform: "tiktok",
                     stats: {
                         likes_count: videoInfo.stats.diggCount,
@@ -247,7 +249,7 @@ export class TiktokScraper extends AbstractScraper {
             })
 
 
-            let comments: TiktokScrapedComment[] = [];
+            let comments: ScrapedComment[] = [];
             // Only do a full comment scrape if the policy is 'full' and there are comments to scrape
             if (sideMission.policy === "metadata+comments" && videoInfo.stats.commentCount > 0) {
                 Logger.info(`[Policy: <Metadata+Comments>] Scraping comments for video ${videoInfo.id}`);
@@ -256,7 +258,7 @@ export class TiktokScraper extends AbstractScraper {
                 Logger.warn(`[Policy: Metadata] Skipping comments for video ${videoInfo.id}`);
             }
 
-            const videoData: TiktokScrapedVideo = {
+            const videoData: ScrapedVideo = {
                 video_id: videoInfo.id,
                 thumbnail_url: videoInfo.video.cover,
                 searched_hashtag: identifier,
@@ -264,6 +266,7 @@ export class TiktokScraper extends AbstractScraper {
                 author_username: videoInfo.author.uniqueId,
                 video_description: description,
                 extracted_hashtags,
+                upload_date: upload_date_iso,
                 platform: "tiktok",
                 stats: {
                     likes_count: videoInfo.stats.diggCount,

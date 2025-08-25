@@ -6,6 +6,7 @@ export interface WindowStylingProps extends React.HTMLAttributes<HTMLDivElement>
     isDetached?: boolean;
     detachedClassName?: string
     detachedStyling?: React.CSSProperties
+    contentClassName?: string
 }
 
 export interface VXEngineWindowProps{

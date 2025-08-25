@@ -34,7 +34,7 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
 
 
 export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string, show?: boolean } & HTMLMotionProps<"div">> = ({
-    className, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, show = true, ...rest
+    className, contentClassName, style, children, isDetached = false, detachedClassName, detachedStyling, bracketsClassName, show = true, ...rest
 }) => {
     if(show === false) return null
     
@@ -42,7 +42,7 @@ export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClas
         <div
             className={classNames(
                 isDetached && ['rounded-none', detachedClassName],
-                'relative px-2 pt-1 flex flex-col gap-2 border border-white/20 h-fit',
+                'relative flex flex-col gap-2 border border-white/20 h-fit',
                 className,
                 { "rounded-none": isDetached },
             )}
@@ -58,7 +58,9 @@ export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClas
             <div className={`absolute -top-1 -right-1 w-3 h-3 border-white border-r border-t`} />
             <div className={`absolute -bottom-1 -left-1 w-3 h-3 border-white border-l border-b`} />
             <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-white border-r border-b`} />
-            {children}
+            <div className={contentClassName + " overflow-y-scroll size-full p-2 pt-3"}>
+                {children}
+            </div>
         </div>
     )
 }

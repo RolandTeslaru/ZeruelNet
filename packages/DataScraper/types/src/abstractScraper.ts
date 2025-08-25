@@ -1,6 +1,6 @@
 import {z} from "zod"
 import { ScrapeMissionSchema, ScrapeSideMissionSchema } from "./missions";
-import { TiktokScrapedVideoMetadataSchema } from "./media";
+import { ScrapedVideoMetadataSchema } from "./media";
 import { variantSchema } from "./utils";
 
 // Scraper Actions
@@ -24,7 +24,7 @@ export const AbstractScraperPayloadSchema = z.discriminatedUnion("action", [
     }),
     z.object({
         action: z.literal("ADD_VIDEO_METADATA"),
-        metadata: TiktokScrapedVideoMetadataSchema.omit({ searched_hashtag: true }),
+        metadata: ScrapedVideoMetadataSchema.omit({ searched_hashtag: true }),
     }),
     z.object({
         action: z.literal("FINALISE_SIDE_MISSION"),

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { useGatewayService } from "./useGatewayService";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
-import { AbstractScraperPayload, ScrapeSideMission, TiktokScrapedVideoMetadata } from "@zeruel/scraper-types";
+import { AbstractScraperPayload, ScrapeSideMission, ScrapedVideoMetadata } from "@zeruel/scraper-types";
 
 enableMapSet()
 
@@ -10,7 +10,7 @@ enableMapSet()
 
 type State = {
     activeJobs: Map<string, ScrapeSideMission>
-    videoMetadata: Record<string, Omit<TiktokScrapedVideoMetadata, "searched_hashtag">>
+    videoMetadata: Record<string, Omit<ScrapedVideoMetadata, "searched_hashtag">>
     jobStatus: Record<string, "SCRAPING" | "SUCCESS" | "ERROR" >
     currentBatchNr: number
     totalBatches: number

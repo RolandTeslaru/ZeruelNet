@@ -3,7 +3,7 @@ import { chromium } from 'playwright-extra';
 import { CommentLayout, commentLayouts } from './pageLayouts';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '../../lib/logger';
-import { TiktokScrapedComment } from '@zeruel/scraper-types';
+import { ScrapedComment } from '@zeruel/scraper-types';
 
 function parseLikes(text: string | null): number {
     if (!text) return 0;
@@ -30,7 +30,7 @@ async function detectCommentLayout(page: Page): Promise<CommentLayout | null> {
     return null;
 }
 
-async function scrapeCommentData(element: any, layout: CommentLayout, parentId: string | null = null): Promise<TiktokScrapedComment | null> {
+async function scrapeCommentData(element: any, layout: CommentLayout, parentId: string | null = null): Promise<ScrapedComment | null> {
     try {
         const author = await element.locator(layout.commentAuthor).first().innerText({ timeout: 200 });
         const textElement = parentId ? element.locator(layout.replyText).first() : element.locator(layout.commentText).first();
@@ -59,8 +59,8 @@ async function scrapeCommentData(element: any, layout: CommentLayout, parentId: 
     }
 }
 
-export async function scrapeComments(page: Page, maxComments: number = 200): Promise<TiktokScrapedComment[]> {
-    const comments: TiktokScrapedComment[] = [];
+export async function scrapeComments(page: Page, maxComments: number = 200): Promise<ScrapedComment[]> {
+    const comments: ScrapedComment[] = [];
     const processedIds = new Set<string>();
 
     const layout = await detectCommentLayout(page);

@@ -97,8 +97,11 @@ export const organiseSideMissions = (
 ): ScrapeSideMission[] => {
     const scrapeSideMissions: ScrapeSideMission[] = []    
     
+    // Cap new videos at the limit
+    const cappedNewVideos = newVideoUrls.slice(0, workflow.limit);
+    
     // Prioritise the new videos which are not in the database
-    for (const url of newVideoUrls) {
+    for (const url of cappedNewVideos) {
         const sideMission: ScrapeSideMission = {
             platform: platform,
             url,
@@ -106,9 +109,9 @@ export const organiseSideMissions = (
         }
         scrapeSideMissions.push(sideMission)
     }
-    // Fill the remaining slots with the urls already in the database 
-    // (these will only have their metadata updated)
-    const remainingSlots = workflow.limit - scrapeSideMissions.length // only filled with the new urls at this point
+    
+    // Fill the remaining slots with existing videos (only if we have space)
+    const remainingSlots = workflow.limit - scrapeSideMissions.length;
     if (remainingSlots > 0) {
         const validUrls = existingVideoUrls.slice(0, remainingSlots)
         for (const url of validUrls) {

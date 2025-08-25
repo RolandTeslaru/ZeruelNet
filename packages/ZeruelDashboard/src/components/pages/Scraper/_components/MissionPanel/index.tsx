@@ -42,7 +42,7 @@ const MissionPanel = memo(() => {
       <p className='text-white/20 font-roboto-mono text-xl font-light'>
         ACTIVE  WORKFLOW  PANEL
       </p>
-      <div className='flex flex-wrap'>
+      <div className='flex flex-wrap gap-4'>
         <AnimatePresence mode="popLayout">
           {/* <motion.div
             key={demo_data.job.url} // Using a unique and stable key like jobUrl is important!

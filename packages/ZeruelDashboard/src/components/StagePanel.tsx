@@ -16,7 +16,9 @@ const StagePanel = () => {
         <div className='absolute -bottom-5'>
           <p className='text-neutral-200/10 text-xs font-mono'>SYS. STATUS PANEL</p>
         </div>
-        <BracketsWindowStyling className='mr-auto relative !px-3 !py-1'>
+        <BracketsWindowStyling className='mr-auto relative'
+          contentClassName='!px-3 !py-1'
+        >
           <RotatingText
             data={displayedStage}
             mainClassName="text-2xl  font-nippo font-light tracking-wider "

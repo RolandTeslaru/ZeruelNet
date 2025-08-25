@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react'
-import { EnrichedVideoSchema, useEnrichmentViewer } from '../context'
 import JsonView from 'react18-json-view'
 // @ts-expect-error
 import 'react18-json-view/src/style.css'
 import { CrossesWindowStyling, CrossIcon } from '@zeruel/shared-ui/WindowStyling'
 import { z } from "zod"
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
+import { useEnrichmentViewer } from '../context'
+import { EnrichedVideoSchema } from '@/types/enrichedVideo'
 
 
 

@@ -1,4 +1,4 @@
-import { DiscoverMission, ScrapeMisson, ScrapeSideMission, TiktokScrapedVideo } from "@zeruel/scraper-types";
+import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapedVideo } from "@zeruel/scraper-types";
 import { BrowserManager } from "../lib/browserManager";
 import { Page } from "playwright";
 
@@ -36,5 +36,5 @@ export abstract class AbstractScraper {
      * @returns {Promise<ScrapedVideo>} A promise that resolves to the scraped video data.
      * @protected
      */
-    protected abstract processScrapeSideMission(sideMission: ScrapeSideMission, page: Page, identifier: string): Promise<TiktokScrapedVideo>
+    protected abstract processScrapeSideMission(sideMission: ScrapeSideMission, page: Page, identifier: string): Promise<ScrapedVideo>
 }

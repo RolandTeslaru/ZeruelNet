@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue } from '@zeruel/shared-ui/foundations'
-import { DiscoveryTask, ScrapeTask } from '@zeruel/scraper-types'
 import { useWorkflowStatus } from '../stores/useWorkflowStatus'
+import { ScrapeWorkflow } from '@zeruel/scraper-types'
 
 const CommandPanel = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +22,7 @@ const CommandPanel = () => {
         const batchSize = Number(formData.get("batchSize"));
 
 
-        const task: ScrapeTask = {
+        const task: ScrapeWorkflow = {
             source: 'hashtag',
             identifier: hashtag,
             limit: limit,

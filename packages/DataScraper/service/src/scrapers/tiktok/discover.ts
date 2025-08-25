@@ -47,7 +47,6 @@ export const discoverVideos = async (identifier: string, limit: number, page: Pa
     const numVideosToFind = limit || MAX_VIDEOS_TO_FIND;
     let videoUrls = new Set<string>();
 
-
     statusManager
         .updateStep('scroll_automation', 'active', "Scrolling to load video cards")
         .log.info(`Scrolling to find up to ${numVideosToFind} video URLs...`)
@@ -76,6 +75,8 @@ export const discoverVideos = async (identifier: string, limit: number, page: Pa
                 .updateStep('url_extraction', "failed", "Failed to extract refs")
                 .log.error("Could not extract video cards ", e)
         }
+
+        retries --
     }
 
     statusManager
@@ -104,4 +105,9 @@ const extractAllHrefs = async (page: Page, selectorId: string) => {
 
         return hrefs;
     }, selectorId)
+}
+
+
+export const extractVideoIdFromUrl = (videoUrl: string): string => {
+    return videoUrl.split('/').pop()
 }

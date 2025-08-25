@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { Logger } from "./logger";
 import { v4 as uuidv4 } from 'uuid';
-import { TiktokScrapedVideo } from "@zeruel/scraper-types";
+import { ScrapedVideo } from "@zeruel/scraper-types";
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -24,14 +24,14 @@ export class DatabaseManager {
 
     private constructor() {}
 
-    public static async saveVideo(videoData: TiktokScrapedVideo): Promise<void> {
+    public static async saveVideo(videoData: ScrapedVideo): Promise<void> {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
 
             const videoInsertQuery = `--sql
-                INSERT INTO videos (id, video_id, searched_hashtag, video_url, author_username, video_description, extracted_hashtags, platform, likes_count, share_count, comment_count, play_count, created_at)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+                INSERT INTO videos (id, video_id, searched_hashtag, video_url, author_username, video_description, extracted_hashtags, platform, likes_count, share_count, comment_count, play_count, created_at, upload_date)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
                 ON CONFLICT (video_id) DO UPDATE SET
                     searched_hashtag = EXCLUDED.searched_hashtag,
                     video_url = EXCLUDED.video_url,
@@ -42,21 +42,24 @@ export class DatabaseManager {
                     share_count = EXCLUDED.share_count,
                     comment_count = EXCLUDED.comment_count,
                     play_count = EXCLUDED.play_count,
+                    upload_date = EXCLUDED.upload_date,
                     updated_at = NOW();
                 `;
+
             const videoValues = [
-                uuidv4(),
-                videoData.video_id,
-                videoData.searched_hashtag,
-                videoData.video_url,
-                videoData.author_username,
-                videoData.video_description,
-                videoData.extracted_hashtags,
-                videoData.platform,
-                videoData.stats.likes_count,
-                videoData.stats.share_count,
-                videoData.stats.comment_count,
-                videoData.stats.play_count,
+                uuidv4(),                       // 1
+                videoData.video_id,             // 2
+                videoData.searched_hashtag,     // 3
+                videoData.video_url,            // 4
+                videoData.author_username,      // 5
+                videoData.video_description,    // 6
+                videoData.extracted_hashtags,   // 7
+                videoData.platform,             // 8
+                videoData.stats.likes_count,    // 9
+                videoData.stats.share_count,    // 10
+                videoData.stats.comment_count,  // 11
+                videoData.stats.play_count,     // 12
+                videoData.upload_date           // 13
             ];
             await client.query(videoInsertQuery, videoValues);
 
@@ -74,14 +77,14 @@ export class DatabaseManager {
                             updated_at = NOW();
                         `;
                     const commentValues = [
-                        uuidv4(),
-                        videoData.video_id,
-                        comment.comment_id,
-                        comment.parent_comment_id,
-                        comment.author,
-                        comment.text,
-                        comment.likes_count,
-                        comment.is_creator,
+                        uuidv4(),                   // 1
+                        videoData.video_id,         // 2
+                        comment.comment_id,         // 3
+                        comment.parent_comment_id,  // 4
+                        comment.author,             // 5
+                        comment.text,               // 6
+                        comment.likes_count,        // 7
+                        comment.is_creator,         // 8
                     ];
                     await client.query(commentInsertQuery, commentValues);
                 }
