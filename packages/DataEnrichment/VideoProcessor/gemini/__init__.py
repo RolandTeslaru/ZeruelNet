@@ -81,6 +81,10 @@ class _GeminiProcessor:
             # Parse the JSON string response into a Python dictionary
             parsed_response = json.loads(response.text)
             # vxlog.info(json.dumps(parsed_response, indent=2))
+            
+            # Cap values to valid ranges [-1.0, 1.0]
+            parsed_response = value_cap_check(parsed_response)
+            
             return parsed_response
         except Exception as e:
             vxlog.error(f"An error occured during Gemini analysis for video {video_path}, error: {e}" )
@@ -88,3 +92,27 @@ class _GeminiProcessor:
 
 
 gemini = _GeminiProcessor()
+
+
+def value_cap_check(parsed_response):
+    # Cap values between [-1.0, 1.0]
+    # The model can sometime mess up 
+
+    overall_alignment = parsed_response["overall_alignment"]
+    if overall_alignment > 1.0:
+        vxlog.warning(f"Capping overall_alignment from {overall_alignment} to 1.0")
+        parsed_response["overall_alignment"] = 1.0
+    elif overall_alignment < -1.0:
+        vxlog.warning(f"Capping overall_alignment from {overall_alignment} to -1.0")
+        parsed_response["overall_alignment"] = -1.0
+    
+    for subject in parsed_response.get("identified_subjects", []):
+        stance = subject.get("stance", 0.0)
+        if stance > 1.0:
+            vxlog.warning(f"Capping stance for '{subject['subject']}' from {stance} to 1.0")
+            subject["stance"] = 1.0
+        elif stance < -1.0:
+            vxlog.warning(f"Capping stance for '{subject['subject']}' from {stance} to -1.0")
+            subject["stance"] = -1.0
+    
+    return parsed_response

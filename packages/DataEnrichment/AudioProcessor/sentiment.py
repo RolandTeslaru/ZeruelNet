@@ -27,7 +27,6 @@ class _SentimentAnalyzer:
         self.model_map = {
             'en': 'cardiffnlp/twitter-roberta-base-sentiment-latest',
             'de': 'oliverguhr/german-sentiment-bert',
-            'fr': 'cmarkea/distilcamembert-base-sentiment',
             'ro': 'DGurgurov/xlm-r_romanian_sentiment',
         }
         self.id2label_maps = {}

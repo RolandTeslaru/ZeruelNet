@@ -28,8 +28,7 @@ def setup_logger(name="EnrichmentWorker"):
         
         root_logger = logging.getLogger()
         root_logger.addHandler(handler)
-        # Set to WARNING to reduce verbosity, change to INFO or DEBUG for more details
-        root_logger.setLevel(logging.WARNING)
+        root_logger.setLevel(logging.INFO)
     
     return logging.getLogger()
 
