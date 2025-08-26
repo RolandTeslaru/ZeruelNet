@@ -18,7 +18,7 @@ export type ScrapeSideMission = z.infer<typeof ScrapeSideMissionSchema>
 
 export const ScrapeMissionSchema = z.object({
     sideMissions: z.array(ScrapeSideMissionSchema),
-    limit: z.int().min(1).default(10),
+    limit: z.coerce.number().int().min(1).default(10),
     batchSize: z.int().max(10).min(1).default(4),
     identifier: z.string(),
     source: SourcesSchema,

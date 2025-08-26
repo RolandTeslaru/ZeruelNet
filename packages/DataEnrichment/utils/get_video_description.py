@@ -1,3 +1,5 @@
+from utils import vxlog
+
 def get_video_description(video_id: str, db_conn):
     VIDEO_DESCRIPTION_QUERY = """--sql
         SELECT video_description
@@ -15,7 +17,7 @@ def get_video_description(video_id: str, db_conn):
     except Exception as e:
         import logging
 
-        logging.error(
+        vxlog.error(
             "Failed to fetch video_description for video_id %s: %s", video_id, e
         )
         return None

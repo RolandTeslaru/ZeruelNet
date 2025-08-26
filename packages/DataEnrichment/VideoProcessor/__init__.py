@@ -1,19 +1,19 @@
 from .gemini import gemini
-import logging
+from utils import vxlog
 
-def process(video_path: str, transcript: str, sentiment: dict, description: str):
-    logging.info(f"Starting video processing for {video_path}")
+def process(video_path: str, video_id: str, transcript: str, sentiment: dict, description: str):
+    vxlog.info(f"Starting video processing for {video_id}")
 
     try:
         analysis_result = gemini.analyze(video_path, transcript, sentiment, description)
 
-        logging.info(f"VIDEO Analysis result {analysis_result}")
+        vxlog.info(f"Video Analysis result {analysis_result}")
 
         if analysis_result:
             return analysis_result
         else:
-            logging.warning(f"Video processing for {video_path} returned no result.")
+            vxlog.warning(f"Video processing for {video_id} returned no result.")
             return None
     except Exception as e:
-        logging.error(f"An error occurred during video processing for {video_path}: {e}")
+        vxlog.error(f"An error occurred during video processing for {video_id}: {e}")
         return None 
