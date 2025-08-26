@@ -64,15 +64,7 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
 
         await scraper.scrape(scrapeMission)
 
-        statusManager
-            .setStage('finalizing')   
-            .updateStep('browser_shutdown', 'active');
-
-        await browserManager.close();
-
-        statusManager
-            .updateStep('browser_shutdown', 'completed')
-            .setStage('success');
+        
 
     } catch (error) {
         Logger.error('An error occurred during the scraping task:', error);
@@ -80,10 +72,23 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
     } finally {
         isScraperRunning = false;
         Logger.info('Scrape task finished.');
+
+        await shutdownBrowser(browserManager)
         // Set back to idle after a short delay to allow final messages to be sent.
     }
 }; 
 
+
+const shutdownBrowser = async (browserManager: BrowserManager) => {
+    statusManager
+        .setStage('finalizing')
+        .updateStep('browser_shutdown', 'active');
+
+    await browserManager.close();
+
+    statusManager
+        .updateStep('browser_shutdown', 'completed')
+}
 
 
 

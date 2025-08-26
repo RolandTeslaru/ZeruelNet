@@ -82,6 +82,8 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
         isScraperRunning = false;
         Logger.info('Scrape task finished.');
         // Set back to idle after a short delay to allow final messages to be sent.
+
+        await shutdownBrowser(browserManager)
     }
 };
 
