@@ -3,7 +3,7 @@ import { baseParams } from "./base";
 
 export const VideosQuerySchema = baseParams.extend({
     hashtag: z.string().trim().min(1).optional(),
-    sort_by: z.enum(["created_at", "updated_at", "play_count", "comment_count", "share_count", "likes_count"]).default("created_at"),
+    sort_by: z.enum(["created_at", "updated_at", "uploaded_at", "play_count", "comment_count", "share_count", "likes_count"]).default("created_at"),
     sort_dir: z.enum(["asc", "desc"]).default("desc")
 })
 

@@ -17,7 +17,7 @@
     "scraper-ui:start": "npm run start --workspace=@zeruel/scraper-ui",
     "scraper-ui:dev": "npm run dev --workspace=@zeruel/scraper-ui",
     "types:build": "npm run build --workspace=@zeruel/scraper-types",
-    "encirhcment:dev": "source packages/DataEnrichment/venv/bin/activate && python packages/DataEnrichment/worker.py",
+    "enrichment:dev": "source packages/DataEnrichment/venv/bin/activate && python packages/DataEnrichment/worker.py",
     "dashboard:dev": "npm run dev --workspace=@zeruel/dashboard"
   },
   "devDependencies": {

@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const orderByWhitelist = {
         "created_at": "v.created_at",
         "updated_at": "v.updated_at",
+        "uploaded_at": "v.uploaded_at",
         "play_count": "v.play_count",
         "comment_count": "v.comment_count",
         "share_count": "v.share_count",

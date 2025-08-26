@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <Layout>
       <QueryClientProvider client={queryClient}>
-        <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-24 ">
+        <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-20 ">
           <div className=' w-full relative '>
 
             {/* <TestChart1/>
