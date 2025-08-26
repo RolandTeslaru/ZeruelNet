@@ -1,13 +1,10 @@
 import subprocess
-import logging
 import os
 import requests
 from urllib.parse import urlencode, urlparse, parse_qs, urlunparse
 from dotenv import load_dotenv
-
+from utils import vxlog
 load_dotenv()
-
-logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 audio_output_dir = os.path.abspath(os.path.join(script_dir, "../tmp/audio"))
@@ -53,7 +50,7 @@ def tiktok_api_video(video_id: str):
     local_path = os.path.join(video_output_dir, f"{video_id}.mp4")
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
-    logging.info(f"Downloading MP4 for {video_id} → {local_path}")
+    vxlog.info(f"Downloading MP4 for {video_id} → {local_path}")
     with requests.get(mp4_url, stream=True, timeout=30) as dl:
         dl.raise_for_status()
         with open(local_path, 'wb') as f:
@@ -83,9 +80,9 @@ def tiktok_full(video_id: str):
         #     video_path = ydl.prepare_filename(info)
         #     if not os.path.exists(video_path):
         #         ydl.download([video_url])
-        #         logging.info(f"Successfully downloaded video to: {video_path}")
+        #         vxlog.info(f"Successfully downloaded video to: {video_path}")
         #     else:
-        #         logging.info(f"Video {video_id} is already downloaded to {video_path}. Skipping")
+        #         vxlog.info(f"Video {video_id} is already downloaded to {video_path}. Skipping")
 
         
         video_path = os.path.join(video_output_dir, f"{video_id}.mp4")
@@ -109,15 +106,15 @@ def tiktok_full(video_id: str):
             
             try:
                 subprocess.run(command, check=True, capture_output=True, text=True)
-                logging.info(f"Successfully extracted audio to: {audio_path}")
+                vxlog.info(f"Successfully extracted audio to: {audio_path}")
             except subprocess.CalledProcessError as e:
-                logging.error(f"Failed to extract audio with FFmpeg: {e.stderr}")
+                vxlog.error(f"Failed to extract audio with FFmpeg: {e.stderr}")
                 raise
         else:
-            logging.info(f"Audio {video_id} is already downloaded in {audio_path}. Skipping")
+            vxlog.info(f"Audio {video_id} is already downloaded. Skipping")
         
         return video_url, video_path, audio_path
 
     except Exception as e:
-        logging.error(f"Failed during download/extraction for video_id: {video_id}: {e}")
+        vxlog.error(f"Failed during download/extraction for video_id: {video_id}: {e}")
         raise

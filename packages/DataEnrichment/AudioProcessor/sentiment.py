@@ -3,11 +3,18 @@ from transformers import AutoTokenizer
 from scipy.special import softmax
 
 import os
-import logging
 import numpy as np
+import warnings
+import logging
+from utils import vxlog
 
+# Suppress transformers library warnings about unused model weights
+logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
+logging.getLogger("transformers").setLevel(logging.ERROR)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Suppress PyTorch FutureWarnings 
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", message=".*encoder_attention_mask.*")
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,7 +56,7 @@ class _SentimentAnalyzer:
     # Check if language is supported otherwise default to the english model
     def _check_lang(self, lang:str):
         if lang not in self.model_map:
-            logging.warning(f"Language {lang} doesnt have a sentiment model. Defaulting to english")
+            vxlog.warning(f"Language {lang} doesnt have a sentiment model. Defaulting to english")
             return "en"
         else:
             return lang
@@ -58,15 +65,15 @@ class _SentimentAnalyzer:
         model_name = self.model_map[lang]
 
         if model_name not in self.loaded_models:
-            logging.info(f"Loading model {self.model_map[lang]} for language {lang}")
+            vxlog.debug(f"Loading model {self.model_map[lang]} for language {lang}")
             try:
                 self.loaded_tokenizers[model_name] = AutoTokenizer.from_pretrained(model_name)
                 model = AutoModelForSequenceClassification.from_pretrained(model_name)
                 self.loaded_models[model_name] = model
                 self.id2label_maps[model_name] = model.config.id2label
-                logging.info(f"Successfully loaded model {model_name}")
+                vxlog.debug(f"Successfully loaded model {model_name}")
             except Exception as e:
-                logging.error(f"An error occurred when tryng to load model {model_name} {e}")
+                vxlog.error(f"An error occurred when tryng to load model {model_name} {e}")
                 self.model_map.pop(lang, None)
                 return None, None
         
@@ -104,12 +111,10 @@ class _SentimentAnalyzer:
             encoded_input = tokenizer(transcription, return_tensors='pt', truncation=True, max_length=512) 
             output = model(**encoded_input)
 
-            logging.info(f"SENTIMENT MODEL OUTPUT {output}")
-
             scores = output[0][0].detach().numpy()
             scores = softmax(scores)
 
-            logging.info(f"SENTIMENT MODEL SCORES {scores}")
+            vxlog.debug(f"SENTIMENT MODEL SCORES {scores}")
 
             # Get the correct mappings for the current model
             id2label = self.id2label_maps[model_name]
@@ -133,7 +138,7 @@ class _SentimentAnalyzer:
             return sentiment_results
 
         except Exception as e:
-            logging.error(f"An Error occured during sentiment analysis {e}")
+            vxlog.error(f"An Error occured during sentiment analysis {e}")
             return {
                 "positive": 0.0,
                 "neutral": 0.0,

@@ -1,10 +1,9 @@
 import subprocess
 import os
-import logging
 from typing import Tuple
 import re
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+from utils import vxlog
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 whisper_cpp_dir = os.path.abspath(os.path.join(script_dir, "support", "whisper.cpp"))
@@ -16,7 +15,7 @@ def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
     model_path = os.path.join(models_dir, model_name)
     executable_path = os.path.join(whisper_cpp_dir, "build", "bin", "whisper-cli")
     
-    logging.info(f"Starting transcriber model {model_name} for audio in {audio_path}")
+    vxlog.info(f"Starting transcriber model {model_name}")
 
     command = [
         executable_path,
@@ -46,9 +45,9 @@ def transcribe_audio(audio_path: str, model_name=DEFAULT_MODEL_NAME):
         return transcript, language, process.stdout + process.stderr
     
     except subprocess.CalledProcessError as e:
-        logging.error(f"Whisper.cpp exited with error: {e}")
-        logging.error(f"Whisper.cpp stderr:\n{e.stderr}")
-        logging.error(f"Whisper.cpp stdout:\n{e.stdout}")
+        vxlog.error(f"Whisper.cpp exited with error: {e}")
+        vxlog.error(f"Whisper.cpp stderr:\n{e.stderr}")
+        vxlog.error(f"Whisper.cpp stdout:\n{e.stdout}")
         raise
 
 
