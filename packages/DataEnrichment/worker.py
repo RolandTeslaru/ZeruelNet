@@ -8,11 +8,10 @@ from utils import download
 from utils.download import RapidAPITiktokDownloaderError, VideoUnavailableError
 from VideoProcessor.gemini import GEMINI_MODEL_NAME
 import AlignmentCalculator
-
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - [EnrichmentWorker] - %(message)s')
 
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = os.getenv("REDIS_PORT", 6379)
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 ENRICHMENT_QUEUE_CHANNEL = "enrichment_queue"
 
 def process(video_id: str, db_conn):
@@ -98,7 +97,7 @@ def main():
 
     db_conn = db.get_connection()
 
-    redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
+    redis_client = redis.from_url(REDIS_URL, db=0, decode_responses=True)
     pubsub = redis_client.pubsub()
     pubsub.subscribe(ENRICHMENT_QUEUE_CHANNEL)
     logging.info(f"Subscribed to Redis channel: '{ENRICHMENT_QUEUE_CHANNEL}'")
