@@ -9,6 +9,9 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT, 10),
+    connectionTimeoutMillis: 5000,
+    idleTimeoutMillis: 10000,
+    statement_timeout: 30000, 
 });
 
 
@@ -118,7 +121,12 @@ export class DatabaseManager {
             Logger.error(`Error fetching existing video IDs from database:`, e);
             throw e;
         } finally {
-            client.release();
+            // Relase the client connection in a try catch ( i dont know why it can fail but it crasehs the whole server)
+            try {
+                client.release();
+            } catch (releaseError) {
+                Logger.error('Error releasing database client:', releaseError);
+            }
         }
     }
 

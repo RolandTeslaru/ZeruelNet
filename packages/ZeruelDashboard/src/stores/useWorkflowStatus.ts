@@ -57,9 +57,7 @@ export const useWorkflowStatus = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: DashboardPages) {
-    console.log("HANDLING SOCKET MESSAGE ", payload, currentPage)
-    
+function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: DashboardPages) {    
     switch (payload.action) {
         case "UPDATE_STEP":
             useWorkflowStatus.setState(state => {

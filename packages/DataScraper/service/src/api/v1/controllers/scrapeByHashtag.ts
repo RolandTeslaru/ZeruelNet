@@ -27,6 +27,7 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
     res.status(202).send({ message: 'Scrape task initiated. See WebSocket stream for live updates.' });
     
     statusManager
+        .clearSteps()
         .setStage('initialization')
         .updateStep('api_request_received', 'completed')
 

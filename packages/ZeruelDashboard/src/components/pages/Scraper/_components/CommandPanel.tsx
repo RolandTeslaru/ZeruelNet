@@ -9,6 +9,7 @@ import { ScrapeByHashtagWorkflowSchema } from '@zeruel/scraper-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod" 
 import ZodFormRenderer from '@/components/ZodFormRenderer'
+import { useSystem } from '@/stores/useSystem'
 
 const SCHEMA_MAP = {
     "hashtag": ScrapeByHashtagWorkflowSchema,

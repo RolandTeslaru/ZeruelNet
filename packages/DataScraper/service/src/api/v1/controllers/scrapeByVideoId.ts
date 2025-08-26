@@ -24,6 +24,7 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
     res.status(202).send({ message: 'Scrape task initiated.' });
 
     statusManager
+        .clearSteps()
         .setStage('initialization')
         .updateStep('api_request_received', 'completed')
 

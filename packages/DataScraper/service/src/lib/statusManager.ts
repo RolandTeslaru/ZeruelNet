@@ -195,6 +195,14 @@ class WorkflowStatusManager {
         }
         return this
     }
+
+    public clearSteps(){
+        this.broadcast({
+            action: "CLEAR_STEPS"
+        })
+
+        return this
+    }
 }
 
 export const statusManager = WorkflowStatusManager.getInstance();

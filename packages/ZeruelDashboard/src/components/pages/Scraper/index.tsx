@@ -16,7 +16,7 @@ const Scraper = React.memo(({ show }: { show: boolean }) => {
         StylingComponent={<BracketsWindowStyling
           show={show}
           className='opacity-0 min-w-[350px] flex-col'
-          contentClassName='!py-0 px-1'
+          contentClassName="!py-0 px-2"
           detachedClassName=''
         />}
       >

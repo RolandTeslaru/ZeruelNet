@@ -25,7 +25,7 @@ const SideMissionWindow: React.FC<Props> = ({ index, scrapeSideMission }) => {
 
   return (
     <CrossesWindowStyling className={classNames(
-      'transition-colors max-w-[200px] w-[200px] h-[300px] relative text-white font-roboto-mono',
+      'transition-colors max-w-[200px] w-[200px] h-[300px] relative text-white font-roboto-mono !p-0',
       { "bg-green-700/10": status === "SUCCESS" },
       { "bg-red-600/10": status === "ERROR" }
     )
