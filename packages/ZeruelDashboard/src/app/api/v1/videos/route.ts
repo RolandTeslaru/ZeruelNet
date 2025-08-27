@@ -1,13 +1,13 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
-import { VideosQuerySchema } from '@/types/queries/videos';
 import { z } from "zod"
+import { VideosAPI } from '@/types/api/video';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const query = Object.fromEntries(searchParams.entries())
 
-    const parsed = VideosQuerySchema.safeParse(query)
+    const parsed = VideosAPI.QuerySchema.safeParse(query)
     if(!parsed.success)
         return NextResponse.json({ error: z.treeifyError(parsed.error) }, { status: 400 })
 

@@ -1,23 +1,25 @@
-import { CommentsQuerySchema, VideoFeaturesQuerySchema, VideosQuerySchema } from "@/types/queries"
+import { CommentsAPI } from "@/types/api/comments"
+import { VideosAPI } from "@/types/api/video"
+import { VideoFeaturesAPI } from "@/types/api/videoFeatures"
 import {z} from "zod"
 
 export const TABLES_MAP = {
     videos: {
-        schema: VideosQuerySchema,
-        defaultValues: VideosQuerySchema.safeParse({}).data || {},
-        json: z.toJSONSchema(VideosQuerySchema),
-        propertiesArray: Object.entries(z.toJSONSchema(VideosQuerySchema).properties)
+        schema: VideosAPI.QuerySchema,
+        defaultValues: VideosAPI.QuerySchema.safeParse({}).data || {},
+        json: z.toJSONSchema(VideosAPI.QuerySchema),
+        propertiesArray: Object.entries(z.toJSONSchema(VideosAPI.QuerySchema).properties)
     },
     comments: {
-        schema: CommentsQuerySchema,
-        defaultValues: CommentsQuerySchema.safeParse({}).data || {},
-        json: z.toJSONSchema(CommentsQuerySchema),
-        propertiesArray: Object.entries(z.toJSONSchema(CommentsQuerySchema).properties)
+        schema: CommentsAPI.QuerySchema,
+        defaultValues: CommentsAPI.QuerySchema.safeParse({}).data || {},
+        json: z.toJSONSchema(CommentsAPI.QuerySchema),
+        propertiesArray: Object.entries(z.toJSONSchema(CommentsAPI.QuerySchema).properties)
     },
     video_features: {
-        schema: VideoFeaturesQuerySchema,
-        defaultValues: VideoFeaturesQuerySchema.safeParse({}).data || {},
-        json: z.toJSONSchema(VideoFeaturesQuerySchema),
-        propertiesArray: Object.entries(z.toJSONSchema(VideoFeaturesQuerySchema).properties)
+        schema: VideoFeaturesAPI.QuerySchema,
+        defaultValues: VideoFeaturesAPI.QuerySchema.safeParse({}).data || {},
+        json: z.toJSONSchema(VideoFeaturesAPI.QuerySchema),
+        propertiesArray: Object.entries(z.toJSONSchema(VideoFeaturesAPI.QuerySchema).properties)
     }
 } as const
