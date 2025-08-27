@@ -59,17 +59,23 @@ export const useGatewayService = create<State & Actions>()(
                 console.log("useGatewayService: WebSocket connection established")
             };
         
-            ws.onclose = (error) => set((state) => {
+            ws.onclose = (event) => set((state) => {
                 state.isConnected = false
                 state.socket = null;
 
                 webSocketEvents.dispatchEvent(new Event("close"));
                 
-                useSystem.getState().setOverrideStage({
-                    type: "FAILURE",
-                    title: `CLOSED  ${error.code}:  GATEWAY  WEBSOCKET`
-                })
-                console.log("WS Closed with error", error)
+                if(event.code){
+                    console.log("WebSocket Connection Lost. Reconnecting in 3s...")
+                    
+                    useSystem.getState().setOverrideStage({
+                        type: "STANDBY",
+                        title: `STANDBY  ${event.code}:  RECONNECTING  TO  WS  GATEWAY  IN  3S`
+                    }, 3000).then(() => {
+                        get().connect()
+                    })
+                        
+                }
             });
 
             ws.onmessage = (event: MessageEvent<any>) => {

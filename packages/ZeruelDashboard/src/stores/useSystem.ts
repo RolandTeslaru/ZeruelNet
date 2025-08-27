@@ -7,7 +7,7 @@ export type DashboardPages = "scraper" | "enrichment" | "tables" | "trendsanalys
 
 export type State = {
     overrideStage: WorkflowStatusStage | null
-    setOverrideStage: (stage: WorkflowStatusStage | null, timeoutMs?: number) => void
+    setOverrideStage: (stage: WorkflowStatusStage | null, timeoutMs?: number) => Promise<void>
     currentPage: DashboardPages
     isDatabaseReachable: boolean
     isServiceReachable: boolean
@@ -31,12 +31,17 @@ export const useSystem = create<State & Actions>()(
 
             set(s => { s.overrideStage = value });
 
-            if (value !== null && timeoutMs && timeoutMs > 0) {
-                overrideTimeout = setTimeout(() => {
-                    set(s => { s.overrideStage = null });
-                    overrideTimeout = null;
-                }, timeoutMs);
-            }
+            return new Promise<void>((resolve) => {
+                if (value !== null && timeoutMs && timeoutMs > 0) {
+                    overrideTimeout = setTimeout(() => {
+                        set(s => { s.overrideStage = null });
+                        overrideTimeout = null;
+                        resolve();
+                    }, timeoutMs);
+                } else {
+                    resolve();
+                }
+            });
         },
         currentPage: "scraper",
         setCurrentPage: (value) => set(s => { s.currentPage = value }),

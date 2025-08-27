@@ -1,5 +1,4 @@
 import { EnrichedVideo } from '@/types/enrichedVideo';
-import { TableSchemaResponse } from '@/types/queries';
 import React, { createContext, useContext, useState, useMemo, memo } from 'react';
 import { z } from "zod"
 

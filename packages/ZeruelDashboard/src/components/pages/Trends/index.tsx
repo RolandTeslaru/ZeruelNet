@@ -7,6 +7,7 @@ import { TrendsProvider } from './context';
 import { useQuery } from '@tanstack/react-query';
 import TimelineChart from './_components/TimelineChart';
 import StateVisualization from './_components/StateVisualization';
+import HashtagAlignmentChart from './_components/HashtagAlignmentChart';
 
 
 
@@ -19,12 +20,13 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden row-span-3 h-full p-1 flex-col'
+            className='hidden row-span-3 h-full flex-col'
             contentClassName='!px-0 !pb-0'
             detachedClassName=''
             show={show}
           />}
         >
+          <HashtagAlignmentChart/>
         </VXWindow>
 
         <VXWindow
@@ -32,7 +34,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends: Main'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden col-span-3 row-span-2 w-full h-full mt-auto p-1 flex-col'
+            className='hidden col-span-3 row-span-2 w-full h-full mt-auto flex-col'
             contentClassName='!px-0 !pb-0'
             detachedClassName=''
             show={show}
@@ -62,7 +64,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends: Right'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden row-span-2 col-start-5 row-start-1  w-full h-full  mt-auto p-1 flex-col'
+            className='hidden row-span-2 col-start-5 row-start-1  w-full h-full  mt-auto flex-col'
             contentClassName='!px-0 !pb-0'
             detachedClassName=''
             show={show}
