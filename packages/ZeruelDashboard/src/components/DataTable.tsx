@@ -43,7 +43,7 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
     return (
         <>
-            <div className="w-full h-full  overflow-x-scroll">
+            <div className="w-full overflow-x-scroll">
                 <Table>
                     <TableHead className="sticky top-0 bg-neutral-950/90 z-20">
                         {table.getHeaderGroups().map((headerGroup) => (

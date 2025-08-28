@@ -2,15 +2,13 @@ import { create } from "zustand";
 import { useGatewayService } from "./useGatewayService";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
-import { AbstractScraperPayload, ScrapeSideMission, ScrapedVideoMetadata } from "@zeruel/scraper-types";
+import { ScraperAPI } from "@zeruel/scraper-types";
 
 enableMapSet()
 
-
-
 type State = {
-    activeJobs: Map<string, ScrapeSideMission>
-    videoMetadata: Record<string, Omit<ScrapedVideoMetadata, "searched_hashtag">>
+    activeJobs: Map<string, ScraperAPI.Mission.SideMission>
+    videoMetadata: Record<string, Omit<ScraperAPI.Data.Video.Metadata, "searched_hashtag">>
     jobStatus: Record<string, "SCRAPING" | "SUCCESS" | "ERROR" >
     currentBatchNr: number
     totalBatches: number
@@ -30,7 +28,7 @@ export const useActiveJobFeed = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(payload: AbstractScraperPayload) {
+function handleSocketMessage(payload: ScraperAPI.Paylaod.Type) {
     switch (payload.action) {
         case "ADD_SIDE_MISSION":
             const key = payload.sideMission.url

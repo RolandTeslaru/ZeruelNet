@@ -16,7 +16,7 @@ import {
     table,
   }: DataTablePaginationProps<TData>) {
     return (
-      <div className="flex w-full items-center justify-between mt-auto">
+      <div className="mt-auto flex w-full items-center justify-between">
         <div className=" flex-1 text-xs  font-roboto-mono text-neutral-300">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.

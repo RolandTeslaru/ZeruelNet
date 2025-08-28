@@ -1,15 +1,14 @@
-import { T_SystemStatusPayload } from '@zeruel/scraper-types';
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
 import { useGatewayService, webSocketEvents } from "./useGatewayService";
 import { enableMapSet } from 'immer';
-import { WorkflowStatusStage, WorkflowStatusStep } from '@zeruel/types';
+import { WorkflowStatusAPI } from '@zeruel/types';
 
 enableMapSet();
 
 type State = {
-    stage: WorkflowStatusStage
-    steps: Map<string, WorkflowStatusStep>
+    stage: WorkflowStatusAPI.Stage.Type
+    steps: Map<string, WorkflowStatusAPI.Step.Type>
 } 
 
 type Actions = {
@@ -18,18 +17,20 @@ type Actions = {
 export const useWorkflowStatus = create<State & Actions>()(
     immer((set, get) => ({
         stage: {
-            type: "INFO",
+            variant: "INFO",
             title: `IDLE:  CONNECTING  TO  SERVER`,
         },
         steps: new Map()
     }))
 )
 
-function handleSocketMessage(payload: T_SystemStatusPayload) {
+function handleSocketMessage(payload: WorkflowStatusAPI.Payload.Type) {
     switch (payload.action) {
         case "UPDATE_STEP":
             useWorkflowStatus.setState(state => {
-                state.steps.set(payload.stepId, payload.step);
+                // The incoming step will be complete without missing properties
+                const incomingStep = payload.step as WorkflowStatusAPI.Step.Type
+                state.steps.set(payload.stepId, incomingStep);
             });
             break;
         case "SET_STAGE":
@@ -47,29 +48,19 @@ function handleSocketMessage(payload: T_SystemStatusPayload) {
             });
             break;
         case "REMOVE_STEP":
-            const { delayMs, stepId, status, description } = payload
+            const { delayMs, stepId, step } = payload
+            // The incoming step will be complete without missing properties
+            const incomingStep = step as WorkflowStatusAPI.Step.Type
+            useWorkflowStatus.setState(state => {
+                state.steps.set(payload.stepId, incomingStep);
+            })
+            // delay te actual removal so the user can see the new status
             if(delayMs){
-                useWorkflowStatus.setState(state => {
-                    const step = state.steps.get(stepId);
-                    step.status = status
-                    if (description)
-                        step.description = description
-                })
-
-                // delay te actual removal so the user can see the new status
                 setTimeout(() => {
                     useWorkflowStatus.setState(state => {
                         state.steps.delete(stepId);
                     })
                 }, delayMs)
-            } else {
-                useWorkflowStatus.setState(state => {
-                    const step = state.steps.get(stepId);
-                    step.status = status
-                    if (description)
-                        step.description = description
-                    state.steps.delete(stepId);
-                })
             }
             break;
     }
@@ -81,7 +72,7 @@ webSocketEvents.addEventListener("open", () => {
     setTimeout(() => {
         useWorkflowStatus.setState(state => {
             state.stage = {
-                type: "INFO",
+                variant: "INFO",
                 title: "IDLE:  AWAITING  TASK  WORK"
             }
         })

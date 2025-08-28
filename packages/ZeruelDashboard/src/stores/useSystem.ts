@@ -5,15 +5,15 @@ import { WorkflowStatusAPI } from "@zeruel/types";
 export type DashboardPages = "scraper" | "enrichment" | "tables" | "trendsanalysis" | "health"
 
 export type State = {
-    overrideStage: WorkflowStatusAPI.Stage.Type | null
-    setOverrideStage: (stage: WorkflowStatusAPI.Stage.Type | null, timeoutMs?: number) => Promise<void>
-    currentPage: DashboardPages
-    isDatabaseReachable: boolean
-    isServiceReachable: boolean
+    overrideStage:          WorkflowStatusAPI.Stage.Type | null
+    setOverrideStage:       (stage: WorkflowStatusAPI.Stage.Type | null, timeoutMs?: number) => Promise<void>
+    currentPage:            DashboardPages
+    isDatabaseReachable:    boolean
+    isServiceReachable:     boolean
 }
 
 export type Actions = {
-    setCurrentPage: (value: DashboardPages) => void
+    setCurrentPage:         (value: DashboardPages) => void
 }
 
 let overrideTimeout: NodeJS.Timeout | null = null;

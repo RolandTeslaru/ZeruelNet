@@ -3,7 +3,7 @@ import { pool } from '@/lib/db';
 import { z } from 'zod';
 
 export namespace HashtagsAlignmentAPI {
-    export const QuerySchema = z.object({
+    export const Query = z.object({
         since: z.iso.datetime().optional(),
         until: z.iso.datetime().optional(),
     
@@ -13,9 +13,9 @@ export namespace HashtagsAlignmentAPI {
         min_polarity: z.coerce.number().min(-1).max(1).optional(),
         max_polarity: z.coerce.number().min(-1).max(1).optional(),
     })
-    export type Query = z.infer<typeof QuerySchema>
+    export type Query = z.infer<typeof Query>
 
-    export const ResponseSchema = z.object({
+    export const Response = z.object({
         subjects: z.array(z.object({
             subject_name: z.string(),
             popularity: z.int(),
@@ -24,10 +24,10 @@ export namespace HashtagsAlignmentAPI {
         })),
         meta: z.object({
             total_subjects: z.int(),
-            filters: QuerySchema
+            filters: Query
         })
     })
-    export type Response = z.infer<typeof ResponseSchema>
+    export type Response = z.infer<typeof Response>
 }
 
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
 
-    const parsed = HashtagsAlignmentAPI.QuerySchema.safeParse(query);
+    const parsed = HashtagsAlignmentAPI.Query.safeParse(query);
     if(!parsed.success) {
         return NextResponse.json({ error: z.treeifyError(parsed.error) }, { status: 400 });
     }

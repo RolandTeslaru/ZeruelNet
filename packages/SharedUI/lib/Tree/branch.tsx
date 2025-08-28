@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { BranchComponentProps } from "./types";
 import { getTreeStore, useBranch, useTree } from "./context";
+import { Spinner } from "../foundations";
 
 
 const BranchComponent: React.FC<BranchComponentProps> = memo(({
@@ -48,7 +49,6 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             tabIndex={-1}
             className={listClassName + " relative min-w-full w-fit"}
         >
-
             <div className={`${className} relative h-8 min-w-full flex items-center gap-2`}
                 style={{ paddingLeft: `${level * 24}px` }}
                 {...rest}
@@ -58,6 +58,7 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
                         <div className={`content-[""] absolute top-0 min-w-[1px] bg-neutral-500  h-[calc(50%_-_6px)] ml-[7.5px]`} />
                         <BranchExpandButton
                             isExpanded={branch.isExpanded}
+                            isLoading={branch.isLoading}
                             onClick={onExpandButtonClick}
                             level={level}
                         />
@@ -101,25 +102,32 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
 
 interface BranchExpandButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
     isExpanded: boolean
+    isLoading: boolean
     level: number
     onClick: () => void
 }
 
 const BranchExpandButton: React.FC<BranchExpandButtonProps> = ({
     isExpanded,
+    isLoading,
     ...props
 }) => {
     return (
         <button
             className="!cursor-pointer transition-transform duration-200"
             {...props}
-            >
-            <svg
-                className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : 'rotate-0'}`}
-                xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth={1} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="18" height="18" x="3" y="3" rx="2" strokeWidth="0.5" />
-                <path d="m10 8 4 4-4 4" />
-            </svg>
+        >
+            {isLoading 
+                ? <Spinner className="w-4"/>
+                : <svg
+                    className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : 'rotate-0'}`}
+                    xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth={1} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2" strokeWidth="0.5" />
+                    <path d="m10 8 4 4-4 4" />
+                </svg>
+            }
+            
+            
         </button>
     )
 }

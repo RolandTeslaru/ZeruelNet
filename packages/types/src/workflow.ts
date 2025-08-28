@@ -6,9 +6,9 @@ export namespace WorkflowStatusAPI {
         export type Variant = z.infer<typeof Variant>
         
         export const Schema = z.object({
-            label: z.string(),
+            label:       z.string(),
             description: z.string(),
-            variant: Variant
+            variant:     Variant
         })
         export type Type = z.infer<typeof Schema>
     }
@@ -18,7 +18,7 @@ export namespace WorkflowStatusAPI {
         export type Variant = z.infer<typeof Variant>
         
         export const Schema = z.object({
-            title: z.string(),
+            title:   z.string(),
             variant: Variant
         })
         export type Type = z.infer<typeof Schema>
@@ -42,20 +42,22 @@ export namespace WorkflowStatusAPI {
         export const Schema = z.discriminatedUnion("action", [
             z.object({
                 action: z.literal("SET_STAGE"),
-                stage: Stage.Schema,
-                steps: z.record(z.string(), Step.Schema),
+                stage:  Stage.Schema,
+                steps:  z.record(z.string(), Step.Schema),
             }),
-            WorkflowStatusAPI.Step.Schema.partial().extend({
+            z.object({
                 action: z.literal("UPDATE_STEP"),
                 stepId: z.string(),
+                step:   WorkflowStatusAPI.Step.Schema.partial()
             }),
             z.object({
                 action: z.literal("CLEAR_STEPS"),
             }),
-            WorkflowStatusAPI.Step.Schema.partial().extend({
-                action: z.literal("REMOVE_STEP"),
-                stepId: z.string(),
-                delayMs: z.number().optional(),
+            z.object({
+                action:   z.literal("REMOVE_STEP"),
+                stepId:   z.string(),
+                delayMs:  z.number().optional(),
+                step:     WorkflowStatusAPI.Step.Schema.partial()
             })
         ])
 

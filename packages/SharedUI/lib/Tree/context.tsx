@@ -37,7 +37,7 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                     if(!branch)
                         return
 
-                    branch.isLoading = true;
+                    branch.isLoading = value;
                 }),
                 addBranch: (branch, parentPaths) => set(s => {
                     // Ceck for queued branches

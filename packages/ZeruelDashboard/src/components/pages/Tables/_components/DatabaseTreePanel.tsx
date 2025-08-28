@@ -1,7 +1,7 @@
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import Tree from '@zeruel/shared-ui/Tree'
 import { Database, Info, Table } from '@zeruel/shared-ui/icons'
-import { fetchTableColumns, fetchTableConstraints, fetchTableIndexes, fetchTableTriggers } from '@/lib/api/dashboard'
+import { fetchTableColumns, fetchTableConstraints, fetchTableIndexes, fetchTableTriggers } from '@/lib/api/database'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger, Popover, PopoverContent, PopoverItem, PopoverTrigger } from '@zeruel/shared-ui/foundations'
 import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper'
 import { memo } from 'react'

@@ -1,19 +1,17 @@
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger, SelectItem, Select, SelectContent, SelectTrigger, SelectValue, Form, FormField, FormItem, FormLabel, FormControl, Slider } from '@zeruel/shared-ui/foundations'
-import { useWorkflowStatus } from '@/stores/useWorkflowStatus'
-import { ScrapeByVideoIdWorkflowSchema } from '@zeruel/scraper-types'
 import { useForm } from 'react-hook-form'
 import { scraperApi, sendScrapeCommand } from '@/lib/api/scraper'
-import { ScrapeByHashtagWorkflowSchema } from '@zeruel/scraper-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod" 
 import ZodFormRenderer from '@/components/ZodFormRenderer'
 import { useSystem } from '@/stores/useSystem'
+import { ScraperAPI } from '@zeruel/scraper-types'
 
 const SCHEMA_MAP = {
-    "hashtag": ScrapeByHashtagWorkflowSchema,
-    "video-id": ScrapeByVideoIdWorkflowSchema
+    "hashtag": ScraperAPI.Workflow.Variants.ByHashtag,
+    "video-id": ScraperAPI.Workflow.Variants.ByVideoId
 } 
 
 const CommandPanel = memo(() => {
@@ -42,7 +40,7 @@ const CommandPanel = memo(() => {
         }, {});
 
         if(scrapeBy === "hashtag"){
-            const parsed = ScrapeByHashtagWorkflowSchema.safeParse(filteredData)
+            const parsed = ScraperAPI.Workflow.Variants.ByHashtag.safeParse(filteredData)
             if(parsed.error){
                 console.error(z.treeifyError(parsed.error))
             }
@@ -50,7 +48,7 @@ const CommandPanel = memo(() => {
             const { data } = await sendScrapeCommand("/api/v1/workflow/scrape-by-hashtag", parsed.data)
         } 
         else if (scrapeBy === "video-id"){
-            const parsed = ScrapeByVideoIdWorkflowSchema.safeParse(filteredData)
+            const parsed = ScraperAPI.Workflow.Variants.ByVideoId.safeParse(filteredData)
             if(parsed.error){
                 console.error(z.treeifyError(parsed.error))
             }

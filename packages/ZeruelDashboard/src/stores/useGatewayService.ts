@@ -5,15 +5,15 @@ import { useSystem } from "./useSystem";
 export const webSocketEvents = new EventTarget();
 
 type State = {
-    socket: null | WebSocket,
-    isConnected: boolean
-    subscriptionQueue: Array<{ topic: string, callback: (data: any) => void }>
+    socket:             null | WebSocket,
+    isConnected:        boolean
+    subscriptionQueue:  Array<{ topic: string, callback: (data: any) => void }>
 }
 
 type Actions = {
-    connect: () => void;
-    disconnect: () => void;
-    subscribeToTopic: (topic: string, callback: (data: any) => void) => void
+    connect:            () => void;
+    disconnect:         () => void;
+    subscribeToTopic:   (topic: string, callback: (data: any) => void) => void
 }
 
 const SOCKET_ON_MESSAGE_CALLBACK_REGISTRY: Record<string, (data: any) => void> = {}
@@ -38,7 +38,7 @@ export const useGatewayService = create<State & Actions>()(
 
             ws.onopen = () => {
                 useSystem.getState().setOverrideStage({
-                    type: "SUCCESS",
+                    variant: "SUCCESS",
                     title: "GATEWAY  WS  CONNECTION  ESTABLISHED"
                 }, 3000)
                 set((state) => {
@@ -69,7 +69,7 @@ export const useGatewayService = create<State & Actions>()(
                     console.log("WebSocket Connection Lost. Reconnecting in 3s...")
                     
                     useSystem.getState().setOverrideStage({
-                        type: "STANDBY",
+                        variant: "STANDBY",
                         title: `STANDBY  ${event.code}:  RECONNECTING  TO  WS  GATEWAY  IN  3S`
                     }, 3000).then(() => {
                         get().connect()

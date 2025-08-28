@@ -27,7 +27,8 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
                     title='ZereulNet Dashboard: Table Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className='hidden bg-neutral-950/30 min-h-full max-h-full  max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] flex-col'
+                        className='hidden bg-neutral-950/30 h-full max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] flex-col'
+                        contentClassName='!px-0'
                         detachedClassName=''
                         show={show}
                     />}

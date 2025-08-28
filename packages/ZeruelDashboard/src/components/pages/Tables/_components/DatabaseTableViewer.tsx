@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table"
 import { useTablesContext } from '../context';
 import { useQuery } from '@tanstack/react-query';
-import { fetchComments, fetchTableSchema, fetchVideoFeatures, fetchVideos } from '@/lib/api/dashboard';
+import { fetchComments, fetchTableColumns, fetchTableMeta, fetchVideoFeatures, fetchVideos } from '@/lib/api/database';
 import { Checkbox, Spinner } from '@zeruel/shared-ui/foundations';
 import { DataTable } from '@/components/DataTable';
 
@@ -22,11 +22,18 @@ const DatabaseTableViewer = memo(() => {
     const { selectedTable, queryParams } = useTablesContext();
 
     // Fetch schema for the table that contains the columns
-    const { data: schemaData, isLoading: isSchemaLoading } = useQuery({
-        queryKey: ['tableSchema', selectedTable],
-        queryFn: () => fetchTableSchema({ tableName: selectedTable as 'videos' | 'video_features' | 'comments' }),
-        staleTime: Infinity, // Schema is static, cache it forever
+    const { data: columns, isLoading: isSchemaLoading } = useQuery({
+        queryKey: ['tableColumns', selectedTable],
+        queryFn: async () => {
+            const data = await fetchTableColumns(selectedTable)
+            return data.map(col => ({
+                accessorKey: col.column_name,
+                header: col.column_name.replace(/_/g, ' ').toUpperCase(),
+            }))
+        },
+        staleTime: Infinity,
     });
+
 
     // Fetch the selected table
     const { data, isLoading: isDataLoading } = useQuery({
@@ -35,37 +42,16 @@ const DatabaseTableViewer = memo(() => {
             const baseParams = { limit: pageSize, offset: pageIndex * pageSize };
             const paramsWithFilters = { ...baseParams, ...(queryParams ?? {}) } as any;
             switch (selectedTable) {
-                case 'video_features': return fetchVideoFeatures(paramsWithFilters);
-                case 'comments': return fetchComments(paramsWithFilters);
-                case 'videos':
-                default: return fetchVideos(paramsWithFilters);
+                case 'video_features':  return fetchVideoFeatures(paramsWithFilters);
+                case 'comments':        return fetchComments(paramsWithFilters);
+                case 'videos':          return fetchVideos(paramsWithFilters);
             }
         },
         // Only run this query if the schema has been successfully loaded
-        enabled: !!schemaData,
+        enabled: !!columns,
     });
 
-    const defaultData = useMemo(() => [], []);
-
-    // Generate columns array
-    const columns = useMemo<ColumnDef<any>[]>(() => {
-        if (!schemaData) return [];
-
-        const generatedColumns = schemaData.map((col) => ({
-            accessorKey: col.column_name,
-            header: col.column_name.replace(/_/g, ' ').toUpperCase(),
-        }));
-
-        // Add the manual "select" column to the front
-        return [
-            {
-                id: "select",
-                header: ({ table }) => (<Checkbox />),
-                cell: ({ row }) => (<Checkbox />),
-            },
-            ...generatedColumns,
-        ];
-    }, [schemaData]);
+    const defaultData = [];
 
     const pagination = useMemo(() => ({
         pageIndex,
@@ -89,7 +75,10 @@ const DatabaseTableViewer = memo(() => {
     }
 
     return (
-        <DataTable data={data ? data.items : EMPTY_DATA} columns={columns} table={table} />
+        <div className='flex flex-col h-full'>
+
+            <DataTable data={data ? data.items : EMPTY_DATA} columns={columns} table={table} />
+        </div>
     );
 })
 

@@ -1,25 +1,23 @@
-import { CommentsAPI } from "@/types/api/comments"
-import { VideosAPI } from "@/types/api/video"
-import { VideoFeaturesAPI } from "@/types/api/videoFeatures"
+import { DatabaseAPI } from "@/types/api/database"
 import {z} from "zod"
 
 export const TABLES_MAP = {
     videos: {
-        schema: VideosAPI.QuerySchema,
-        defaultValues: VideosAPI.QuerySchema.safeParse({}).data || {},
-        json: z.toJSONSchema(VideosAPI.QuerySchema),
-        propertiesArray: Object.entries(z.toJSONSchema(VideosAPI.QuerySchema).properties)
+        schema:             DatabaseAPI.Videos.Query,
+        defaultValues:      DatabaseAPI.Videos.Query.safeParse({}).data || {},
+        json:               z.toJSONSchema(DatabaseAPI.Videos.Query),
+        propertiesArray:    Object.entries(z.toJSONSchema(DatabaseAPI.Videos.Query).properties)
     },
     comments: {
-        schema: CommentsAPI.QuerySchema,
-        defaultValues: CommentsAPI.QuerySchema.safeParse({}).data || {},
-        json: z.toJSONSchema(CommentsAPI.QuerySchema),
-        propertiesArray: Object.entries(z.toJSONSchema(CommentsAPI.QuerySchema).properties)
+        schema:             DatabaseAPI.Comments.Query,
+        defaultValues:      DatabaseAPI.Comments.Query.safeParse({}).data || {},
+        json:               z.toJSONSchema(DatabaseAPI.Comments.Query),
+        propertiesArray:    Object.entries(z.toJSONSchema(DatabaseAPI.Comments.Query).properties)
     },
     video_features: {
-        schema: VideoFeaturesAPI.QuerySchema,
-        defaultValues: VideoFeaturesAPI.QuerySchema.safeParse({}).data || {},
-        json: z.toJSONSchema(VideoFeaturesAPI.QuerySchema),
-        propertiesArray: Object.entries(z.toJSONSchema(VideoFeaturesAPI.QuerySchema).properties)
+        schema:             DatabaseAPI.VideoFeatures.Query,
+        defaultValues:      DatabaseAPI.VideoFeatures.Query.safeParse({}).data || {},
+        json:               z.toJSONSchema(DatabaseAPI.VideoFeatures.Query),
+        propertiesArray:    Object.entries(z.toJSONSchema(DatabaseAPI.VideoFeatures.Query).properties)
     }
 } as const

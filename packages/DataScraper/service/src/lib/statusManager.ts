@@ -160,16 +160,16 @@ class WorkflowStatusManager {
     public updateStep(stepId: string, variant?: WorkflowStatusAPI.Step.Variant, description?: string) {
         const step = this.currentStatus.steps[stepId];
         if (step) {
-            step.variant = variant;
-            if (description) {
-                step.description = description;
-            }
-            this.broadcast({
-                ...step,
-                action: "UPDATE_STEP",
-                stepId,
+            const newStep = {
+                ...step, 
                 variant,
                 description
+            }
+ 
+            this.broadcast({
+                action: "UPDATE_STEP",
+                stepId,
+                step: newStep
             });
         }
         else {
@@ -181,12 +181,17 @@ class WorkflowStatusManager {
     public removeStep(stepId: string, variant?: WorkflowStatusAPI.Step.Variant, description?: string, delayMs?: number){
         const step = this.currentStatus.steps[stepId];
         if(step){
+            const newStep = {
+                ...step, 
+                variant,
+                description
+            }
+
             this.broadcast({
                 action: "REMOVE_STEP",
                 stepId,
                 delayMs,
-                variant,
-                description,
+                step: newStep
             })
         } else {
             console.error(`Remove Step `)

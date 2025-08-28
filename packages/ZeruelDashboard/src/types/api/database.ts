@@ -1,0 +1,148 @@
+import {z} from "zod"
+
+export namespace DatabaseAPI {
+    export const BaseQuery = z.object({
+        video_id:   z.string().regex(/^\d+$/, "videoId must be a numeric string").optional(),
+        limit:      z.coerce.number().int().positive().max(100).default(20),
+        offset:     z.coerce.number().int().min(0).default(0),
+        since:      z.iso.datetime().optional(),
+        until:      z.iso.datetime().optional(),
+      })
+
+
+
+    export namespace Comments {
+        export const Query = BaseQuery.extend({
+            author:             z.string().optional(),
+            video_id:           z.string().optional(),
+            comment_id:         z.string().optional(),
+            parent_comment_id:  z.string().optional(),
+    
+            text_contains:      z.string().optional(),
+    
+            min_likes_count:    z.coerce.number().min(0).optional(),
+            max_likes_count:    z.coerce.number().optional(),
+    
+            sort_by:            z.enum(["likes_count", "created_at", "updated_at"]).default("created_at"),
+            sort_dir:           z.enum(["asc", "desc"]).default("desc")
+        })
+        export type Query = z.infer<typeof Query>
+    
+        export const Response = z.object({
+            items: z.array(z.any()),
+            page: z.object({
+                limit:  z.number(),
+                offset: z.number(),
+                total:  z.number(),
+            })
+        })
+        export type Response = z.infer<typeof Response>
+    }
+
+
+
+    export namespace Videos {
+        export const Query = BaseQuery.extend({
+            hashtag:    z.string().trim().min(1).optional(),
+            sort_by:    z.enum(["created_at", "updated_at", "uploaded_at", "play_count", "comment_count", "share_count", "likes_count"]).default("created_at"),
+            sort_dir:   z.enum(["asc", "desc"]).default("desc")
+        })
+        export type Query = z.infer<typeof Query>
+    
+        export const Response = z.object({
+            items: z.array(z.any()),
+            page: z.object({
+                limit:  z.number(),
+                offset: z.number(),
+                total:  z.number(),
+            }),
+        })
+        export type Response = z.infer<typeof Response>
+    }
+
+
+
+    export namespace VideoFeatures {
+        export const IdentifiedSubject = z.object({
+            subject:    z.string().trim().min(1),
+            min_stance: z.coerce.number().min(-1).max(1).optional(),
+            max_stance: z.coerce.number().min(-1).max(1).optional(),
+        })
+        export type IdentifiedSubject = z.infer<typeof IdentifiedSubject>
+    
+        export const Query = BaseQuery.extend({
+            video_id:          z.string().optional(),
+            detected_language: z.string().regex(/^[a-z]{2}$/, "Invalid language code").optional(),
+            enrichment_status: z.enum(["completed", "failed"]).optional(),
+            // -1 means very pro russia while 1 means pro western
+            min_alignment:     z.coerce.number().min(-1).max(1).optional(),
+            max_alignment:     z.coerce.number().min(-1).max(1).optional(),
+            // polairty = positive - negative sentiments
+            min_polarity:      z.coerce.number().min(-1).max(1).optional(),
+            max_polarity:      z.coerce.number().min(-1).max(1).optional(),
+        
+            timestamp:         z.enum(["last_enriched_at", "polarity", "llm_overall_alignment"]).default("last_enriched_at").optional(),
+            sort:              z.enum(["asc", "desc"]).default("desc").optional(),
+        
+            identified_subjects: z.array(IdentifiedSubject).optional()
+        })
+        export type Query = z.infer<typeof Query>
+    
+        export const Response = z.object({
+            items:  z.array(z.any()),
+            page:   z.object({
+                limit:  z.number(),
+                offset: z.number(),
+                total:  z.number(),
+            }),
+        })
+        export type Response = z.infer<typeof Response>
+    }
+
+
+
+    export namespace TableMeta {
+        export const Column = z.object({
+            column_name: z.string(),
+            data_type: z.string(),
+        });
+        export type Column = z.infer<typeof Column>
+        
+        export const Constraint = z.object({
+            constraint_name:     z.string(),
+            constraint_type:     z.enum(["PRIMARY KEY", "FOREIGN KEY", "UNIQUE", "CHECK"]),
+            column_name:         z.string(),
+            foreign_table_name:  z.string().nullable(),
+            foreign_column_name: z.string().nullable(),
+        });
+        export type Constraint = z.infer<typeof Constraint>
+
+
+        export const Index = z.object({
+            index_name: z.string(),
+            index_definition: z.string(),
+        });
+        export type Index = z.infer<typeof Index>
+        
+        export const Trigger = z.object({
+            trigger_name:       z.string(),
+            event_manipulation: z.string(),
+            action_timing:      z.string(),
+        });
+        export type Trigger = z.infer<typeof Trigger>
+        
+
+        export const Query = z.object({
+            tableName: z.enum(['videos', 'video_features', 'comments'])
+        })
+        export type Query = z.infer<typeof Query>
+    
+        export const Response = z.object({
+            columns:        z.array(Column),
+            constraints:    z.array(Constraint),
+            indexes:        z.array(Index),
+            triggers:       z.array(Trigger),
+        });
+        export type Response = z.infer<typeof Response>
+    }
+}

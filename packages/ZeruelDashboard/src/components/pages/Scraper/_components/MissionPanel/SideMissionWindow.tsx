@@ -4,12 +4,12 @@ import { Spinner } from '@zeruel/shared-ui/foundations'
 import { useActiveScraping } from "@/stores/useActiveScraping"
 import { Bookmark, Heart, Share, Comment, ICON_MAP, Eye, Check, X } from '@zeruel/shared-ui/icons'
 import classNames from 'classnames'
-import { ScrapeSideMission, ScrapedVideoMetadata } from '@zeruel/scraper-types'
+import { ScraperAPI } from '@zeruel/scraper-types'
 
 interface Props {
   index: number
-  scrapeSideMission: ScrapeSideMission
-  metadata?: ScrapedVideoMetadata
+  scrapeSideMission: ScraperAPI.Mission.SideMission
+  metadata?: ScraperAPI.Data.Video.Metadata
 }
 
 const success_text_classNames = 'absolute bottom-1/2 right-1/2 translate-1/2 text-green-300 text-center text-xl font-nippo tracking-wider animate-pulse'

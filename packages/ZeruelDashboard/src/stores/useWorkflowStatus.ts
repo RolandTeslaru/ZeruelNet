@@ -3,19 +3,18 @@ import { immer } from "zustand/middleware/immer"
 import { useGatewayService, webSocketEvents } from "./useGatewayService";
 import { enableMapSet } from 'immer';
 import { DashboardPages } from './useSystem';
-import { WorkflowStatusStage, WorkflowStatus, WorkflowStatusStep } from '@zeruel/types';
-import { WorkflowStatusPayload } from "@zeruel/scraper-types";
+import { WorkflowStatusAPI } from "@zeruel/types";
 
 enableMapSet();
 
 
 type State = {
-    pageStages: Record<DashboardPages, WorkflowStatusStage>
-    pageSteps: Record<DashboardPages, Map<string, WorkflowStatusStep>>
+    pageStages: Record<DashboardPages, WorkflowStatusAPI.Stage.Type>
+    pageSteps: Record<DashboardPages, Map<string, WorkflowStatusAPI.Step.Type>>
 } 
 
 type Actions = {
-    setPageStage: (page: DashboardPages, stage: WorkflowStatusStage) => void
+    setPageStage: (page: DashboardPages, stage: WorkflowStatusAPI.Stage.Type) => void
 }
 
 export const useWorkflowStatus = create<State & Actions>()(
@@ -23,23 +22,23 @@ export const useWorkflowStatus = create<State & Actions>()(
 
         pageStages: {
             scraper : {
-                type: "INFO",
+                variant: "INFO",
                 title: `IDLE:  AWAITING  WORKFLOW  REQUEST`, // scraper service
             },
             enrichment: {
-                type: "INFO",
+                variant: "INFO",
                 title: "IDLE:  AWAITING  TASK"
             },
             tables : {
-                type: "INFO",
+                variant: "INFO",
                 title: `IDLE:  CONNECTED  TO  DATABASE`, // postgreSql database
             },
             trendsanalysis : {
-                type: "INFO",
+                variant: "INFO",
                 title: `IDLE:  AWAITING  TASK`, // dashboard service
             },
             health : {
-                type: "INFO",
+                variant: "INFO",
                 title: `IDLE:  NO  DATA`, // nothing
             },
         },
@@ -57,11 +56,17 @@ export const useWorkflowStatus = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: DashboardPages) {    
+function handleSocketMessage(payload: WorkflowStatusAPI.Payload.Type, currentPage: DashboardPages) {    
     switch (payload.action) {
         case "UPDATE_STEP":
             useWorkflowStatus.setState(state => {
-                state.pageSteps[currentPage].set(payload.stepId, payload.step);
+                const oldStep = state.pageSteps[currentPage].get(payload.stepId)
+
+                const newStep: WorkflowStatusAPI.Step.Type = {
+                    ...oldStep,
+                    ...payload.step
+                }
+                state.pageSteps[currentPage].set(payload.stepId, newStep);
             });
             break;
         case "SET_STAGE":
@@ -79,13 +84,17 @@ function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: Dashbo
             });
             break;
         case "REMOVE_STEP":
-            const { delayMs, stepId, status, description } = payload
+            const { delayMs, stepId, step } = payload
             if(delayMs){
                 useWorkflowStatus.setState(state => {
-                    const step = state.pageSteps[currentPage].get(stepId);
-                    step.status = status
-                    if (description)
-                        step.description = description
+                    const oldStep = state.pageSteps[currentPage].get(stepId);
+
+                    const newStep = {
+                        ...oldStep,
+                        ...step
+                    }
+                    
+                    state.pageSteps[currentPage].set(payload.stepId, newStep);
                 })
 
                 // delay te actual removal so the user can see the new status
@@ -96,11 +105,14 @@ function handleSocketMessage(payload: WorkflowStatusPayload, currentPage: Dashbo
                 }, delayMs)
             } else {
                 useWorkflowStatus.setState(state => {
-                    const step = state.pageSteps[currentPage].get(stepId);
-                    step.status = status
-                    if (description)
-                        step.description = description
-                    state.pageSteps[currentPage].delete(stepId);
+                    const oldStep = state.pageSteps[currentPage].get(stepId);
+
+                    const newStep = {
+                        ...oldStep,
+                        ...step
+                    }
+                    
+                    state.pageSteps[currentPage].set(payload.stepId, newStep);
                 })
             }
             break;

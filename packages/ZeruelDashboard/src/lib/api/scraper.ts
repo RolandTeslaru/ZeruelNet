@@ -19,7 +19,7 @@ export async function sendScrapeCommand(urlPath: string, params: any){
         const errorDetails = handleScraperError(error);
         
         useSystem.getState().setOverrideStage({
-            type: "FAILURE",
+            variant: "FAILURE",
             title: errorDetails.code === 'ERR_NETWORK' 
                 ? "ERROR:  SCRAPER  SERVICE  UNREACHABLE"
                 : "ERROR:  FAILED  TO SEND  CMD"

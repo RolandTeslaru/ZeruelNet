@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 
 export async function GET(
+
   _request: NextRequest,
   { params }: { params: Promise<{ tableName: string }> }
+  
 ) {
   const { tableName } = await params;
   try {

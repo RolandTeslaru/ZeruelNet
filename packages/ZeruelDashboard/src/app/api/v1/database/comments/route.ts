@@ -1,13 +1,13 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import { z } from "zod";
-import { CommentsAPI } from '@/types/api/comments';
+import { DatabaseAPI } from '@/types/api/database';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const query = Object.fromEntries(searchParams.entries());
 
-  const parsed = CommentsAPI.QuerySchema.safeParse(query);
+  const parsed = DatabaseAPI.Comments.Query.safeParse(query);
   
   if (!parsed.success) {
     console.error(z.treeifyError(parsed.error));

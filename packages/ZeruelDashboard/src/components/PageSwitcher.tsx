@@ -25,23 +25,23 @@ const PageSwitcher = () => {
             >
                 <TabsList className='gap-2 !bg-neutral-800/40 !border-primary-thin' indicatorClassname='!bg-blue-500 !border-blue-400' indicatorStyle={{boxShadow: "0px 0px 10px 3px oklch(0.623 0.214 259.815" }}
                 >
-                    <TabsTrigger className=' px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="scraper">
+                    <TabsTrigger className=' px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="scraper">
                         <Bot strokeWidth={1.5} size={20}/>
                         SCRAPER
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="enrichment">
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="enrichment">
                         <Sparkles size={20}/>
                         ENRICHMENT
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="tables">
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="tables">
                         <Table strokeWidth={1.5} size={20}/>
                         TABLES
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="trendsanalysis">
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="trendsanalysis">
                         <Activity strokeWidth={1.5} size={20}/>
                         TRENDS & ANALYSIS
                     </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-normal tracking-wider' value="health">
+                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="health">
                         <Health strokeWidth={1.5} size={20}/>
                         SYS. HEALTH
                     </TabsTrigger>

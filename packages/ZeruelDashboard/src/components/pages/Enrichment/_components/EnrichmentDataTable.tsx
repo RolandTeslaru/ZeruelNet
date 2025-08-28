@@ -1,4 +1,4 @@
-import { fetchTableSchema, fetchVideoFeatures } from '@/lib/api/dashboard';
+import { fetchTableColumns, fetchTableMeta, fetchVideoFeatures } from '@/lib/api/database';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, getCoreRowModel, PaginationState, useReactTable } from '@tanstack/react-table';
 import { CommandBar, CommandBarBar, CommandBarCommand, CommandBarSeperator, CommandBarValue, Input, Spinner } from '@zeruel/shared-ui/foundations';
@@ -19,9 +19,15 @@ const EnrichmentDataTable = memo(() => {
     });
 
     // Fetch schema for the table that contains the columns
-    const { data: schemaData, isLoading: isSchemaLoading } = useQuery({
-        queryKey: ['tableSchema', 'video_features'],
-        queryFn: () => fetchTableSchema({ tableName: 'video_features' }),
+    const { data: columns, isLoading: isSchemaLoading } = useQuery({
+        queryKey: ['tableColumns', 'video_features'],
+        queryFn: async () => {
+            const data = await fetchTableColumns("video_features")
+            return data.map(col => ({
+                accessorKey: col.column_name,
+                header: col.column_name.replace(/_/g, ' ').toUpperCase(),
+            }))
+        },
         staleTime: Infinity,
     });
 
@@ -36,20 +42,10 @@ const EnrichmentDataTable = memo(() => {
             };
             return fetchVideoFeatures(baseParams);
         },
-        enabled: !!schemaData,
+        enabled: !!columns,
     });
 
     const defaultData = useMemo(() => [], []);
-
-    // Generate columns array ( also selection happens on row click )
-    const columns = useMemo<ColumnDef<any>[]>(() => {
-        if (!schemaData) return [];
-
-        return schemaData.map((col) => ({
-            accessorKey: col.column_name,
-            header: col.column_name.replace(/_/g, ' ').toUpperCase(),
-        }));
-    }, [schemaData]);
 
     const pagination = useMemo(() => ({
         pageIndex,
@@ -105,7 +101,7 @@ const EnrichmentDataTable = memo(() => {
     }
 
     return (
-        <>
+        <div className='h-full flex flex-col gap-2'>
             <Input
                 placeholder='search video id'
                 className='w-[200px] ml-2'
@@ -120,9 +116,8 @@ const EnrichmentDataTable = memo(() => {
                 columns={columns}
                 table={table}
             >
-                {/* <DataTableBulkEditor table={table} rowSelection={table.getState().rowSelection}/> */}
             </DataTable >
-        </>
+        </div>
     );
 })
 

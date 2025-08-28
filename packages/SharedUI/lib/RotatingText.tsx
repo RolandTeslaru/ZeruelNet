@@ -12,7 +12,7 @@ import {
   type Target,
   type TargetAndTransition,
 } from "motion/react";
-import { WorkflowStatusStage } from "@zeruel/types";
+import { WorkflowStatusAPI } from "@zeruel/types";
 
 function cn(...classes: (string | undefined | null | boolean)[]): string {
   return classes.filter(Boolean).join(" ");
@@ -23,7 +23,7 @@ export interface RotatingTextProps
     React.ComponentPropsWithoutRef<typeof motion.span>,
     "children" | "transition" | "initial" | "animate" | "exit"
   > {
-  data?: WorkflowStatusStage;
+  data?: WorkflowStatusAPI.Stage.Type;
   transition?: any;
   initial?: boolean | Target | VariantLabels;
   animate?: boolean | VariantLabels | TargetAndTransition;
@@ -152,7 +152,7 @@ const RotatingText: React.FC<RotatingTextProps> = (
     return Array.from(text);
   };
 
-  const currentStyles = currentData ? styleMap[currentData.type] : { className: '', elementLevelClassName: '' };
+  const currentStyles = currentData ? styleMap[currentData.variant] : { className: '', elementLevelClassName: '' };
   const currentText = currentData ? currentData.title : '';
 
   const elements = useMemo(() => {
