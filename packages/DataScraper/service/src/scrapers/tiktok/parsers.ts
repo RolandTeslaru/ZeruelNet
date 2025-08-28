@@ -3,7 +3,7 @@ import { chromium } from 'playwright-extra';
 import { CommentLayout, commentLayouts } from './pageLayouts';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '../../lib/logger';
-import { ScrapedComment } from '@zeruel/scraper-types';
+import { ScraperAPI } from '@zeruel/scraper-types';
 
 function parseLikes(text: string | null): number {
     if (!text) return 0;
@@ -17,7 +17,13 @@ function parseLikes(text: string | null): number {
     return parseInt(cleanText, 10) || 0;
 }
 
-async function detectCommentLayout(page: Page): Promise<CommentLayout | null> {
+
+
+async function detectCommentLayout(
+
+    page: Page
+
+): Promise<CommentLayout | null> {
     for (const layout of commentLayouts) {
         try {
             await page.waitForSelector(layout.commentListContainer, { state: 'attached', timeout: 3000 });
@@ -30,7 +36,16 @@ async function detectCommentLayout(page: Page): Promise<CommentLayout | null> {
     return null;
 }
 
-async function scrapeCommentData(element: any, layout: CommentLayout, parentId: string | null = null): Promise<ScrapedComment | null> {
+
+
+
+async function scrapeCommentData(
+
+    element: any, 
+    layout: CommentLayout, 
+    parentId: string | null = null
+
+): Promise<ScraperAPI.Data.Video.Comment | null> {
     try {
         const author = await element.locator(layout.commentAuthor).first().innerText({ timeout: 200 });
         const textElement = parentId ? element.locator(layout.replyText).first() : element.locator(layout.commentText).first();
@@ -59,8 +74,17 @@ async function scrapeCommentData(element: any, layout: CommentLayout, parentId: 
     }
 }
 
-export async function scrapeComments(page: Page, maxComments: number = 200): Promise<ScrapedComment[]> {
-    const comments: ScrapedComment[] = [];
+
+
+
+export async function scrapeComments(
+    
+    page: Page, 
+    maxComments: number = 200
+
+): Promise<ScraperAPI.Data.Video.Comment[]> {
+
+    const comments: ScraperAPI.Data.Video.Comment[] = [];
     const processedIds = new Set<string>();
 
     const layout = await detectCommentLayout(page);

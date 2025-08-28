@@ -3,9 +3,9 @@ import { BrowserManager } from '../../../lib/browserManager';
 import { Logger } from '../../../lib/logger';
 import { statusManager } from '../../../lib/statusManager';
 import { TiktokScraper } from "../../../scrapers/tiktok"
-import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapeByHashtagWorkflowSchema, ScrapeByHashtagWorkflow } from '@zeruel/scraper-types';
 import {z} from "zod"
 import { Platforms } from '@zeruel/types';
+import { ScraperAPI } from '@zeruel/scraper-types';
 let isScraperRunning = false;
 
 export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
@@ -14,7 +14,7 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
         return res.status(409).send({ message: 'A scrape workflow is already in progress. Please wait for it to complete.' });
     }
 
-    const parsed = ScrapeByHashtagWorkflowSchema.safeParse(req.body)
+    const parsed = ScraperAPI.Workflow.Variants.ByHashtag.safeParse(req.body)
     if(parsed.error)
         return res.status(400).send({error: z.treeifyError(parsed.error)})
     const workflow = parsed.data
@@ -48,16 +48,17 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
             })
         
 
-        const discoveryMission: DiscoverMission = { 
+        const discoveryMission: ScraperAPI.Mission.Variants.Discover = { 
             source: workflow.source, 
             identifier: workflow.identifier, 
             limit: workflow.limit 
         };
         const {newVideoUrls, existingVideoUrls} = await scraper.discover(discoveryMission);
 
-        const scrapeSideMissions: ScrapeSideMission[] = organiseSideMissions(newVideoUrls, existingVideoUrls, workflow, scraper.platform)
+        const scrapeSideMissions: ScraperAPI.Mission.SideMission[] 
+            = organiseSideMissions(newVideoUrls, existingVideoUrls, workflow, scraper.platform)
 
-        const scrapeMission: ScrapeMisson = {
+        const scrapeMission: ScraperAPI.Mission.Variants.Scrape = {
             ...workflow,
             sideMissions: scrapeSideMissions,
             batchSize: workflow.batchSize ?? 4
@@ -98,17 +99,17 @@ const shutdownBrowser = async (browserManager: BrowserManager) => {
 export const organiseSideMissions = (
     newVideoUrls: string[], 
     existingVideoUrls: string[], 
-    workflow: ScrapeByHashtagWorkflow,
+    workflow: ScraperAPI.Workflow.Variants.ByHashtag,
     platform: Platforms
-): ScrapeSideMission[] => {
-    const scrapeSideMissions: ScrapeSideMission[] = []    
+): ScraperAPI.Mission.SideMission[] => {
+    const scrapeSideMissions: ScraperAPI.Mission.SideMission[] = []    
     
     // Cap new videos at the limit
     const cappedNewVideos = newVideoUrls.slice(0, workflow.limit);
     
     // Prioritise the new videos which are not in the database
     for (const url of cappedNewVideos) {
-        const sideMission: ScrapeSideMission = {
+        const sideMission: ScraperAPI.Mission.SideMission = {
             platform: platform,
             url,
             policy: "metadata+comments",
@@ -121,7 +122,7 @@ export const organiseSideMissions = (
     if (remainingSlots > 0) {
         const validUrls = existingVideoUrls.slice(0, remainingSlots)
         for (const url of validUrls) {
-            const sideMission: ScrapeSideMission = {
+            const sideMission: ScraperAPI.Mission.SideMission = {
                 platform: platform,
                 url,
                 policy: "metadata",

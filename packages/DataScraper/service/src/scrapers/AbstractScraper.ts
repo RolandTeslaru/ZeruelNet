@@ -1,18 +1,12 @@
-import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapedVideo } from "@zeruel/scraper-types";
+import { ScraperAPI } from "@zeruel/scraper-types";
 import { BrowserManager } from "../lib/browserManager";
 import { Page } from "playwright";
 
-export type ScrapeReport = {
-    newVideosScraped: number,
-    videosUpdated: number,
-    updatedVideoIds: string[],
-    totalCommentsScraped: number,
-    failedSideMissions: number
-}
 
 export abstract class AbstractScraper {
     readonly abstract platform: 'tiktok' | 'facebook' | 'x'
     protected abstract browserManager: BrowserManager;
+
 
 
     /**
@@ -20,14 +14,26 @@ export abstract class AbstractScraper {
      * @param {DiscoveryTask} task - The discovery task containing search parameters.
      * @returns {Promise<ScrapeJob[]>} A promise that resolves to an array of scrape jobs.
     */
-    abstract discover(mission: DiscoverMission): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}>;
+    abstract discover(
+        
+        mission: ScraperAPI.Mission.Variants.Discover
+    
+    ): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}>;
 
+    
+    
     /**
      * Processes a list of scrape jobs, scraping video data and comments.
      * @param {ScrapeJob[]} jobs - The list of scrape jobs to process.
      * @returns {Promise<void>} A promise that resolves when all jobs are processed.
     */
-    abstract scrape(mission: ScrapeMisson): Promise<ScrapeReport>
+    abstract scrape(
+        
+        mission: ScraperAPI.Mission.Variants.Scrape
+    
+    ): Promise<ScraperAPI.Report>
+    
+    
     
     /**
      * Processes a single scrape job, extracting video data and comments.
@@ -36,5 +42,11 @@ export abstract class AbstractScraper {
      * @returns {Promise<ScrapedVideo>} A promise that resolves to the scraped video data.
      * @protected
      */
-    protected abstract processScrapeSideMission(sideMission: ScrapeSideMission, page: Page, identifier: string): Promise<ScrapedVideo>
+    protected abstract processScrapeSideMission(
+        
+        sideMission: ScraperAPI.Mission.SideMission, 
+        page: Page, 
+        identifier: string
+    
+    ): Promise<ScraperAPI.Data.Video.Type>
 }

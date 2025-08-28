@@ -1,4 +1,3 @@
-import { DiscoverMission, ScrapeMisson, ScrapeSideMission, ScrapedComment, ScrapedVideo, AbstractScraperPayload } from '@zeruel/scraper-types';
 import { discoverVideos, extractVideoIdFromUrl } from './discover';
 import { scrapeComments } from './parsers';
 import { BrowserManager } from '../../lib/browserManager';
@@ -8,10 +7,11 @@ import os from 'os';
 import chalk from 'chalk';
 import { statusManager } from '../../lib/statusManager';
 import { DatabaseManager } from '../../lib/DatabaseManager';
-import { AbstractScraper, ScrapeReport } from '../AbstractScraper';
+import { AbstractScraper } from '../AbstractScraper';
 import { Page } from 'playwright';
 import { sleep } from './utils';
 import { redisBroker } from '../../lib/redisBroker';
+import { ScraperAPI } from '@zeruel/scraper-types';
 
 type StatusUpdateCallback = (message: any) => void;
 
@@ -54,14 +54,19 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    private broadcast(payload: AbstractScraperPayload) {
+    private broadcast(payload: ScraperAPI.Paylaod.Type) {
         eventBus.broadcast("active_scrape_feed", payload)
     }
 
 
 
 
-    public async discover(mission: DiscoverMission): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}> {
+    public async discover(
+        
+        mission: ScraperAPI.Mission.Variants.Discover
+    
+    ): Promise<{newVideoUrls: string[], existingVideoUrls: string[]}> {
+
         statusManager.setStage("discovery");
 
         const page = await this.browserManager.getPage();
@@ -93,7 +98,12 @@ export class TiktokScraper extends AbstractScraper {
 
 
 
-    public async scrape(mission: ScrapeMisson): Promise<ScrapeReport> {
+    public async scrape(
+
+        mission: ScraperAPI.Mission.Variants.Scrape
+    
+    ): Promise<ScraperAPI.Report> {
+
         const sideMissions = mission.sideMissions
 
         statusManager
@@ -209,10 +219,10 @@ export class TiktokScraper extends AbstractScraper {
 
 
     protected async processScrapeSideMission(
-        sideMission: ScrapeSideMission, 
+        sideMission: ScraperAPI.Mission.SideMission, 
         page: Page, 
         identifier: string
-    ): Promise<ScrapedVideo> {
+    ): Promise<ScraperAPI.Data.Video.Type> {
         try {
             await page.goto(sideMission.url, { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]', { state: 'attached', timeout: 30000 });
@@ -249,7 +259,7 @@ export class TiktokScraper extends AbstractScraper {
             })
 
 
-            let comments: ScrapedComment[] = [];
+            let comments: ScraperAPI.Data.Video.Comment[] = [];
             // Only do a full comment scrape if the policy is 'full' and there are comments to scrape
             if (sideMission.policy === "metadata+comments" && videoInfo.stats.commentCount > 0) {
                 Logger.info(`[Policy: <Metadata+Comments>] Scraping comments for video ${videoInfo.id}`);
@@ -258,7 +268,7 @@ export class TiktokScraper extends AbstractScraper {
                 Logger.warn(`[Policy: Metadata] Skipping comments for video ${videoInfo.id}`);
             }
 
-            const videoData: ScrapedVideo = {
+            const videoData: ScraperAPI.Data.Video.Type = {
                 video_id: videoInfo.id,
                 thumbnail_url: videoInfo.video.cover,
                 searched_hashtag: identifier,

@@ -3,8 +3,8 @@ import { BrowserManager } from '../../../lib/browserManager';
 import { Logger } from '../../../lib/logger';
 import { statusManager } from '../../../lib/statusManager';
 import { TiktokScraper } from "../../../scrapers/tiktok"
-import { ScrapeByVideoIdWorkflowSchema, ScrapeMisson } from '@zeruel/scraper-types';
 import { z } from "zod"
+import { ScraperAPI } from '@zeruel/scraper-types';
 
 let isScraperRunning = false;
 
@@ -14,7 +14,7 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
         return res.status(409).send({ message: 'A scrape workflow is already in progress. Please wait for it to complete.' });
     }
 
-    const parsed = ScrapeByVideoIdWorkflowSchema.safeParse(req.body)
+    const parsed = ScraperAPI.Workflow.Variants.ByVideoId.safeParse(req.body)
     if (parsed.error)
         return res.status(400).send({ error: z.treeifyError(parsed.error) })
     const workflow = parsed.data
@@ -51,7 +51,7 @@ export const scrapeByVideoIdWorkflow = async (req: Request, res: Response) => {
             
         const url = `https://www.tiktok.com/@placeholder/video/${workflow.videoId}`
 
-        const scrapeMission: ScrapeMisson = {
+        const scrapeMission: ScraperAPI.Mission.Variants.Scrape = {
             identifier: `${workflow.videoId}`,
             source: 'url',
             sideMissions: [{

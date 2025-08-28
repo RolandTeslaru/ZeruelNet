@@ -1,13 +1,12 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer"
-import { useWorkflowStatus } from "./useWorkflowStatus";
-import { WorkflowStatusStage } from "@zeruel/types";
+import { WorkflowStatusAPI } from "@zeruel/types";
 
 export type DashboardPages = "scraper" | "enrichment" | "tables" | "trendsanalysis" | "health"
 
 export type State = {
-    overrideStage: WorkflowStatusStage | null
-    setOverrideStage: (stage: WorkflowStatusStage | null, timeoutMs?: number) => Promise<void>
+    overrideStage: WorkflowStatusAPI.Stage.Type | null
+    setOverrideStage: (stage: WorkflowStatusAPI.Stage.Type | null, timeoutMs?: number) => Promise<void>
     currentPage: DashboardPages
     isDatabaseReachable: boolean
     isServiceReachable: boolean

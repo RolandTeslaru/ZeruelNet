@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { Logger } from "./logger";
 import { v4 as uuidv4 } from 'uuid';
-import { ScrapedVideo } from "@zeruel/scraper-types";
+import { ScraperAPI } from "@zeruel/scraper-types";
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -27,7 +27,7 @@ export class DatabaseManager {
 
     private constructor() {}
 
-    public static async saveVideo(videoData: ScrapedVideo): Promise<void> {
+    public static async saveVideo(videoData: ScraperAPI.Data.Video.Type): Promise<void> {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');

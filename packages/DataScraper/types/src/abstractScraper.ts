@@ -1,7 +1,6 @@
 import {z} from "zod"
-import { ScrapeMissionSchema, ScrapeSideMissionSchema } from "./missions";
-import { ScrapedVideoMetadataSchema } from "./media";
 import { variantSchema } from "./utils";
+import { ScraperAPI } from "./";
 
 // Scraper Actions
 export const AbstractScraperActionSchema = z.enum([
@@ -14,22 +13,22 @@ export const AbstractScraperActionSchema = z.enum([
 export const AbstractScraperPayloadSchema = z.discriminatedUnion("action", [
     z.object({
         action: z.literal("SET_CURRENT_BATCH"),
-        batch: z.array(ScrapeSideMissionSchema),
+        batch: z.array(ScraperAPI.Mission.SideMission),
         currentBatch: z.number(),
         totalBatches: z.number(),
     }),
     z.object({
         action: z.literal("ADD_SIDE_MISSION"),
-        sideMission: ScrapeSideMissionSchema,
+        sideMission: ScraperAPI.Mission.SideMission,
     }),
     z.object({
         action: z.literal("ADD_VIDEO_METADATA"),
-        metadata: ScrapedVideoMetadataSchema.omit({ searched_hashtag: true }),
+        metadata: ScraperAPI.Data.Video.Metadata.omit({ searched_hashtag: true }),
     }),
     z.object({
         action: z.literal("FINALISE_SIDE_MISSION"),
         type: z.enum(["succes", "error"]), 
-        sideMission: ScrapeSideMissionSchema,
+        sideMission: ScraperAPI.Mission.SideMission,
         error: z.any().optional(),
     }),
 ]);

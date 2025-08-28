@@ -1,127 +1,126 @@
-import { WorkflowStatusPayload } from '@zeruel/scraper-types';
+import { WorkflowStatusAPI } from '@zeruel/types';
 import { eventBus } from './eventBus';
-import { WorkflowStatusStage, WorkflowStatusStep, WorkflowStatusStepStatus, WorkflowStatusSchema, WorkflowStatus } from '@zeruel/types';
 import { Logger } from './logger';
 
 
-const DEFAULT_STEPS: Record<string, Record<string, WorkflowStatusStep>> = {
+const DEFAULT_STEPS: Record<string, Record<string, WorkflowStatusAPI.Step.Type>> = {
     idle: {},
     initialization: {
         api_request_received: {
             label: 'API_REQUEST_RECEIVED',
             description: 'Validating parameters',
-            status: 'pending'
+            variant: 'pending'
         },
         browser_manager_init: {
             label: 'BROWSER_MANAGER_INIT',
             description: 'Initializing persistent browser',
-            status: 'pending'
+            variant: 'pending'
         }
     },
     discovery: {
         navigation: {
             label: 'NAVIGATION',
             description: 'Navigating to hashtag page',
-            status: 'pending'
+            variant: 'pending'
         },
         scroll_automation: {
             label: 'SCROLL_AUTOMATION',
             description: 'Scrolling to load video grid',
-            status: 'pending'
+            variant: 'pending'
         }
     },
     analysis: {
         db_query: {
             label: 'DB_QUERY',
             description: 'Checking for existing videos in database',
-            status: 'pending'
+            variant: 'pending'
         },
         job_classification: {
             label: 'JOB_CLASSIFICATION',
             description: 'Categorizing new vs. update jobs',
-            status: 'pending'
+            variant: 'pending'
         },
         workload_ready: {
             label: 'WORKLOAD_READY',
             description: 'Analysis complete, harvest queue populated',
-            status: 'pending'
+            variant: 'pending'
         }
     },
     scraping: {
         batch_processing: {
             label: 'BATCH_PROCESSING',
             description: 'Processing videos in batches',
-            status: 'pending'
+            variant: 'pending'
         },
         rate_limit_delays: {
             label: 'RATE_LIMIT_DELAY',
             description: 'Applying human-like delays',
-            status: 'pending'
+            variant: 'pending'
         },
         data_persistence: {
             label: 'DATA_PERSISTENCE',
             description: 'Saving data to database',
-            status: 'pending'
+            variant: 'pending'
         },
     },
     finalizing: {
         browser_shutdown: {
             label: 'BROWSER_SHUTDOWN',
             description: 'Closing browser instance',
-            status: 'pending'
+            variant: 'pending'
         }
     },
     success: {
         success: {
             label: 'SUCCESS',
             description: 'The operation completed successfully.',
-            status: "completed"
+            variant: "completed"
         }
     },
     error: {
         error: {
             label: 'ERROR',
             description: 'An unrecoverable error occurred.',
-            status: "failed"
+            variant: "failed"
         }
     }
 }
 
 class WorkflowStatusManager {
-    private currentStatus: WorkflowStatus;
+    private currentStatus: WorkflowStatusAPI.Type;
     private static instance: WorkflowStatusManager;
 
-    private stages: Record<string, { stage: WorkflowStatusStage; steps: Record<string, WorkflowStatusStep> }> = {
+    private stages: Record<string, { stage: WorkflowStatusAPI.Stage.Type; steps: Record<string, WorkflowStatusAPI.Step.Type> }> = {
         idle: {
-            stage: { title: 'IDLE:  AWAITING  WORKFLOW  REQUEST', type: 'INFO' },
+            stage: { title: 'IDLE:  AWAITING  WORKFLOW  REQUEST', variant: 'INFO' },
             steps: DEFAULT_STEPS["idle"]
         },
         initialization: {
-            stage: { title: 'INITIALIZING...', type: 'TASK' },
+            stage: { title: 'INITIALIZING...', variant: 'TASK' },
             steps: DEFAULT_STEPS["initialization"]
         },
         discovery: {
-            stage: { title: 'STAGE 1:  DISCOVERING  VIDEOS', type: 'TASK' },
+            stage: { title: 'STAGE 1:  DISCOVERING  VIDEOS', variant: 'TASK' },
             steps: DEFAULT_STEPS["discovery"]
         },
         analysis: {
-            stage: { title: 'STAGE 2:  ANALYZING  WORKLOAD', type: 'TASK' },
+            stage: { title: 'STAGE 2:  ANALYZING  WORKLOAD', variant: 'TASK' },
             steps: DEFAULT_STEPS["analysis"]
         },
         scraping: {
-            stage: { title: 'STAGE 3:  SCRAPING  DATA', type: 'TASK' },
+            stage: { title: 'STAGE 3:  SCRAPING  DATA', variant: 'TASK' },
             steps: DEFAULT_STEPS["scraping"]
         },
         finalizing: {
-            stage: { title: 'STAGE 4:  FINALIZING', type: 'TASK' },
+            stage: { title: 'STAGE 4:  FINALIZING', variant: 'TASK' },
             steps: DEFAULT_STEPS["finalizing"]
         },
         success: {
-            stage: { title: 'FINSHED:  WORKFLOW  SUCCESSFUL', type: 'SUCCESS' },
+            stage: { title: 'FINSHED:  WORKFLOW  SUCCESSFUL', variant: 'SUCCESS' },
             steps: DEFAULT_STEPS["success"]
         },
         error: {
-            stage: { title: 'ERROR:  WORKFLOW  FAILED', type: 'FAILURE' },
+            stage: { title: 'ERROR:  WORKFLOW  FAILED', variant: 'FAILURE' },
             steps: DEFAULT_STEPS["error"]
         }
     };
@@ -137,7 +136,7 @@ class WorkflowStatusManager {
         return WorkflowStatusManager.instance;
     }
 
-    private broadcast(payload: WorkflowStatusPayload) {
+    private broadcast(payload: WorkflowStatusAPI.Payload.Type) {
         eventBus.broadcast("system_status", payload)
     }
 
@@ -158,20 +157,19 @@ class WorkflowStatusManager {
         return this
     }
 
-    public updateStep(stepId: string, status: WorkflowStatusStepStatus, description?: string) {
+    public updateStep(stepId: string, variant?: WorkflowStatusAPI.Step.Variant, description?: string) {
         const step = this.currentStatus.steps[stepId];
         if (step) {
-            step.status = status;
+            step.variant = variant;
             if (description) {
                 step.description = description;
             }
             this.broadcast({
+                ...step,
                 action: "UPDATE_STEP",
                 stepId,
-                step: {
-                    ...step,
-                    status
-                }
+                variant,
+                description
             });
         }
         else {
@@ -180,14 +178,14 @@ class WorkflowStatusManager {
         return this
     }
 
-    public removeStep(stepId: string, status: WorkflowStatusStepStatus, description?: string, delayMs?: number){
+    public removeStep(stepId: string, variant?: WorkflowStatusAPI.Step.Variant, description?: string, delayMs?: number){
         const step = this.currentStatus.steps[stepId];
         if(step){
             this.broadcast({
                 action: "REMOVE_STEP",
                 stepId,
                 delayMs,
-                status,
+                variant,
                 description,
             })
         } else {
