@@ -2,7 +2,7 @@ import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, ResponsiveContainer, ReferenceLine, Cell } from 'recharts'
 import { useTrendsStore } from '../context'
 import { useQuery } from '@tanstack/react-query'
-import { fetchSubjectsAlignment } from '@/lib/api/trends'
+import { fetchSujects } from '@/lib/api/trends'
 import JsonView from 'react18-json-view'
 import { Spinner } from '@zeruel/shared-ui/foundations'
 import ChartTooltip from '@zeruel/shared-ui/charts/sharedComponents/ChartTooltip'
@@ -14,9 +14,10 @@ const SubjectAlignmentChart = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['subjectsAlignment', { start: slidingWindow.start, end: slidingWindow.end }],
     queryFn: () => {
-      return fetchSubjectsAlignment({
+      return fetchSujects({
         since: slidingWindow.start.toISOString(),
         until: slidingWindow.end.toISOString()
+        // include_knowledge defaults to false, so we don't need to pass it
       })
     }
   })

@@ -8,7 +8,8 @@ export async function fetchDataBounds(): Promise<TrendsAPI.Metadata.DataBounds.R
     return data;
 }
 
-export async function fetchSubjectsAlignment(
+
+export async function fetchSujects(
     
     params: TrendsAPI.Subjects.Query
 
