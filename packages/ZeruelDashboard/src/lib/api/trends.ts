@@ -1,0 +1,18 @@
+import {z} from "zod"
+import { api } from ".";
+import { TrendsAPI } from "@/types/api";
+
+
+export async function fetchDataBounds(): Promise<TrendsAPI.Metadata.DataBounds.Response>{
+    const { data } = await api.get("/api/v1/trends/metadata/data-bounds")
+    return data;
+}
+
+export async function fetchSubjectsAlignment(
+    
+    params: TrendsAPI.Subjects.Query
+
+): Promise<TrendsAPI.Subjects.Response>{
+    const { data } = await api.get("/api/v1/trends/subjects", { params })
+    return data;
+}

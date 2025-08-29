@@ -19,5 +19,11 @@ export const TABLES_MAP = {
         defaultValues:      DatabaseAPI.VideoFeatures.Query.safeParse({}).data || {},
         json:               z.toJSONSchema(DatabaseAPI.VideoFeatures.Query),
         propertiesArray:    Object.entries(z.toJSONSchema(DatabaseAPI.VideoFeatures.Query).properties)
+    },
+    knowledge_subjects: {
+        schema:             DatabaseAPI.KnowledgeSubjects.Query,
+        defaultValues:      DatabaseAPI.KnowledgeSubjects.Query.safeParse({}).data || {},
+        json:               z.toJSONSchema(DatabaseAPI.KnowledgeSubjects.Query),
+        propertiesArray:    Object.entries(z.toJSONSchema(DatabaseAPI.KnowledgeSubjects.Query).properties)
     }
 } as const

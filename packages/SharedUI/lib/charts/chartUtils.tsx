@@ -159,6 +159,7 @@ export const renderShape = (
   activeBar: any | undefined,
   activeLegend: string | undefined,
   layout: string,
+  conditionalColors?: { negative: string; positive: string; neutral: string }
 ) => {
   const { fillOpacity, name, payload, value } = props
   let { x, width, y, height } = props
@@ -171,12 +172,25 @@ export const renderShape = (
     width = Math.abs(width) // width must be a positive number
   }
 
+  // Determine fill color based on value if conditional colors are provided
+  let fillColor = ""
+  if (conditionalColors && typeof value === 'number') {
+    if (value < 0) {
+      fillColor = conditionalColors.negative
+    } else if (value > 0) {
+      fillColor = conditionalColors.positive
+    } else {
+      fillColor = conditionalColors.neutral
+    }
+  }
+
   return (
     <rect
       x={x}
       y={y}
       width={width}
       height={height}
+      fill={fillColor || undefined}
       opacity={
         activeBar || (activeLegend && activeLegend !== name)
           ? deepEqual(activeBar, { ...payload, value })

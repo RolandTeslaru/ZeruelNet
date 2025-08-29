@@ -145,4 +145,37 @@ export namespace DatabaseAPI {
         });
         export type Response = z.infer<typeof Response>
     }
+
+
+    export namespace KnowledgeSubjects {
+        export const Subject = z.object({
+            id: z.number(),
+            subject_name: z.string(),
+            category: z.string(),
+            country_code: z.string().regex(/^[a-z]{2}$|^eu$/i).nullable(),
+            alignment_tendency: z.number().min(-1).max(1),
+            weight: z.number(),
+            aliases: z.array(z.string()),
+            created_at: z.string(),
+            updated_at: z.string()
+        })
+        export type Subject = z.infer<typeof Subject>
+
+
+        export const Query = z.object({
+            subject_name: z.string().optional(),
+            min_alignment_tendency: z.coerce.number().min(-1).max(1).optional(),
+            max_alignment_tendency: z.coerce.number().min(-1).max(1).optional(),
+            min_weight: z.coerce.number().min(0).max(2).optional(),
+            max_weight: z.coerce.number().min(0).max(2).optional(),
+            category: z.enum(["Political Leader", "Country", "Program", "Concept", "Institution", "EP Group", "Party", "Extremist Movement"]).optional(),
+            country_code: z.string().regex(/^[a-z]{2}$|^eu$/i, "Must be 2-letter country code or 'eu'").nullable().optional()
+        })
+        export type Query = z.infer<typeof Query>
+
+        export const Response = z.object({
+            subjects: z.array(Subject)
+        })
+        export type Response = z.infer<typeof Response>
+    }
 }

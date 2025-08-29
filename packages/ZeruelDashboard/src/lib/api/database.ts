@@ -42,6 +42,20 @@ export async function fetchComments(
 
 
 
+
+export async function fetchKnowledgeSubjects(
+
+    params: DatabaseAPI.KnowledgeSubjects.Query
+
+): Promise<DatabaseAPI.KnowledgeSubjects.Response> {
+    const { data } = await api.get("/api/v1/database/knowledge_subjects")
+    return data
+}
+
+
+
+
+
 export async function fetchTableMeta(
     
     params: DatabaseAPI.TableMeta.Query
@@ -102,3 +116,7 @@ export async function fetchDatabaseHealth(): Promise<any> {
     const {data} = await api.get(`/health/database`)
     return data
 }
+
+
+
+

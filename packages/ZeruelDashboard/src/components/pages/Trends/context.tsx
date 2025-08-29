@@ -6,6 +6,7 @@ import { enableMapSet } from "immer"
 import { shallow } from 'zustand/shallow';
 import { useQuery } from '@tanstack/react-query';
 import { subDays, differenceInMilliseconds } from 'date-fns';
+import { fetchDataBounds } from '@/lib/api/trends';
 
 type State = {
     slidingWindow: {
@@ -13,7 +14,7 @@ type State = {
         end: Date
         size: number
     }
-    dataRange: {
+    dataBounds: {
         start_video_date: Date
         end_video_date: Date
     }
@@ -21,19 +22,18 @@ type State = {
 
 type Actions = {
     setSlidingWindow: (props: {start: Date, end:Date, size: number}) => void
-    setDataRange: (start_video_date: Date, end_video_date: Date) => void
 }
 
 interface TrendsStoreInitialProps {
-    initialDataRange?: { start_video_date: string; end_video_date: string }
+    initialDataBounds: { start_video_date: string; end_video_date: string }
 }
 
-const createTrendsStore = (props: TrendsStoreInitialProps = {}) => {
+const createTrendsStore = (props: TrendsStoreInitialProps) => {
 
-    const { initialDataRange } = props
+    const { initialDataBounds } = props
 
-    const end_video_date = initialDataRange ? new Date(initialDataRange.end_video_date) : new Date()
-    const start_video_date = initialDataRange ? new Date(initialDataRange.start_video_date) : new Date()
+    const start_video_date = initialDataBounds ? new Date(initialDataBounds.start_video_date) : new Date()
+    const end_video_date = initialDataBounds ? new Date(initialDataBounds.end_video_date) : new Date()
 
     const slidingWindowEnd = new Date(Math.min(new Date().getTime(), end_video_date.getTime()))
     // 7 day window
@@ -48,9 +48,9 @@ const createTrendsStore = (props: TrendsStoreInitialProps = {}) => {
                     end: slidingWindowEnd,
                     size: slidingWindowSize
                 },
-                dataRange: {
-                    start_video_date,
-                    end_video_date
+                dataBounds: {
+                    start_video_date: start_video_date,
+                    end_video_date: end_video_date
                 },
                 setSlidingWindow: ({start, end, size}) => {
                     set((state) => {
@@ -60,12 +60,6 @@ const createTrendsStore = (props: TrendsStoreInitialProps = {}) => {
                             state.slidingWindow.end = end;
                         if(size)
                             state.slidingWindow.size = size
-                    });
-                },
-                setDataRange: (start_video_date: Date, end_video_date: Date) => {
-                    set((state) => {
-                        state.dataRange.start_video_date = start_video_date;
-                        state.dataRange.end_video_date = end_video_date;
                     });
                 }
             })
@@ -81,21 +75,21 @@ interface TreeProviderProps {
 
 export const TrendsProvider: React.FC<TreeProviderProps> = memo(({children}) => {
     
-    const dataRange = useQuery({
-        queryKey: ["trends", "dataRange"],
+    const { data: initialDataBounds, isLoading } = useQuery({
+        queryKey: ["trends", "data-bounds"],
         queryFn: async () => {
-          const response = await fetch("/api/v1/trends/videos-volume-range");
-          if (!response.ok) {
-            throw new Error("Failed to fetch data range");
-          }
-          return response.json();
-        }
+          const data = await fetchDataBounds();
+            
+            console.log("INITIAL DATA BOUNDS ",data)
+
+          return data
+        },
+        retry: false, 
     })
+
       
     return (
-        <Context.Provider value={createTrendsStore({
-            initialDataRange: dataRange.data
-        })}>
+        <Context.Provider value={createTrendsStore({ initialDataBounds })}>
             {children}
         </Context.Provider>
     )

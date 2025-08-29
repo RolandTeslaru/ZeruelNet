@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
             OR v.searched_hashtag = $3
             OR $3 = ANY(v.extracted_hashtags)
           )
-        AND ($6::text is NULL OR v.video_id = $6)
+          AND ($6::text is NULL OR v.video_id = $6)
         ORDER BY ${orderBy} ${direction}
         LIMIT $4 OFFSET $5
     `;

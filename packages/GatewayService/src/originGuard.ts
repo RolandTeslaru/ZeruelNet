@@ -6,7 +6,7 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
 export function isOriginAllowed(originHeader?: string): boolean {
     // Temporarily allow all origins for testing
     return true;
-    
+
     // Original code (re-enable after testing):
     // if(!originHeader)
     //     return false

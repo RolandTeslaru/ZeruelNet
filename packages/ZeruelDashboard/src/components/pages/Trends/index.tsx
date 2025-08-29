@@ -7,7 +7,7 @@ import { TrendsProvider } from './context';
 import { useQuery } from '@tanstack/react-query';
 import TimelineChart from './_components/TimelineChart';
 import StateVisualization from './_components/StateVisualization';
-import HashtagAlignmentChart from './_components/HashtagAlignmentChart';
+import SubjectAlignmentChart from './_components/SubjectAlignmentChart';
 
 
 
@@ -26,7 +26,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
             show={show}
           />}
         >
-          <HashtagAlignmentChart/>
+          
         </VXWindow>
 
         <VXWindow
@@ -70,7 +70,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
             show={show}
           />}
         >
-          <p>Timeline</p>
+          <SubjectAlignmentChart/>
         </VXWindow>
 
       </div>

@@ -32,7 +32,7 @@ const ZodFormRenderer: React.FC<Props> = ({ form, onSubmit, children, schema, su
                             <FormItem className='gap-1'>
                                 <FormLabel className='font-sans text-neutral-400'>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</FormLabel>
                                 <FormItem className='relative'>
-                                    {INPUT_RENDERER_MAP[zodProp.type](zodProp, field, form.control)}
+                                    {INPUT_RENDERER_MAP[zodProp.type]?.(zodProp, field, form.control)}
                                 </FormItem>
                                 <FormMessage />
                             </FormItem>
