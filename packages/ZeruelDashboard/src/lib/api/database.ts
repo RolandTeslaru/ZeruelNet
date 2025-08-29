@@ -48,7 +48,7 @@ export async function fetchKnowledgeSubjects(
     params: DatabaseAPI.KnowledgeSubjects.Query
 
 ): Promise<DatabaseAPI.KnowledgeSubjects.Response> {
-    const { data } = await api.get("/api/v1/database/knowledge_subjects")
+    const { data } = await api.get("/api/v1/database/knowledge_subjects", { params })
     return data
 }
 

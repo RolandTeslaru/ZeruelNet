@@ -51,23 +51,18 @@ const VideoFeaturesViewer = () => {
                 </div>
             </CrossesWindowStyling>
             
-            
             <CollapsiblePanel title="Alignment" contentClassName='overflow-y-scroll gap-2'>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>final_alignment</p>
-                    <p>{parsedData.final_alignment}</p>
+                    <NumberSignValueNode title='final_alignment' value={parsedData.final_alignment}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>llm_overall_alignment</p>
-                    <p>{parsedData.llm_overall_alignment}</p>
+                    <NumberSignValueNode title='llm_overall_alignment' value={parsedData.llm_overall_alignment}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>deterministic_alignment</p>
-                    <p>{parsedData.deterministic_alignment}</p>
+                    <NumberSignValueNode title='deterministic_alignment' value={parsedData.deterministic_alignment}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>alignment_conflict</p>
-                    <p>{parsedData.alignment_conflict}</p>
+                    <NumberSignValueNode title='alignment_conflict' value={parsedData.alignment_conflict}/>
                 </div>
             </CollapsiblePanel>
             
@@ -79,20 +74,16 @@ const VideoFeaturesViewer = () => {
             
             <CollapsiblePanel title="Sentiment Analysis" contentClassName='overflow-y-scroll gap-2'>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>polarity:&nbsp;</p>
-                    <p>{parsedData.polarity}</p>
+                    <NumberSignValueNode title='polarity' value={parsedData.polarity}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>text_sentiment_positive:&nbsp;</p>
-                    <p>{parsedData.text_sentiment_positive}</p>
+                    <NumberSignValueNode title='text_sentiment_positive' value={parsedData.text_sentiment_positive}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>text_sentiment_negative:&nbsp;</p>
-                    <p>{parsedData.text_sentiment_negative}</p>
+                    <NumberSignValueNode title='text_sentiment_negative' value={parsedData.text_sentiment_negative}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>text_sentiment_neutral:&nbsp;</p>
-                    <p>{parsedData.text_sentiment_neutral}</p>
+                    <NumberSignValueNode title='text_sentiment_neutral' value={parsedData.text_sentiment_neutral}/>
                 </div>
             </CollapsiblePanel>
             
@@ -103,8 +94,7 @@ const VideoFeaturesViewer = () => {
                     <p>{parsedData.llm_model_name}</p>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>llm_overall_alignment:&nbsp;</p>
-                    <p>{parsedData.llm_overall_alignment}</p>
+                    <NumberSignValueNode title='llm_overall_alignment' value={parsedData.llm_overall_alignment}/>
                 </div>
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
                     <p>llm_summary:&nbsp;</p>
@@ -121,7 +111,12 @@ const VideoFeaturesViewer = () => {
                             {parsedData.llm_identified_subjects.map((obj, index) => (
                                 <div key={index} className={`relative px-1 py-3 flex justify-between ${index !== 0 && selectedVideoData.llm_identified_subjects.length - 1 !== 0 && "border-t border-white/20"}`}>
                                     <p>subject: {obj.subject}</p>
-                                    <p>stance: {obj.stance}</p>
+                                    <div className='flex flex-col'>
+                                        <NumberSignValueNode title='stance' value={obj.stance}/>
+                                        <NumberSignValueNode title='alingment_score' value={obj.alignment_score}/>
+                                        <NumberSignValueNode title='expected_alignment' value={obj.expected_alignment}/>
+                                        <NumberSignValueNode title='alignment_gap' value={obj.alignment_gap}/>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -138,3 +133,26 @@ const VideoFeaturesViewer = () => {
 }
 
 export default VideoFeaturesViewer
+
+
+const NumberSignValueNode = ({title, value}: {title: string, value: number}) => {
+    const formatValue = (val: number) => {
+        if (val > 0) {
+            return `+${val.toFixed(2)}`;
+        }
+        return val.toFixed(2);
+    };
+
+    const getColorClass = (val: number) => {
+        if (val > 0) return "text-green-400";
+        if (val < 0) return "text-red-400";
+        return "text-cyan-400";
+    };
+
+    return (
+        <div className='flex flex-row w-full justify-between gap-1'>
+            <p>{title}:</p>
+            <p className={getColorClass(value)}>{formatValue(value)}</p>
+        </div>
+    )
+}

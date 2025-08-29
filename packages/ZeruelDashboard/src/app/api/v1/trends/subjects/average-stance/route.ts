@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
 
-    const parsed = TrendsAPI.Subjects.Query.safeParse(query);
+    const parsed = TrendsAPI.Subjects.AverageStance.Query.safeParse(query);
     if(!parsed.success) {
         return NextResponse.json({ error: z.treeifyError(parsed.error) }, { status: 400 });
     }
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
             total_mentions: Number(row.total_mentions)
         }));
 
-        const response: TrendsAPI.Subjects.Response = {
+        const response: TrendsAPI.Subjects.AverageStance.Response = {
             subjects,
             meta: {
                 total_subjects: total,

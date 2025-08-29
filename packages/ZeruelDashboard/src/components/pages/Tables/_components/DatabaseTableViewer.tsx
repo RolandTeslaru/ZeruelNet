@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table"
 import { useTablesContext } from '../context';
 import { useQuery } from '@tanstack/react-query';
-import { fetchComments, fetchTableColumns, fetchTableMeta, fetchVideoFeatures, fetchVideos } from '@/lib/api/database';
+import { fetchComments, fetchKnowledgeSubjects, fetchTableColumns, fetchTableMeta, fetchVideoFeatures, fetchVideos } from '@/lib/api/database';
 import { Checkbox, Spinner } from '@zeruel/shared-ui/foundations';
 import { DataTable } from '@/components/DataTable';
 
@@ -42,9 +42,10 @@ const DatabaseTableViewer = memo(() => {
             const baseParams = { limit: pageSize, offset: pageIndex * pageSize };
             const paramsWithFilters = { ...baseParams, ...(queryParams ?? {}) } as any;
             switch (selectedTable) {
-                case 'video_features':  return fetchVideoFeatures(paramsWithFilters);
-                case 'comments':        return fetchComments(paramsWithFilters);
-                case 'videos':          return fetchVideos(paramsWithFilters);
+                case 'video_features':      return fetchVideoFeatures(paramsWithFilters);
+                case 'comments':            return fetchComments(paramsWithFilters);
+                case 'videos':              return fetchVideos(paramsWithFilters);
+                case 'knowledge_subjects':  return fetchKnowledgeSubjects(paramsWithFilters)
             }
         },
         // Only run this query if the schema has been successfully loaded

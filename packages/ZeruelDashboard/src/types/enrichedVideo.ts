@@ -1,8 +1,11 @@
 import { z } from "zod"
 
 export const llmIdentifiedSubjectSchema = z.object({
-    stance: z.number().min(-1).max(1),
-    subject: z.string()
+    subject: z.string(),
+    stance: z.number(),
+    alignment_score: z.number(),
+    expected_alignment: z.number(),
+    alignment_gap: z.number()
 })
 
 export const EnrichedVideoSchema = z.object({
