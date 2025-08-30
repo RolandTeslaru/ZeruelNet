@@ -101,8 +101,8 @@ body {
 
 
 .dark {
-  --popover: color-mix(in oklab, var(--color-neutral-500) 70%, transparent);
-  --border-popover: color-mix(in oklab, var(--color-neutral-400) 60%, transparent);
+  --popover: color-mix(in oklab, var(--color-neutral-500) 50%, transparent);
+  --border-popover: color-mix(in oklab, var(--color-neutral-400) 50%, transparent);
 
 
   --primary-opaque: var(--color-neutral-700);

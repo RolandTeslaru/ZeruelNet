@@ -28,6 +28,8 @@ export interface DateRangePickerProps {
   align?: 'start' | 'center' | 'end'
   /** Option for locale */
   locale?: string
+
+  horizontal?: boolean
 }
 
 const formatDate = (date: Date, locale: string = 'en-us'): string => {
@@ -76,14 +78,13 @@ const PRESETS: Preset[] = [
 ]
 
 /** The DateRangePicker component allows a user to select a range of dates */
-export const DateRangePicker: FC<DateRangePickerProps> & {
-  filePath: string
-} = ({
+export const DateRangePicker: FC<DateRangePickerProps> = ({
   initialDateFrom = new Date(new Date().setHours(0, 0, 0, 0)),
   initialDateTo,
   onUpdate,
   align = 'end',
-  locale = 'en-US'
+  locale = 'en-US',
+  horizontal = false
 }): JSX.Element => {
     const [isOpen, setIsOpen] = useState(false)
 
@@ -184,16 +185,14 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
         open={isOpen}
         onOpenChange={(open: boolean) => {
           // When the picker closes, propagate the selected range to parent via onUpdate
-          if (!open && typeof onUpdate === "function") {
-            onUpdate({ range })
-          }
+          
           setIsOpen(open)
         }}
       >
         <PopoverTrigger asChild>
-          <Button variant="outline" size={"sm"} className='w-fit px-2 text-xs flex-col'>
+          <Button variant="outline" size={"sm"} className={`flex ${horizontal ? "flex-row gap-2" : "flex-col px-2 "} w-fit text-xs `}>
             <p>{formatDate(range.from, locale)}</p>
-            <ArrowDown size={20} />
+            <ArrowDown size={20} className={`${horizontal ? "-rotate-90" : "" }`}/>
             <p>{formatDate(range.to, locale)}</p>
           </Button>
         </PopoverTrigger>
@@ -214,6 +213,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                     onSelect={(value: { from?: Date, to?: Date } | undefined) => {
                       if (value?.from != null) {
                         setRange({ from: value.from, to: value?.to })
+                        onUpdate?.({ range: { from: value.from, to: value?.to }})
                       }
                     }}
                     selected={range}
@@ -237,7 +237,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
               />
             )}
           </div>
-          <div className="flex flex-row gap-2 mx-auto w-auto">
+          <div className={`flex flex-row gap-2 mx-auto w-auto`}>
             <DateInput
               value={range.from}
               onChange={(date) => {
@@ -250,7 +250,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                 }))
               }}
             />
-            <ArrowRight className='stroke-white'/>
+            <ArrowRight className='stroke-white w-5'/>
             <DateInput
               value={range.to}
               onChange={(date) => {
@@ -270,7 +270,6 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   }
 
 DateRangePicker.displayName = 'DateRangePicker'
-DateRangePicker.filePath = 'packages/SharedUI/lib/foundations/DateRangePicker.tsx'
 
 interface PresetSelectorProps {
   presets: Preset[]
@@ -317,10 +316,10 @@ const PresetButton = ({
        flex flex-row text-white p-1 px-2 bg-transparent hover:bg-neutral-600/80 rounded-md`)}
     {...buttonProps}
   >
-      <span className={cn('pr-2 opacity-0', isSelected && 'opacity-70')}>
+      <span className={cn(' opacity-0', isSelected && 'opacity-70')}>
         <Check size={18} />
       </span>
-      <p className='ml-auto'>
+      <p className='ml-auto font-roboto-mono'>
         {children}
       </p>
   </button>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, ResponsiveContainer, ReferenceLine, Cell } from 'recharts'
 import { useTrendsStore } from '../context'
 import { useQuery } from '@tanstack/react-query'
@@ -6,17 +6,22 @@ import { fetchSujects } from '@/lib/api/trends'
 import JsonView from 'react18-json-view'
 import { Spinner } from '@zeruel/shared-ui/foundations'
 import ChartTooltip from '@zeruel/shared-ui/charts/sharedComponents/ChartTooltip'
+import DataLoadingIndicator from "@zeruel/shared-ui/DataLoadingIndicator"
 
-const SubjectAlignmentChart = () => {
+const SubjectAlignmentChart = memo(() => {
 
-  const slidingWindow = useTrendsStore(state => state.slidingWindow)
+  const [start, end] = useTrendsStore(state => [state.slidingWindow.start, state.slidingWindow.end])
 
   const { data, isLoading } = useQuery({
-    queryKey: ['subjectsAlignment', { start: slidingWindow.start, end: slidingWindow.end }],
+    queryKey: [
+      'subjectsAlignment',
+      start.toISOString(),
+      end.toISOString()
+    ],
     queryFn: () => {
       return fetchSujects({
-        since: slidingWindow.start.toISOString(),
-        until: slidingWindow.end.toISOString()
+        since: start.toISOString(),
+        until: end.toISOString()
         // include_knowledge defaults to false, so we don't need to pass it
       })
     }
@@ -30,7 +35,7 @@ const SubjectAlignmentChart = () => {
         LLM Identified Subjects Alignment
       </p>
 
-      {isLoading ? <Spinner /> :
+      {isLoading ? <DataLoadingIndicator /> :
         <>
           <div className="w-full  max-h-full overflow-y-auto [&_*]:outline-none [&_*]:focus:outline-none">
             <ResponsiveContainer
@@ -89,6 +94,6 @@ const SubjectAlignmentChart = () => {
 
     </div>
   )
-}
+})
 
 export default SubjectAlignmentChart

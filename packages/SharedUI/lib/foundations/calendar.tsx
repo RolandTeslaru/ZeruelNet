@@ -52,7 +52,7 @@ function Calendar({
           "flex gap-4 flex-col md:flex-row relative",
           defaultClassNames.months
         ),
-        month: cn("flex flex-col w-full gap-4 text-white", defaultClassNames.month),
+        month: cn("flex flex-col w-full gap-4 text-white font-roboto-mono ", defaultClassNames.month),
         nav: cn(
           "flex  items-center gap-1 w-full absolute top-0 inset-x-0 justify-between",
           defaultClassNames.nav
@@ -143,11 +143,11 @@ function Calendar({
           defaultClassNames.day
         ),
         range_start: cn(
-          "rounded-l-md bg-accent",
+          "rounded-l-md bg-blue-500",
           defaultClassNames.range_start
         ),
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-md bg-accent", defaultClassNames.range_end),
+        range_end: cn("rounded-r-md bg-blue-500", defaultClassNames.range_end),
         today: cn(
           "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
           defaultClassNames.today
@@ -244,19 +244,19 @@ function CalendarDayButton({
         gap-1 leading-none font-normal rounded-md
 
 
-        data-[selected-single=true]:bg-primary
+        data-[selected-single=true]:bg-blue-500
         data-[selected-single=true]:text-primary-foreground
 
-        data-[range-start=true]:bg-primary
+        data-[range-start=true]:bg-white
         data-[range-start=true]:text-primary-foreground
         data-[range-start=true]:rounded-md
         data-[range-start=true]:rounded-l-md
 
-        data-[range-middle=true]:bg-accent
+        data-[range-middle=true]:bg-blue-500
         data-[range-middle=true]:text-accent-foreground
         data-[range-middle=true]:rounded-none
 
-        data-[range-end=true]:bg-primary
+        data-[range-end=true]:bg-white
         data-[range-end=true]:text-primary-foreground
         data-[range-end=true]:rounded-md
         data-[range-end=true]:rounded-r-md

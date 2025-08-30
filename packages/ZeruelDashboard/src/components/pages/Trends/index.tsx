@@ -5,9 +5,9 @@ import { BracketsWindowStyling, CrossesWindowStyling } from '@zeruel/shared-ui/W
 import React, { memo } from 'react';
 import { TrendsProvider } from './context';
 import { useQuery } from '@tanstack/react-query';
-import TimelineChart from './_components/TimelineChart';
 import StateVisualization from './_components/StateVisualization';
 import SubjectAlignmentChart from './_components/SubjectAlignmentChart';
+import TimelineComposedChart from './_components/TimelineComposedChart';
 
 
 
@@ -49,12 +49,12 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
             className='hidden col-span-4 col-start-2 row-start-3 w-full h-full flex-col'
-            contentClassName='!px-0 !pb-0'
+            contentClassName='!px-0 !pb-0 !pt-0'
             detachedClassName=''
             show={show}
           />}
         >
-          <TimelineChart/>
+          <TimelineComposedChart/>
         </VXWindow>
 
 

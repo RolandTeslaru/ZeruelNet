@@ -1,5 +1,6 @@
 import { createStore, useStore } from 'zustand';
-import React, { createContext, memo, useContext } from 'react';
+import { useStoreWithEqualityFn } from 'zustand/traditional';
+import React, { createContext, memo, useContext, useMemo } from 'react';
 import type { StoreApi } from 'zustand';
 import { immer } from "zustand/middleware/immer"
 import { enableMapSet } from "immer"
@@ -7,12 +8,14 @@ import { shallow } from 'zustand/shallow';
 import { useQuery } from '@tanstack/react-query';
 import { subDays, differenceInMilliseconds } from 'date-fns';
 import { fetchDataBounds } from '@/lib/api/trends';
+import { TrendsAPI } from '@/types/api';
 
 type State = {
     slidingWindow: {
         start: Date
         end: Date
         size: number
+        bucketInterval: TrendsAPI.ComposedData.BucketInterval
     }
     dataBounds: {
         start_video_date: Date
@@ -21,7 +24,8 @@ type State = {
 }
 
 type Actions = {
-    setSlidingWindow: (props: {start: Date, end:Date, size: number}) => void
+    setSlidingWindowRange: (props: {start: Date, end:Date}) => void
+    setSlidingWindowInterval: (value: TrendsAPI.ComposedData.BucketInterval) => void
 }
 
 interface TrendsStoreInitialProps {
@@ -29,6 +33,8 @@ interface TrendsStoreInitialProps {
 }
 
 const createTrendsStore = (props: TrendsStoreInitialProps) => {
+
+    console.log("Create Trends Store")
 
     const { initialDataBounds } = props
 
@@ -46,21 +52,27 @@ const createTrendsStore = (props: TrendsStoreInitialProps) => {
                 slidingWindow: {
                     start: slidingWindowStart,
                     end: slidingWindowEnd,
-                    size: slidingWindowSize
+                    size: slidingWindowSize,
+                    bucketInterval: "day"
                 },
                 dataBounds: {
                     start_video_date: start_video_date,
                     end_video_date: end_video_date
                 },
-                setSlidingWindow: ({start, end, size}) => {
+                setSlidingWindowRange: ({start, end}) => {
                     set((state) => {
                         if(start)
                             state.slidingWindow.start = start;
                         if(end)
                             state.slidingWindow.end = end;
-                        if(size)
-                            state.slidingWindow.size = size
+
+                        state.slidingWindow.size = differenceInMilliseconds(state.slidingWindow.end, state.slidingWindow.start)
                     });
+                },
+                setSlidingWindowInterval: (value) => {
+                    set(state => {
+                        state.slidingWindow.bucketInterval = value
+                    })
                 }
             })
         )
@@ -79,17 +91,18 @@ export const TrendsProvider: React.FC<TreeProviderProps> = memo(({children}) => 
         queryKey: ["trends", "data-bounds"],
         queryFn: async () => {
           const data = await fetchDataBounds();
-            
-            console.log("INITIAL DATA BOUNDS ",data)
-
           return data
         },
         retry: false, 
     })
 
+    const value = useMemo(() => {
+        return createTrendsStore({ initialDataBounds })
+    },[initialDataBounds])
+
       
     return (
-        <Context.Provider value={createTrendsStore({ initialDataBounds })}>
+        <Context.Provider value={value}>
             {children}
         </Context.Provider>
     )
@@ -102,9 +115,9 @@ export function useTrendsStore<T>(selector?: (state: State & Actions) => T) {
     if (!store) throw new Error('Missing TrendsProvider in the tree');
     
     if (selector) {
-        return useStore(store, selector);
+        return useStoreWithEqualityFn(store, selector, shallow);
     }
     
     // Return entire state if no selector provided
-    return useStore(store, (state) => state);
+    return useStoreWithEqualityFn(store, (state) => state, shallow);
 };

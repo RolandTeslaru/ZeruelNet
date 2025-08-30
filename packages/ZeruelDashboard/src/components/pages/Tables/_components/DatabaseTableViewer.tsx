@@ -34,10 +34,13 @@ const DatabaseTableViewer = memo(() => {
         staleTime: Infinity,
     });
 
-
-    // Fetch the selected table
     const { data, isLoading: isDataLoading } = useQuery({
-        queryKey: [selectedTable, { pageIndex, pageSize, queryParams }],
+        queryKey: [
+            selectedTable,
+            pageIndex,
+            pageSize, 
+            JSON.stringify(queryParams)
+        ],
         queryFn: () => {
             const baseParams = { limit: pageSize, offset: pageIndex * pageSize };
             const paramsWithFilters = { ...baseParams, ...(queryParams ?? {}) } as any;
@@ -48,7 +51,6 @@ const DatabaseTableViewer = memo(() => {
                 case 'knowledge_subjects':  return fetchKnowledgeSubjects(paramsWithFilters)
             }
         },
-        // Only run this query if the schema has been successfully loaded
         enabled: !!columns,
     });
 

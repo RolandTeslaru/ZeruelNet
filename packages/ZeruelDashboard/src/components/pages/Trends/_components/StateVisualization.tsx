@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { memo } from 'react'
 import JsonView from 'react18-json-view'
 import { useTrendsStore } from '../context'
 
-const StateVisualization = () => {
+const StateVisualization = memo(() => {
 
     const state = useTrendsStore()
 
@@ -11,6 +11,6 @@ const StateVisualization = () => {
         <JsonView src={state}/>
     </div>
   )
-}
+})
 
 export default StateVisualization

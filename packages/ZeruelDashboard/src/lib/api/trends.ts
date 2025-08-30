@@ -17,3 +17,13 @@ export async function fetchSujects(
     const { data } = await api.get("/api/v1/trends/subjects", { params })
     return data;
 }
+
+
+export async function fetchComposedData(
+
+    params: TrendsAPI.ComposedData.Query
+
+): Promise<TrendsAPI.ComposedData.Response>{
+    const { data } = await api.get("/api/v1/trends/composed-data", {params})
+    return data
+}
