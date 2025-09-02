@@ -94,9 +94,13 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             )}
         </li>
     )
+    
+    if (branch.overrideRenderBranch)
+        return branch.overrideRenderBranch(branch, BranchTemplate)
+    else if(renderBranch)
+        return renderBranch(branch, BranchTemplate)
 
-    return renderBranch ? renderBranch(branch, BranchTemplate) : null
-
+    return null
 })
 
 

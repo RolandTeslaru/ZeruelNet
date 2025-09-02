@@ -7,7 +7,8 @@ export namespace DatabaseAPI {
         offset:     z.coerce.number().int().min(0).default(0),
         since:      z.iso.datetime().optional(),
         until:      z.iso.datetime().optional(),
-      })
+    })
+
 
 
 
@@ -41,6 +42,7 @@ export namespace DatabaseAPI {
 
 
 
+
     export namespace Videos {
         export const Query = BaseQuery.extend({
             hashtag:    z.string().trim().min(1).optional(),
@@ -62,17 +64,36 @@ export namespace DatabaseAPI {
 
 
 
+
     export namespace VideoFeatures {
-        export const IdentifiedSubject = z.object({
-            subject:    z.string().trim().min(1),
-            min_stance: z.coerce.number().min(-1).max(1).optional(),
-            max_stance: z.coerce.number().min(-1).max(1).optional(),
-        })
-        export type IdentifiedSubject = z.infer<typeof IdentifiedSubject>
+        export namespace LLMIdentifiedSubject {
+            export const Query = z.object({
+                subject:                z.string().trim().min(1),
+                min_stance:             z.coerce.number().min(-1).max(1).optional(),
+                max_stance:             z.coerce.number().min(-1).max(1).optional(),
+                min_alignment_score:    z.coerce.number().min(-1).max(1).optional(),
+                max_alignment_score:    z.coerce.number().min(-1).max(1).optional(),
+                min_expected_alignment: z.coerce.number().min(-1).max(1).optional(),
+                max_expected_alignment: z.coerce.number().min(-1).max(1).optional(),  
+                min_alignment_gap:      z.coerce.number().min(-1).max(1).optional(),
+                max_alignment_gap:      z.coerce.number().min(-1).max(1).optional(),  
+            })
+            export type Query = z.infer<typeof Query>
+
+            export const Response = z.object({
+                subject:            z.string(),
+                stance:             z.number(),
+                alignment_score:    z.number(),
+                expected_alignment: z.number(),
+                alignment_gap:      z.number()
+            })
+        }
+
+        const detectedLanguage = z.string().regex(/^[a-z]{2}$/, "Invalid language code")
     
         export const Query = BaseQuery.extend({
             video_id:          z.string().optional(),
-            detected_language: z.string().regex(/^[a-z]{2}$/, "Invalid language code").optional(),
+            detected_language: detectedLanguage.optional(),
             enrichment_status: z.enum(["completed", "failed"]).optional(),
             // -1 means very pro russia while 1 means pro western
             min_alignment:     z.coerce.number().min(-1).max(1).optional(),
@@ -84,13 +105,33 @@ export namespace DatabaseAPI {
             timestamp:         z.enum(["last_enriched_at", "polarity", "llm_overall_alignment"]).default("last_enriched_at").optional(),
             sort:              z.enum(["asc", "desc"]).default("desc").optional(),
         
-            identified_subjects: z.array(IdentifiedSubject).optional()
+            identified_subjects: z.array(LLMIdentifiedSubject.Query).optional()
         })
         export type Query = z.infer<typeof Query>
+
+        export const Item = z.object({
+            video_id:                 z.string(),
+            transcript:               z.string(),
+            detected_language:        detectedLanguage,
+            last_enriched_at:         z.iso.datetime(),
+            llm_summary:              z.string(),
+            llm_identified_subjects:  z.array(LLMIdentifiedSubject.Response).nullable(),
+            llm_model_name:           z.string(),
+            llm_overall_alignment:    z.number(),
+            deterministic_alignment:  z.number(),
+            final_alignment:          z.number(),
+            alignment_conflict:       z.number(),
+            text_sentiment_positive:  z.number(),
+            text_sentiment_negative:  z.number(),
+            text_sentiment_neutral:   z.number(),
+            polarity:                 z.number(),
+            enrichment_status:        z.enum(["completed", "failed", "deleted"]),
+        })
+        export type Item = z.infer<typeof Item>
     
         export const Response = z.object({
-            items:  z.array(z.any()),
-            page:   z.object({
+            items: z.array(Item),
+            page: z.object({
                 limit:  z.number(),
                 offset: z.number(),
                 total:  z.number(),
@@ -98,6 +139,7 @@ export namespace DatabaseAPI {
         })
         export type Response = z.infer<typeof Response>
     }
+
 
 
 
@@ -146,6 +188,9 @@ export namespace DatabaseAPI {
         export type Response = z.infer<typeof Response>
     }
 
+
+
+    
     export namespace KnowledgeSubjects {
         export const SubjectCategory = z.enum([
             "Political Leader",

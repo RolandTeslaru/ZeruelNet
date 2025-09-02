@@ -5,6 +5,7 @@ export interface DummyTreeBranch{
     children?: Record<string, DummyTreeBranch>
     isExpanded?: boolean
     data?: any
+    overrideRenderBranch?: RenderBranchFunction
 }
 
 export type DummyTree = Record<string, DummyTreeBranch>
@@ -25,6 +26,7 @@ export interface InternalTreeBranch {
     needsLazyLoading?: boolean
     parentPaths: Set<string>
     data?: any
+    overrideRenderBranch?: RenderBranchFunction
     isLoading: boolean
 }
 

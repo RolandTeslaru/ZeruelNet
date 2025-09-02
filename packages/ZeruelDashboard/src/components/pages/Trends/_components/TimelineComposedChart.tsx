@@ -53,6 +53,14 @@ const TimelineComposedChart = memo(() => {
             /> */}
             {isLoading ? <DataLoadingIndicator /> :
                 <>
+                    <Popover>
+                        <PopoverTrigger className='w-fit absolute right-0'>
+                            <Info />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <DataViewerWrapper src={data} title="Data" />
+                        </PopoverContent>
+                    </Popover>
                     <ChartComponent data={data} />
                     {/* <div className='text-xs'>
                         <JsonView src={data} />
@@ -78,9 +86,9 @@ type UpperBarProps = {
     setSlidingWindowRange: (range: { start: Date; end: Date }) => void
 }
 
-const UpperBar = ({ 
-        slidingWindow, data, setSlidingWindowInterval, setSlidingWindowRange 
-    }: UpperBarProps
+const UpperBar = ({
+    slidingWindow, data, setSlidingWindowInterval, setSlidingWindowRange
+}: UpperBarProps
 ): React.ReactElement => {
 
     const onRangeUpdate = useCallback((values: { range: DateRange }) => {
@@ -140,14 +148,14 @@ const ChartComponent: React.FC<ChartProps> = memo(({ data }) => {
                     <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                     <YAxis yAxisId="left" tick={{ fontSize: 11 }} /> {/* Primary Y-axis for the bars */}
                     <YAxis yAxisId="right" domain={[-1, 1]} orientation="right" tick={{ fontSize: 11 }} /> {/* Secondary Y-axis for the lines */}
-                    <Tooltip content={({active, payload, label}) => 
+                    <Tooltip content={({ active, payload, label }) =>
                         <ChartTooltip
                             active={active}
                             payload={payload}
                             label={label as string}
                             valueFormatter={(value) => value.toFixed(3)}
                         />
-                    }/>
+                    } />
                     <Bar dataKey="volume" barSize={20} fill="url(#volumeColor)" yAxisId="left" />
                     <Area
                         type="monotone"

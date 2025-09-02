@@ -28,6 +28,7 @@ export const processDummyBranch = (key: string, dummyBranch: DummyTreeBranch, br
         canBeExpanded: childrenLength > 0 || needsLazyLoading,
         parentPaths,
         data: dummyBranch.data,
+        overrideRenderBranch: dummyBranch.overrideRenderBranch,
         children: null,
         isLoading: false
     }

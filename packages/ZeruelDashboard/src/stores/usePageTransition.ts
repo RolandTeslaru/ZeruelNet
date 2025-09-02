@@ -19,10 +19,10 @@ type Actions = {
 
 const DEFAULTS: GSAPTweenVars = { duration: 0.3, ease: "power2.inOut" } 
 
-const SCRAPER_PAGE_SELECTOR = "#ZN-DataScraper-StepperPanel, #ZN-DataScraper-MissionPanel, #ZN-DataScraper-CommandPanel"
+const SCRAPER_PAGE_SELECTOR    = "#ZN-DataScraper-StepperPanel, #ZN-DataScraper-MissionPanel, #ZN-DataScraper-CommandPanel"
 const ENRICHMENT_PAGE_SELECTOR = "#ZN-Enrichment-TablePanel, #ZN-Enrichment-DataPanel"
-const TABLES_PAGE_SELECTOR = "#ZN-Dashboard-Database-Tree-Panel, #ZN-Dashboard-Database-Table-Viewer, #ZN-Dashboard-Database-Query-Panel"
-const TRENDS_PAGE_SELECTOR = "#ZN-Trends-LeftPanel, #ZN-Trends-Timeline, #ZN-Trends-Main, #ZN-Trends-Right"
+const TABLES_PAGE_SELECTOR     = "#ZN-Dashboard-Database-Tree-Panel, #ZN-Dashboard-Database-Table-Viewer, #ZN-Dashboard-Database-Query-Panel"
+const TRENDS_PAGE_SELECTOR     = "#ZN-Trends-LeftPanel, #ZN-Trends-Timeline, #ZN-Trends-Main, #ZN-Trends-Right"
 
 const showPage = (pageKey: PageKey): GSAPTimeline => {
     switch(pageKey){

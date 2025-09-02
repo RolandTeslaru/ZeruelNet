@@ -21,7 +21,7 @@ export namespace TrendsAPI {
             // If include_knowledge is false then the knowledge based filtering wont work
             
             // Knowledge-based filtering (triggers JOIN)
-            category: z.enum(["Political Leader", "Country", "Program", "Concept", "Institution", "EP Group", "Party", "Extremist Movement"]).optional(),
+            category: DatabaseAPI.KnowledgeSubjects.SubjectCategory.optional(),
             min_weight: z.coerce.number().min(0).max(2).optional(),
             max_weight: z.coerce.number().min(0).max(2).optional(),
             country_code: z.string().regex(/^[a-z]{2}$|^eu$/i).nullable().optional(),
@@ -65,6 +65,8 @@ export namespace TrendsAPI {
 
             since: z.iso.datetime(),
             until: z.iso.datetime(),
+
+            subjects: z.array(DatabaseAPI.VideoFeatures.LLMIdentifiedSubject.Query).optional(),
 
             min_final_alignment: z.coerce.number().min(-1).max(1).optional(),
             max_final_alignment: z.coerce.number().min(-1).max(1).optional(),

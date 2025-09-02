@@ -1,4 +1,4 @@
-import { EnrichedVideo } from '@/types/enrichedVideo';
+import { DatabaseAPI } from '@/types/api';
 import React, { createContext, useContext, useState, useMemo, memo } from 'react';
 import { z } from "zod"
 
@@ -6,27 +6,28 @@ import { z } from "zod"
 
 
 interface EnrichmentViewerContextState {
-    selectedVideoId: string | undefined;
-    setSelectedVideoId: React.Dispatch<React.SetStateAction<string | undefined>>;
+    selectedVideoId:        string | undefined;
+    setSelectedVideoId:     React.Dispatch<React.SetStateAction<string | undefined>>;
 
-    selectedVideoData: EnrichedVideo | undefined;
-    setSelectedVideoData: React.Dispatch<React.SetStateAction<EnrichedVideo | undefined>>;
+    selectedVideoData:      DatabaseAPI.VideoFeatures.Item | undefined;
+    setSelectedVideoData:   React.Dispatch<React.SetStateAction<DatabaseAPI.VideoFeatures.Item | undefined>>;
 
-    rowSelection: Record<string, boolean>;
-    setRowSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    rowSelection:           Record<string, boolean>;
+    setRowSelection:        React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 
-    queryParams: Record<string, any> | undefined;
-    setQueryParams: React.Dispatch<React.SetStateAction<Record<string, any> | undefined>>;
+    queryParams:            Record<string, any> | undefined;
+    setQueryParams:         React.Dispatch<React.SetStateAction<Record<string, any> | undefined>>;
 }
 
 
 const EnrichmentViewerContext = createContext<EnrichmentViewerContextState | undefined>(undefined)
 
 export const EnrichmentViewerProvider: React.FC<{ children: React.ReactNode }> = memo(({ children }) => {
-    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-    const [selectedVideoId, setSelectedVideoId] = useState<string>();
-    const [selectedVideoData, setSelectedVideoData] = useState<EnrichedVideo>();
-    const [queryParams, setQueryParams] = useState<Record<string, any> | undefined>();
+    
+    const [rowSelection,      setRowSelection]      = useState<Record<string, boolean>>({});
+    const [selectedVideoId,   setSelectedVideoId]   = useState<string>();
+    const [selectedVideoData, setSelectedVideoData] = useState<DatabaseAPI.VideoFeatures.Item>();
+    const [queryParams,       setQueryParams]       = useState<Record<string, any> | undefined>();
 
     const value = useMemo(() => ({
         selectedVideoId,

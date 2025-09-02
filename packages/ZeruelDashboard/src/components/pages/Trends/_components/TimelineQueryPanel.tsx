@@ -11,6 +11,39 @@ import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper'
 import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker'
 import { Info } from '@zeruel/shared-ui/icons'
 import { DateRange } from 'react-day-picker'
+import { DummyTree, RenderBranchFunction } from '@zeruel/shared-ui/Tree/types'
+import Tree from '@zeruel/shared-ui/Tree'
+
+const QueryTree: DummyTree = {
+    "Subjects Alignment": {
+        isExpanded: true,
+        children: {
+            "hour": {
+                isExpanded: true,
+                children: {}
+            },
+            "date range": {
+                isExpanded: true,
+                children: {}
+            },
+            "hashtags": {
+                isExpanded: true,
+                children: {}
+            },
+
+        }
+    }
+}
+
+const renderBranch: RenderBranchFunction = (branch, BranchTemplate) => {
+    return (
+        <BranchTemplate className='h-[30px] min-w-fit'>
+            <p>
+                {branch.key}
+            </p>
+        </BranchTemplate>
+    )
+}
 
 const TimelineQueryPanel = () => {
     const [slidingWindow, setSlidingWindowRange, setSlidingWindowInterval] = useTrendsStore(state => [
@@ -18,15 +51,6 @@ const TimelineQueryPanel = () => {
         state.setSlidingWindowRange,
         state.setSlidingWindowInterval
     ])
-
-    const { data, isLoading } = useQuery({
-        queryKey: [
-            'composed-data',
-            slidingWindow.start.getTime(),
-            slidingWindow.end.getTime(),
-            slidingWindow.bucketInterval
-        ]
-    })
 
     const onRangeUpdate = useCallback((values: { range: DateRange }) => {
         setSlidingWindowRange({
@@ -38,15 +62,10 @@ const TimelineQueryPanel = () => {
 
     return (
         <div className='size-full'>
-            <Popover>
-                <PopoverTrigger className='w-fit'>
-                    <Info />
-                </PopoverTrigger>
-                <PopoverContent>
-                    <DataViewerWrapper src={data} title="Data" />
-                </PopoverContent>
-            </Popover>
-
+            <Tree 
+                src={QueryTree}
+                renderBranch={renderBranch}
+            />
             <Select
                 onValueChange={(value: TrendsAPI.ComposedData.BucketInterval) => setSlidingWindowInterval(value)}
                 defaultValue={slidingWindow.bucketInterval}

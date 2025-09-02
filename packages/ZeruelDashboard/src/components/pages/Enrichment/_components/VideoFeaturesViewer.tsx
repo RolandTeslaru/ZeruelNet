@@ -6,7 +6,7 @@ import { CrossesWindowStyling, CrossIcon } from '@zeruel/shared-ui/WindowStyling
 import { z } from "zod"
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel'
 import { useEnrichmentViewer } from '../context'
-import { EnrichedVideoSchema } from '@/types/enrichedVideo'
+import { DatabaseAPI } from '@/types/api'
 
 
 
@@ -17,11 +17,11 @@ const VideoFeaturesViewer = () => {
         if(!selectedVideoData)
             return null
         
-        const result = EnrichedVideoSchema.safeParse(selectedVideoData)
+        const result = DatabaseAPI.VideoFeatures.Item.safeParse(selectedVideoData)
         if (result.success)
             return result.data
         else if(result.error){
-            console.log("Result Error ", z.treeifyError(result.error))
+            console.log("Result Error ", z.treeifyError(result.error), selectedVideoData)
             return null
         }
     }, [selectedVideoData, selectedVideoId])
@@ -44,10 +44,6 @@ const VideoFeaturesViewer = () => {
                 <div className='text-xs font-roboto-mono flex text-white justify-between'>
                     <p>last_enriched_at:</p>
                     <p>{parsedData.last_enriched_at}</p>
-                </div>
-                <div className='text-xs font-roboto-mono flex text-white justify-between'>
-                    <p>total_count</p>
-                    <p>{parsedData.total_count}</p>
                 </div>
             </CrossesWindowStyling>
             
@@ -108,7 +104,7 @@ const VideoFeaturesViewer = () => {
                             <CrossIcon className={"absolute h-3 w-3 top-0 right-0 transform translate-x-1/2 -translate-y-1/2"} />
                             <CrossIcon className={"absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2"} />
                             <CrossIcon className={"absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2"} />
-                            {parsedData.llm_identified_subjects.map((obj, index) => (
+                            {parsedData?.llm_identified_subjects?.map((obj, index) => (
                                 <div key={index} className={`relative px-1 py-3 flex justify-between ${index !== 0 && selectedVideoData.llm_identified_subjects.length - 1 !== 0 && "border-t border-white/20"}`}>
                                     <p>subject: {obj.subject}</p>
                                     <div className='flex flex-col'>
