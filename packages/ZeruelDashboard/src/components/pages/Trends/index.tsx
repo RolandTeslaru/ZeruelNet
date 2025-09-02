@@ -8,7 +8,10 @@ import { useQuery } from '@tanstack/react-query';
 import StateVisualization from './_components/StateVisualization';
 import SubjectAlignmentChart from './_components/SubjectAlignmentChart';
 import TimelineComposedChart from './_components/TimelineComposedChart';
-
+import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel';
+import DatabaseTreePanel from '../Tables/_components/DatabaseTreePanel';
+import HorizontalCollapsiblePanel from "@zeruel/shared-ui/HorizontalCollapsiblePannel"
+import TimelineQueryPanel from './_components/TimelineQueryPanel';
 
 
 const Trends = React.memo(({ show }: { show: boolean }) => {
@@ -21,12 +24,12 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
             className='hidden row-span-3 h-full flex-col'
-            contentClassName='!px-0 !pb-0'
+            contentClassName=''
             detachedClassName=''
             show={show}
           />}
         >
-          
+          <DatabaseTreePanel />
         </VXWindow>
 
         <VXWindow
@@ -48,13 +51,30 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends: Timeline'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden col-span-4 col-start-2 row-start-3 w-full h-full flex-col'
-            contentClassName='!px-0 !pb-0 !pt-0'
+            className='hidden col-span-4 col-start-2 row-start-3 w-full h-full'
+            contentClassName=''
             detachedClassName=''
             show={show}
           />}
         >
-          <TimelineComposedChart/>
+          <div className='size-full relative flex flex-row gap-4'>
+            <HorizontalCollapsiblePanel 
+              title='VOLUME ALIGNMENT'
+              contentClassName='pb-0'
+              openWidth={"80%"}
+              closedWidth={"40"}
+            >
+              <TimelineComposedChart/>
+            </HorizontalCollapsiblePanel>
+            <HorizontalCollapsiblePanel 
+              title='VOLUME QUERY'
+              contentClassName='pb-0'
+              openWidth={"20%"}
+              closedWidth={"40"}
+            >
+              <TimelineQueryPanel/>
+            </HorizontalCollapsiblePanel>
+          </div>
         </VXWindow>
 
 
@@ -65,12 +85,18 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
             className='hidden row-span-2 col-start-5 row-start-1  w-full h-full  mt-auto flex-col'
-            contentClassName='!px-0 !pb-0'
+            contentClassName=''
             detachedClassName=''
             show={show}
           />}
         >
-          <SubjectAlignmentChart/>
+          <CollapsiblePanel 
+            title='LLM IDENTIFIED SUBJECTS ALIGNMENT'
+            className='!h-[100%]'
+            contentClassName='overflow-y-scroll'
+          >
+            <SubjectAlignmentChart/>
+          </CollapsiblePanel>
         </VXWindow>
 
       </div>

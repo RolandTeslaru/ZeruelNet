@@ -23,8 +23,12 @@ const CollapsiblePanel: React.FC<Props> = memo(
         return (
 
             <CrossesWindowStyling className={
-                classNames(className, { "max-h-[40px]!": open === false }, { "max-h-[700px]": open === true }, { "px-1": noPadding === false },
-                    `z-50 h-fit relative !transform-gpu duration-500 ease bg-zinc-900/40 backdrop-blur-2xl`)}>
+                classNames(className, 
+                    { "max-h-[40px]!": open === false }, 
+                    { "max-h-[700px]": open === true }, 
+                    { "px-1": noPadding === false },
+                    `z-50 h-fit relative !transform-gpu duration-500 ease bg-zinc-900/40 backdrop-blur-2xl`)}
+            >
                 {/* Header*/}
                 <div className={`py-2 ${noPadding ? "px-2" : "px-0"} min-h-[20px] relativ`}>
                     {/* Open/Close Buton */}

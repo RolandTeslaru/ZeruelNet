@@ -90,6 +90,7 @@ const shutdownBrowser = async (browserManager: BrowserManager) => {
 
     statusManager
         .updateStep('browser_shutdown', 'completed')
+        .setStage("success")
 }
 
 

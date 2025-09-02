@@ -5,11 +5,12 @@ import classNames from 'classnames';
 import { DotPattern } from "./DotPattern";
 import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'motion/react'
 
-export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassName?: string }> = ({
+export const CrossesWindowStyling = React.forwardRef<HTMLDivElement, WindowStylingProps & { crossesClassName?: string }>(({
     className, style, children, isDetached = false, detachedClassName, detachedStyling, crossesClassName, ...rest
-}) => {
+}, ref) => {
     return (
         <div
+            ref={ref}
             className={classNames(
                 isDetached && ['rounded-none', detachedClassName],
                 'p-2 relative flex flex-col gap-2 border border-white/20',
@@ -30,7 +31,7 @@ export const CrossesWindowStyling: React.FC<WindowStylingProps & { crossesClassN
             {children}
         </div>
     )
-}
+})
 
 
 export const BracketsWindowStyling: React.FC<WindowStylingProps & { bracketsClassName?: string, show?: boolean } & HTMLMotionProps<"div">> = ({
@@ -88,7 +89,6 @@ export const StandardWindowStyling = (props: WindowStylingProps) => {
         </div>
     )
 }
-
 
 
 

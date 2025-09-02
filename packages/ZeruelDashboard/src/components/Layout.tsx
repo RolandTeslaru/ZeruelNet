@@ -37,9 +37,10 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
             <AuroraBackground asLayer />
             <div className={classNames(
                 'pointer-events-none absolute inset-0 bg-transparent transition-bg duration-500 ease-in-out',
-                { "!bg-cyan-900/20": currentPage === "scraper" },
+                { "!bg-sky-600/20": currentPage === "scraper" },
                 { "!bg-black/60": currentPage === "tables" },
-                { "!bg-blue-950/20": currentPage === "trendsanalysis" },
+                { "!bg-cyan-800/20": currentPage === "enrichment" },
+                { "!bg-sky-950/60": currentPage === "trendsanalysis" },
                 { "!bg-indigo-500/10": currentPage === "health" },
             )}
                 id="ZN-Layout-BackgroundColor"
@@ -49,7 +50,7 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
                 className='pointer-events-none absolute inset-0 transition-all duration-700 ease-in-out'
                 style={{
                     background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%)',
-                    opacity: currentPage === "tables" ? 1 : 0
+                    opacity: (currentPage === "tables" || currentPage === "trendsanalysis") ? 1 : 0
                 }}
             />
             <VexrLogo className={`pointer-events-none ${theme === "dark" && "!text-white/3"} ${theme === "light" && "!text-black/3 "} h-[100px] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2`} />

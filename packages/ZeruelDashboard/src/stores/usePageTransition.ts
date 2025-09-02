@@ -151,36 +151,6 @@ const createOutroTimeline = (pageKey: PageKey): GSAPTimeline => {
     }
 }
 
-const playBackgroundTimeline = (page: PageKey) => {
-    switch(page){
-        case "scraper":
-            gsap.to("#ZN-Layout-BackgroundColor",{
-                backgroundColor: "rgba(22, 78, 99, 0.2)", // bg-cyan-900/20
-            })
-            break;
-        case "enrichment":
-            gsap.to("#ZN-Layout-BackgroundColor",{
-                backgroundColor: "rgba(0, 0, 0, 0.6)", // bg-cyan-900/20
-            })
-            break;
-        case "tables":
-            gsap.to("#ZN-Layout-BackgroundColor",{
-                backgroundColor: "rgba(0, 0, 0, 0.6)", // bg-blck/60
-            })
-            break;
-        case "trendsanalysis":
-            gsap.to("#ZN-Layout-BackgroundColor",{
-                backgroundColor: "rgba(14, 165, 233, 0.6)", // bg-sky-500/20
-            })
-            break;
-        case "health":
-            gsap.to("#ZN-Layout-BackgroundColor",{
-                backgroundColor: "rgba(99, 102, 241, 0.2)", // bg-blue-900/20
-            })
-            break;
-    }
-}
-
 export const usePageTransition = create<State & Actions>()(
     immer((set, get) => ({
         transition: ({ toPage, exitAnimationDelay, bgAnimationDelay, enterAnimationDelay }) => {
@@ -192,7 +162,6 @@ export const usePageTransition = create<State & Actions>()(
                 .then(() => {
                     // console.log("Finsihed EXIT")
                     showPage(toPage).restart()
-                    playBackgroundTimeline(toPage)
                     useSystem.getState().setCurrentPage(toPage);
 
                     // Wait for React to render the new components

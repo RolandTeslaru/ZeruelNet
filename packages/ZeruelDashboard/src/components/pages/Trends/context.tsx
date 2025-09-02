@@ -32,6 +32,8 @@ interface TrendsStoreInitialProps {
     initialDataBounds: { start_video_date: string; end_video_date: string }
 }
 
+export type TrendsStoreProps = State & Actions
+
 const createTrendsStore = (props: TrendsStoreInitialProps) => {
 
     console.log("Create Trends Store")
@@ -43,7 +45,7 @@ const createTrendsStore = (props: TrendsStoreInitialProps) => {
 
     const slidingWindowEnd = new Date(Math.min(new Date().getTime(), end_video_date.getTime()))
     // 7 day window
-    const slidingWindowStart = subDays(slidingWindowEnd, 7)
+    const slidingWindowStart = subDays(slidingWindowEnd, 40)
     const slidingWindowSize = differenceInMilliseconds(slidingWindowEnd, slidingWindowStart)
 
     return createStore<State & Actions>()(
@@ -53,7 +55,7 @@ const createTrendsStore = (props: TrendsStoreInitialProps) => {
                     start: slidingWindowStart,
                     end: slidingWindowEnd,
                     size: slidingWindowSize,
-                    bucketInterval: "day"
+                    bucketInterval: "hour"
                 },
                 dataBounds: {
                     start_video_date: start_video_date,

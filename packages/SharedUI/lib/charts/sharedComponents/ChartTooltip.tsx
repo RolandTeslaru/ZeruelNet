@@ -36,20 +36,15 @@ const ChartTooltip = ({
     return (
       <div
         className={cx(
-          // base
           "rounded-lg border text-xs shadow-md",
-          // border color
           "border-gray-200 dark:border-gray-500/40",
-          // background color
           "bg-white dark:bg-neutral-700/60 backdrop-blur-lg",
         )}
       >
         <div className={cx("border-b border-inherit px-2 py-1")}>
           <p
             className={cx(
-              // base
               "font-medium",
-              // text color
               "text-gray-900 dark:text-gray-50",
             )}
           >
@@ -72,9 +67,7 @@ const ChartTooltip = ({
                 />
                 <p
                   className={cx(
-                    // base
                     "text-right whitespace-nowrap",
-                    // text color
                     "text-gray-700 dark:text-gray-300",
                   )}
                 >
@@ -83,13 +76,12 @@ const ChartTooltip = ({
               </div>
               <p
                 className={cx(
-                  // base
                   "text-right font-medium whitespace-nowrap tabular-nums",
-                  // text color
                   "text-gray-900 dark:text-gray-50",
                 )}
               >
-                {valueFormatter(value)}
+                {typeof value === "number" && valueFormatter(value)}
+                {/* {value} */}
               </p>
             </div>
           ))}

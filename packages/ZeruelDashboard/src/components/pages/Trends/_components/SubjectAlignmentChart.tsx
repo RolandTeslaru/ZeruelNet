@@ -30,14 +30,10 @@ const SubjectAlignmentChart = memo(() => {
   const BAR_HEIGHT = 28;
 
   return (
-    <div className='relative size-full text-xs'>
-      <p className='text-sm text-center font-roboto-mono font-medium text-white/80'>
-        LLM Identified Subjects Alignment
-      </p>
-
+    <>
       {isLoading ? <DataLoadingIndicator /> :
         <>
-          <div className="w-full  max-h-full overflow-y-auto [&_*]:outline-none [&_*]:focus:outline-none">
+          <div className="[&_*]:outline-none [&_*]:focus:outline-none">
             <ResponsiveContainer
               height={data.subjects.length * BAR_HEIGHT}
               width={"100%"}
@@ -80,9 +76,19 @@ const SubjectAlignmentChart = memo(() => {
 
                 <Bar dataKey="avg_stance" isAnimationActive={false} barSize={BAR_HEIGHT - 4}>
                   {data.subjects.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.avg_stance >= 0 ? "oklch(79.2% 0.209 151.711)" : "oklch(70.4% 0.191 22.216)"} />
+                    <Cell key={`cell-${index}`} fill={entry.avg_stance >= 0 ? "url(#barGreenHorizontal)" : "url(#barRedHorizontal)"} />
                   ))}
                 </Bar>
+                <defs>
+                  <linearGradient id="barGreenHorizontal" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="oklch(79.2% 0.209 151.711)" stopOpacity={0.1} />
+                    <stop offset="100%" stopColor="oklch(79.2% 0.209 151.711)" stopOpacity={0.8} />
+                  </linearGradient>
+                  <linearGradient id="barRedHorizontal" x1="1" y1="0" x2="0" y2="0">
+                    <stop offset="0%" stopColor="oklch(63.7% 0.237 25.331)" stopOpacity={0.1} />
+                    <stop offset="100%" stopColor="oklch(63.7% 0.237 25.331)" stopOpacity={0.8} />
+                  </linearGradient>
+                </defs>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -91,8 +97,8 @@ const SubjectAlignmentChart = memo(() => {
         </>
 
       }
-
-    </div>
+    
+    </>
   )
 })
 
