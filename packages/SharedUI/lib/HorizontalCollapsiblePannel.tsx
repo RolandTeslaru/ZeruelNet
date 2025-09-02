@@ -25,7 +25,7 @@ interface Props {
 
 const HorizontalCollapsiblePanel: React.FC<Props> = memo(
     (props) => {
-        const [open, setOpen] = useState(props.defaultOpen);
+        const [open, setOpen] = useState(props.defaultOpen ?? false);
         const ref = useRef(null)
         const { contextSafe } = useGSAP({ scope: ref })
 
@@ -83,7 +83,7 @@ const HorizontalCollapsiblePanel: React.FC<Props> = memo(
         })
 
         useEffect(() => {
-            playAnimation(props.defaultOpen)
+            playAnimation(!props.defaultOpen)
         }, [])
 
         return (

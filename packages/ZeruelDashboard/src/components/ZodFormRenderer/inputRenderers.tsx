@@ -7,63 +7,53 @@ import {
 import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "./types"
 import { Control, ControllerRenderProps, useFieldArray } from "react-hook-form";
 
-export const stringInputRenderer = (zodStringObject: ZodStringObject, field: ControllerRenderProps, control: Control) => {    
+export const stringInputRenderer = (zodStringObject: ZodStringObject, field: ControllerRenderProps, control: Control, className?: string) => {
     if (zodStringObject.format === "date-time") {
         return (
-            <>
-                <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
-                <Input
-                    {...field}
-                    type="date"
-                    className='w-1/2 ml-auto'
-                    value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                    onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : undefined)}
-                />
-            </>
+            <Input
+                {...field}
+                type="date"
+                className={className + ' w-1/2 ml-auto'}
+                value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+            />
         )
     }
     if (zodStringObject.enum) {
         return (
-            <>
-                <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
-                <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value ?? zodStringObject.default}
-                >
-                    <SelectTrigger className="w-1/2 ml-auto focus:outline-hidden text-xs!">
-                        <SelectValue placeholder="ENUM" className={field.value ? "text-white" : "text-neutral-200"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {zodStringObject.enum.map((value) => (
-                            <SelectItem key={value} value={value}>
-                                {value}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </>
+            <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value ?? zodStringObject.default}
+            >
+                <SelectTrigger className="w-1/2 ml-auto focus:outline-hidden text-xs!">
+                    <SelectValue placeholder="ENUM" className={field.value ? "text-white" : "text-neutral-200"} />
+                </SelectTrigger>
+                <SelectContent>
+                    {zodStringObject.enum.map((value) => (
+                        <SelectItem key={value} value={value}>
+                            {value}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         )
     }
     return (
-        <>
-            <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2'/>
-            <Input
-                {...field}
-                type='text'
-                className='w-1/2 ml-auto'
-                placeholder='STRING'
-            />
-        </>
+        <Input
+            {...field}
+            type='text'
+            className={className + ' w-1/2 ml-auto'}
+            placeholder='STRING'
+        />
     )
 }
 
-export const integerInputRenderer = (zodIntegerObject: ZodIntegerObject, field: ControllerRenderProps, control: Control) => {
+export const integerInputRenderer = (zodIntegerObject: ZodIntegerObject, field: ControllerRenderProps, control: Control, className?: string) => {
     return (
         <>
-            <div className='h-1/2 w-[20px] border-b border-l border-neutral-500 absolute left-2'/>
             <Input
                 {...field}
-                className='w-1/2 ml-auto'
+                className={className + ' w-1/2 ml-auto'}
                 type="number"
                 min={zodIntegerObject.minimum || zodIntegerObject.exclusiveMinimum}
                 max={zodIntegerObject.maximum || zodIntegerObject.exclusiveMaximum}
@@ -149,8 +139,8 @@ const IdentifiedSubjectsInput = ({ control, name }: { control: Control<any>, nam
 }
 
 export type INPUT_RENDERER_MAP_RETURN_TYPE = (
-    zodProp: ZodPropertyObject, 
-    field: ControllerRenderProps, 
+    zodProp: ZodPropertyObject,
+    field: ControllerRenderProps,
     control: Control
 ) => React.ReactNode
 

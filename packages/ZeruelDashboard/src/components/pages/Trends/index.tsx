@@ -12,6 +12,7 @@ import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel';
 import DatabaseTreePanel from '../Tables/_components/DatabaseTreePanel';
 import HorizontalCollapsiblePanel from "@zeruel/shared-ui/HorizontalCollapsiblePannel"
 import TimelineQueryPanel from './_components/TimelineQueryPanel';
+import JsonDataView from './_components/JsonDataView';
 
 
 const Trends = React.memo(({ show }: { show: boolean }) => {
@@ -60,19 +61,30 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           <div className='size-full relative flex flex-row gap-4'>
             <HorizontalCollapsiblePanel 
               title='VOLUME ALIGNMENT'
-              contentClassName='pb-0'
-              openWidth={"80%"}
+              contentClassName='pp-0'
+              openWidth={"100%"}
               closedWidth={"40"}
+              defaultOpen={true}
             >
               <TimelineComposedChart/>
             </HorizontalCollapsiblePanel>
             <HorizontalCollapsiblePanel 
-              title='VOLUME QUERY'
-              contentClassName='pb-0'
+              title='QUERY'
+              contentClassName='!py-0'
               openWidth={"20%"}
-              closedWidth={"40"}
+              closedWidth={"20"}
+              defaultOpen={true}
             >
               <TimelineQueryPanel/>
+            </HorizontalCollapsiblePanel>
+            <HorizontalCollapsiblePanel 
+              title='JSON DATA'
+              contentClassName='!py-0'
+              defaultOpen={false}
+              openWidth={"50%"}
+              closedWidth={"40"}
+            >
+              <JsonDataView/>
             </HorizontalCollapsiblePanel>
           </div>
         </VXWindow>

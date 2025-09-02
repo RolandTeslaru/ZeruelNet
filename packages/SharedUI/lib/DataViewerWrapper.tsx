@@ -4,7 +4,7 @@ import { JsonViewProps } from 'react18-json-view';
 
 type DataViewerWrapperProps = { children?: React.ReactNode, title: string } & JsonViewProps
 
-const DataViewerWrapper: React.FC<DataViewerWrapperProps> = ({ children, title, ...rest }) => {
+const DataViewerWrapper: React.FC<DataViewerWrapperProps> = ({ children, title = "Data", ...rest }) => {
     return (
         <div className='w-72 flex flex-col'>
             <p className='font-roboto-mono text-xs font-semibold text-center text-label-primary'>{title}</p>

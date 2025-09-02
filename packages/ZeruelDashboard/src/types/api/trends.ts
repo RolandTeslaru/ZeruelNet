@@ -61,34 +61,28 @@ export namespace TrendsAPI {
         export type BucketInterval = z.infer<typeof BucketInterval>
 
         export const Query = z.object({
-            interval: BucketInterval,
-
-            since: z.iso.datetime(),
-            until: z.iso.datetime(),
-
-            subjects: z.array(DatabaseAPI.VideoFeatures.LLMIdentifiedSubject.Query).optional(),
-
-            min_final_alignment: z.coerce.number().min(-1).max(1).optional(),
-            max_final_alignment: z.coerce.number().min(-1).max(1).optional(),
-            
-            min_deterministic_alignment: z.coerce.number().min(-1).max(1).optional(),
-            max_deterministic_alignment: z.coerce.number().min(-1).max(1).optional(),
-            
-            min_llm_overall_alignment: z.coerce.number().min(-1).max(1).optional(),
-            max_llm_overall_alignment: z.coerce.number().min(-1).max(1).optional(),
-
-            min_text_polarity: z.coerce.number().min(-1).max(1).optional(),
-            max_text_polarity: z.coerce.number().min(-1).max(1).optional(),
+            interval:                   BucketInterval,
+            since:                      z.iso.datetime(),
+            until:                      z.iso.datetime(),
+            subjects:                   z.array(DatabaseAPI.VideoFeatures.LLMIdentifiedSubject.Query).optional(),
+            min_final_alignment:        z.coerce.number().min(-1).max(1).optional(),
+            max_final_alignment:        z.coerce.number().min(-1).max(1).optional(),
+            min_deterministic_alignment:z.coerce.number().min(-1).max(1).optional(),
+            max_deterministic_alignment:z.coerce.number().min(-1).max(1).optional(),
+            min_llm_overall_alignment:  z.coerce.number().min(-1).max(1).optional(),
+            max_llm_overall_alignment:  z.coerce.number().min(-1).max(1).optional(),
+            min_text_polarity:          z.coerce.number().min(-1).max(1).optional(),
+            max_text_polarity:          z.coerce.number().min(-1).max(1).optional(),
         })
         export type Query = z.infer<typeof Query>
 
         export const ResponseBucket = z.object({
-            bucket: z.string(), // ISO start time string
-            volume: z.number(),
-            avg_final_alignment: z.number().nullable(),
-            avg_llm_overall_alignment: z.number().nullable(),
-            avg_deterministic_alignment: z.number().nullable(),
-            avg_polarity: z.number().nullable()
+            bucket:                     z.string(), // ISO start time string
+            volume:                     z.number(),
+            avg_final_alignment:        z.number().nullable(),
+            avg_llm_overall_alignment:  z.number().nullable(),
+            avg_deterministic_alignment:z.number().nullable(),
+            avg_polarity:               z.number().nullable()
         })
 
         export const Response = z.object({

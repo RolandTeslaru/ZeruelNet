@@ -21,9 +21,6 @@ const TimelineComposedChart = memo(() => {
         state.setSlidingWindowInterval
     ])
 
-
-
-
     const { data, isLoading } = useQuery({
         queryKey: [
             'composed-data',
@@ -38,7 +35,6 @@ const TimelineComposedChart = memo(() => {
                 until: slidingWindow.end.toISOString()
             }
             const data = fetchComposedData(query)
-            console.log("COMPSOED DATA ", data)
             return data
         }
     })

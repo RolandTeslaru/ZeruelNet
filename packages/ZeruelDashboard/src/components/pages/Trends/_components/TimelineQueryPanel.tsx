@@ -11,11 +11,19 @@ import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper'
 import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker'
 import { Info } from '@zeruel/shared-ui/icons'
 import { DateRange } from 'react-day-picker'
-import { DummyTree, RenderBranchFunction } from '@zeruel/shared-ui/Tree/types'
+import { DummyTree, DummyTreeBranch, RenderBranchFunction } from '@zeruel/shared-ui/Tree/types'
 import Tree from '@zeruel/shared-ui/Tree'
+import ZodFormRenderer from '@/components/ZodFormRenderer'
+import { Form, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import z from 'zod'
+import JsonView from 'react18-json-view'
+import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
+
+
 
 const QueryTree: DummyTree = {
-    "Subjects Alignment": {
+    "Volume Alignment Query": {
         isExpanded: true,
         children: {
             "hour": {
@@ -34,6 +42,7 @@ const QueryTree: DummyTree = {
         }
     }
 }
+
 
 const renderBranch: RenderBranchFunction = (branch, BranchTemplate) => {
     return (
@@ -59,14 +68,24 @@ const TimelineQueryPanel = () => {
         })
     }, [])
 
+    const form = useForm({
+        resolver: zodResolver(TrendsAPI.ComposedData.Query),
+        defaultValues: TrendsAPI.ComposedData.Query.safeParse({}).data || {}
+    })
 
     return (
-        <div className='size-full'>
-            <Tree 
-                src={QueryTree}
-                renderBranch={renderBranch}
+        <div className='size-full overflow-y-scroll'>
+            {/* <ZodFormRenderer 
+                form={form} 
+                schema={TrendsAPI.ComposedData.Query}
+
+            /> */}
+            <ZodFromTreeRenderer 
+                // @ts-expect-error
+                form={form} schema={TrendsAPI.ComposedData.Query} rootTreeName='Query'
             />
-            <Select
+      
+            {/* <Select
                 onValueChange={(value: TrendsAPI.ComposedData.BucketInterval) => setSlidingWindowInterval(value)}
                 defaultValue={slidingWindow.bucketInterval}
             >
@@ -89,7 +108,7 @@ const TimelineQueryPanel = () => {
                 initialDateTo={slidingWindow.end}
                 onUpdate={onRangeUpdate}
                 horizontal={true}
-            />
+            /> */}
 
         </div>
     )
