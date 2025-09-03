@@ -104,6 +104,11 @@ body {
   --popover: color-mix(in oklab, var(--color-neutral-500) 50%, transparent);
   --border-popover: color-mix(in oklab, var(--color-neutral-400) 50%, transparent);
 
+  --bg-input: color-mix(in oklab, var(--color-neutral-700) 50%, transparent);
+  --border-input: color-mix(in oklab, var(--color-neutral-500) 30%, transparent);
+
+  --bg-accent: var(--color-blue-500);
+  --border-accent: var(--color-blue-400);
 
   --primary-opaque: var(--color-neutral-700);
   --primary-thick: color-mix(in oklab, var(--color-neutral-700) 90%, transparent);
@@ -132,8 +137,6 @@ body {
   --border-background: color-mix(in oklab, var(--color-neutral-400) 10%, transparent);
 
   --foreground: var(--tertiary-ultra-thin);
-  --border-accent: color-mix(in oklab, var(--color-neutral-400) 15%, transparent);
-
   --foreground-shadow: var(--tertiary-opaque);
 
   --label-primary: var(--color-neutral-100);
@@ -149,12 +152,10 @@ body {
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);

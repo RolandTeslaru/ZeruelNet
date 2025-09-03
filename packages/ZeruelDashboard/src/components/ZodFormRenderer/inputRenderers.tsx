@@ -6,6 +6,7 @@ import {
 } from '@zeruel/shared-ui/foundations'
 import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "./types"
 import { Control, ControllerRenderProps, useFieldArray } from "react-hook-form";
+import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker';
 
 export const stringInputRenderer = (zodStringObject: ZodStringObject, field: ControllerRenderProps, control: Control, className?: string) => {
     if (zodStringObject.format === "date-time") {
@@ -25,7 +26,7 @@ export const stringInputRenderer = (zodStringObject: ZodStringObject, field: Con
                 onValueChange={field.onChange}
                 defaultValue={field.value ?? zodStringObject.default}
             >
-                <SelectTrigger className="w-1/2 ml-auto focus:outline-hidden text-xs!">
+                <SelectTrigger className={className + " w-1/2 ml-auto focus:outline-hidden text-xs!"}>
                     <SelectValue placeholder="ENUM" className={field.value ? "text-white" : "text-neutral-200"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -73,6 +74,11 @@ export const arrayInputRender = (zodArrayObject: ZodArrayObject, field: Controll
     )
 }
 
+export const dateRangeInputRenderer = (zodObject: any, field: ControllerRenderProps, control: Control) => {
+    return (
+        <DateRangePicker horizontal={true}/>
+    )
+}
 
 const IdentifiedSubjectsInput = ({ control, name }: { control: Control<any>, name: string }) => {
     const { fields, append, remove } = useFieldArray({
@@ -148,5 +154,6 @@ export const INPUT_RENDERER_MAP = {
     "string": stringInputRenderer,
     "integer": integerInputRenderer,
     "number": integerInputRenderer,
-    "array": arrayInputRender
+    "array": arrayInputRender,
+    "daterange": dateRangeInputRenderer
 } as const as any as INPUT_RENDERER_MAP_RETURN_TYPE

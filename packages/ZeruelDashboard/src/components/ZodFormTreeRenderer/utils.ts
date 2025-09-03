@@ -3,7 +3,7 @@ import { z } from "zod"
 
 export const buildZodBranchTree = (
     parentBranch: DummyTreeBranch,
-    value: z.core.JSONSchema._JSONSchema,
+    zodProp: z.core.JSONSchema._JSONSchema & Object,
     key?: string,
 ): DummyTreeBranch => {
     const branch: DummyTreeBranch = {
@@ -12,19 +12,35 @@ export const buildZodBranchTree = (
     }
 
     // @ts-expect-error
-    if (value.type === "string" || value.type === "number") {
-        const isInline = typeof key === "string" && key.length < 6
-        branch.children["value"] = {
-            isExpanded: true,
-            children: {},
-            data: isInline ? { schema: value, renderType: "inline" } : value
+    if (zodProp.type === "string" || zodProp.type === "number") {
+        const hasForm = "format" in zodProp
+        const isInline = typeof key === "string" && key.length < 10 && !hasForm
+
+        if(isInline){
+            branch.data = {
+                schema: zodProp,
+                fieldKey: key,
+                renderType: "inline"
+            }
+        } else {
+            branch.children["value"] = {
+                isExpanded: true,
+                children: {},
+                data: {
+                    schema: zodProp,
+                    fieldKey: key,
+                    renderType: "stacked"
+                }
+            }
         }
+
     }
 
     return branch
 }
 
-export const buildZodTree = (rootTreeName: string, propertiesArray: [string, z.core.JSONSchema._JSONSchema][]) => {
+export const buildZodTree = (rootTreeName: string, schema: z.ZodObject) => {
+    const properties = z.toJSONSchema(schema).properties
     const rootBranch: DummyTreeBranch = {
         isExpanded: true,
         children: {}
@@ -33,7 +49,31 @@ export const buildZodTree = (rootTreeName: string, propertiesArray: [string, z.c
         [rootTreeName]: rootBranch
     }
 
-    propertiesArray.forEach(([key, zodProp]) => {
+    if ("since" in properties && "until" in properties){
+        delete properties["since"]
+        delete properties["until"]
+
+        tree[rootTreeName].children["range"] = {
+            isExpanded: true,
+            children: {
+                value: {
+                    isExpanded: true,
+                    data: {
+                        schema: {
+                            type: "daterange"
+                        },
+                        isDateRange: true,
+                        fieldKey: "range"
+                    },
+                    children: {}
+                }
+            }
+        }
+    }
+
+    Object.entries(properties).forEach(([key, zodProp]: 
+        [a: string, b:z.core.JSONSchema._JSONSchema & Object,]
+    ) => {
         const minMatch = key.match(/^min_(.+)$/)
         const maxMatch = key.match(/^max_(.+)$/)
 
@@ -51,7 +91,13 @@ export const buildZodTree = (rootTreeName: string, propertiesArray: [string, z.c
             tree[rootTreeName].children[baseKey].children[key] = {
                 isExpanded: true,
                 children: {},
-                data: { schema: zodProp, renderType: "inline", isMin: minMatch, isMax: maxMatch }
+                data: { 
+                    schema: zodProp, 
+                    fieldKey: key,
+                    renderType: "inline", 
+                    isMin: minMatch, 
+                    isMax: maxMatch 
+                }
             }
         } else {
             const branch = buildZodBranchTree(rootBranch, zodProp, key)

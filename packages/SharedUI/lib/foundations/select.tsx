@@ -36,9 +36,11 @@ function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        `flex w-full items-center justify-between rounded-lg border border-primary-thin  bg-secondary-regular px-2 text-xs
-       ring-offset-background placeholder:text-white disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1
-        shadow-md shadow-black/20 !h-6 antialiased font-medium
+        `flex w-full items-center justify-between rounded-lg shadow-md shadow-black/20 !h-6 
+         border border-border-input  bg-input px-2 text-xs antialiased font-medium
+         ring-offset-background placeholder:text-white disabled:cursor-not-allowed disabled:opacity-50 
+         [&>span]:line-clamp-1
+        
       `,
         className
       )}
@@ -101,12 +103,12 @@ function SelectContent({
     <SelectPrimitive.Portal container={externalContainer}>
       <SelectPrimitive.Content
         className={cn(
-          `${theme} relative z-50 max-h-96 min-w-[8rem] overflow-hidden backdrop-blur-lg rounded-lg border border-primary-thin
-         bg-background shadow-md shadow-black/20
-          data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 
-          data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2`,
-          position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          `${theme} relative z-50 max-h-96 min-w-[8rem] overflow-hidden backdrop-blur-lg rounded-xl
+            border border-border-input bg-input shadow-md shadow-black/20
+            data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 
+            data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2`,
+            position === "popper" &&
+            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className
         )}
         position={position}
@@ -149,8 +151,9 @@ function SelectItem({
     <SelectPrimitive.Item
       className={cn(
         `group relative flex w-full  cursor-pointer select-none items-center rounded-lg py-1 pl-7 pr-1
-       text-xs outline-hidden data-disabled:pointer-events-none data-disabled:opacity-50 font-normal
-       hover:bg-blue-600 hover:shadow-md shadow-black/30 hover:border-blue-500 border border-transparent 
+         text-xs outline-hidden data-disabled:pointer-events-none data-disabled:opacity-50 font-medium !antialiased
+         hover:bg-accent hover:shadow-md shadow-black/20 hover:border-border-accent border border-transparent 
+         text-label-primary group-hover:text-neutral-100 hover:text-shadow-black/10 hover:text-shadow-sm
        `,
         className
       )}
@@ -163,7 +166,7 @@ function SelectItem({
       </span>
 
       <SelectPrimitive.ItemText>
-        <span className="text-label-primary group-hover:text-neutral-100">
+        <span className="">
           {children}
         </span>
       </SelectPrimitive.ItemText>

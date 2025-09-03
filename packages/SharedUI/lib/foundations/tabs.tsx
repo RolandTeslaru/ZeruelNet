@@ -81,10 +81,9 @@ const TabsList = ({
       <div
         ref={indicatorRef}
         style={{
-          boxShadow: "0px 0px 4px 1px oklch(0.623 0.214 259.815",
           ...indicatorStyle,
         }}
-        className={indicatorClassname + " " + "absolute top-[1px] z-[0] !pointer-events-none border bg-blue-500 border-blue-400 rounded-full transition-all duration-300 ease-out"}
+        className={indicatorClassname + " " + "absolute top-[1px] z-[0] !pointer-events-none border bg-accent border-border-accent shadow-accent rounded-full transition-all duration-300 ease-out"}
       />
     </div>
   )

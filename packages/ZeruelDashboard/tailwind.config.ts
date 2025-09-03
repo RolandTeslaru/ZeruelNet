@@ -25,6 +25,12 @@ const config: Config = {
         'popover': 'var(--popover)',
         'border-popover': 'var(--border-popover)',
 
+        'input': 'var(--bg-input)',
+        'border-input': 'var(--border-input)',
+
+        'accent': 'var(--bg-accent)',
+        'border-accent': 'var(--border-accent)',
+
         'primary-opaque': 'var(--primary-opaque)',
         'primary-thick': 'var(--primary-thick)',
         'primary-regular': 'var(--primary-regular)',
@@ -52,7 +58,6 @@ const config: Config = {
         
         'foreground': 'var(--foreground)',
         'foreground-shadow': 'var(--foreground-shadow)',
-        'border-accent': 'var(--border-accent)',
         'label-primary': 'var(--label-primary)',
         'label-secondary': 'var(--label-secondary)',
         'label-tertiary': 'var(--label-tertiary)',
@@ -65,12 +70,10 @@ const config: Config = {
         'secondary-foreground': 'var(--secondary-foreground)',
         muted: 'var(--muted)',
         'muted-foreground': 'var(--muted-foreground)',
-        accent: 'var(--accent)',
         'accent-foreground': 'var(--accent-foreground)',
         destructive: 'var(--destructive)',
         'destructive-foreground': 'var(--destructive-foreground)',
         border: 'var(--border)',
-        input: 'var(--input)',
         ring: 'var(--ring)',
         'chart-1': 'var(--chart-1)',
         'chart-2': 'var(--chart-2)',
@@ -87,6 +90,7 @@ const config: Config = {
         'sidebar-ring': 'var(--sidebar-ring)'
       },
       boxShadow: {
+        "accent": '0px 0px 8px 1px var(--border-accent)',
         "contextItem": "0 0 5px black "
       },
       fontSize: {

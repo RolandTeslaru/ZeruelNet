@@ -24,6 +24,9 @@ const config = {
         'popover': 'var(--popover)',
         'border-popover': 'var(--border-popover)',
 
+        'bg-input': 'var(--bg-input)',
+        'border-input': 'var(--border--input)',
+
 
         'primary-opaque': 'var(--primary-opaque)',
         'primary-thick': 'var(--primary-thick)',
