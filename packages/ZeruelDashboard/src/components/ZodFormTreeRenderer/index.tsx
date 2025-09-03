@@ -57,7 +57,7 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
                                 name={branch.key}
                                 render={({ field }) => (
                                     <FormItem className='gap-1 w-full '>
-                                        {INPUT_RENDERER_MAP[zodSchema.type]?.(zodSchema, field, form.control, "!w-full")}
+                                        {INPUT_RENDERER_MAP[zodSchema.type]?.(zodSchema, field, form.control, "!w-full max-w-[130px]")}
                                         <FormMessage />
                                     </FormItem>
                                 )}

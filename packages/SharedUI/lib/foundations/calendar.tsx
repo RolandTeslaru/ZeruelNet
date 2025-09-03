@@ -143,11 +143,11 @@ function Calendar({
           defaultClassNames.day
         ),
         range_start: cn(
-          "rounded-l-md bg-blue-500",
+          "rounded-l-md bg-accent",
           defaultClassNames.range_start
         ),
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-md bg-blue-500", defaultClassNames.range_end),
+        range_end: cn("rounded-r-md bg-accent", defaultClassNames.range_end),
         today: cn(
           "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
           defaultClassNames.today
@@ -244,7 +244,7 @@ function CalendarDayButton({
         gap-1 leading-none font-normal rounded-md
 
 
-        data-[selected-single=true]:bg-blue-500
+        data-[selected-single=true]:bg-accent
         data-[selected-single=true]:text-primary-foreground
 
         data-[range-start=true]:bg-white
@@ -252,7 +252,7 @@ function CalendarDayButton({
         data-[range-start=true]:rounded-md
         data-[range-start=true]:rounded-l-md
 
-        data-[range-middle=true]:bg-blue-500
+        data-[range-middle=true]:bg-accent
         data-[range-middle=true]:text-accent-foreground
         data-[range-middle=true]:rounded-none
 

@@ -190,9 +190,8 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
         }}
       >
         <PopoverTrigger asChild>
-          <Button variant="input" size={"sm"} className={`flex ${horizontal ? "flex-row gap-2" : "flex-col px-2 "} w-fit text-xs `}>
+          <Button variant="input" size={"xs"} className={`flex ${horizontal ? "flex-row gap-2 min-w-[160px] max-w-[160px]" : "flex-col px-2 "} text-xs `}>
             <p>{formatDate(range.from, locale)}</p>
-            <ArrowDown size={20} className={`${horizontal ? "-rotate-90" : "" }`}/>
             <p>{formatDate(range.to, locale)}</p>
           </Button>
         </PopoverTrigger>
@@ -311,9 +310,10 @@ const PresetButton = ({
   isSelected,
   ...buttonProps
 }: React.HTMLAttributes<HTMLButtonElement> & {isSelected: boolean} )=> (
-  <button
-    className={cn(`cursor-pointer text-xs transition-none w-full
-       flex flex-row text-white p-1 px-2 bg-transparent hover:bg-neutral-600/80 rounded-md`)}
+  <Button
+    variant='accent'
+    size='xs'
+    className='w-full'
     {...buttonProps}
   >
       <span className={cn(' opacity-0', isSelected && 'opacity-70')}>
@@ -322,7 +322,7 @@ const PresetButton = ({
       <p className='ml-auto font-roboto-mono'>
         {children}
       </p>
-  </button>
+  </Button>
 )
 
 

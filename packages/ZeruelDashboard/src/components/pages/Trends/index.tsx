@@ -71,8 +71,8 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
             <HorizontalCollapsiblePanel 
               title='QUERY'
               contentClassName='!py-0'
-              openWidth={"20%"}
-              closedWidth={"20"}
+              openWidth={"25%"}
+              closedWidth={"40"}
               defaultOpen={true}
             >
               <TimelineQueryPanel/>

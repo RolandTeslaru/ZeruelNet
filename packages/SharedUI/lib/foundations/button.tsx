@@ -22,6 +22,8 @@ export const buttonVariants = cva(
           "border border-border-input bg-input",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        accent:
+          "shadow-none bg-transparent border border-transparent hover:bg-accent hover:border-border-accent",
         dashed1:
           "bg-gray-400/10 border border-dashed !rounded-none outline-offset-2 border-white/20 hover:bg-white/10",
         ghost: "text-neutral-200 hover:bg-accent hover:text-neutral-300 shadow-none",
@@ -49,8 +51,8 @@ export const buttonVariants = cva(
       },
       size: {
         default: "rounded-sm h-8 px-4 py-0",
-        sm: " rounded-lg px-1",
-        xs: " rounded-lg px-2 py-0.5 text-xs",
+        sm: "rounded-lg px-1 text-xs",
+        xs: "rounded-lg px-0.5 py-0.5 text-xs",
         md: "rounded-lg px-3 py-1",
         lg: "h-9 rounded-lg px-8",
         icon: "h-10 w-10",

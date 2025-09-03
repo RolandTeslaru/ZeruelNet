@@ -36,10 +36,10 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
         >
             <AuroraBackground asLayer />
             <div className={classNames(
-                'pointer-events-none absolute inset-0 bg-transparent transition-bg duration-500 ease-in-out',
+                'pointer-events-none absolute inset-0 bg-transparent transition-bg duration-1000 ease-in-out',
                 { "!bg-sky-600/20": currentPage === "scraper" },
-                { "!bg-black/60": currentPage === "tables" },
                 { "!bg-cyan-800/20": currentPage === "enrichment" },
+                { "!bg-black/60": currentPage === "tables" },
                 { "!bg-sky-950/60": currentPage === "trendsanalysis" },
                 { "!bg-indigo-500/10": currentPage === "health" },
             )}
