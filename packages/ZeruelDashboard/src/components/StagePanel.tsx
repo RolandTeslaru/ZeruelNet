@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts';
 import RotatingText from '@zeruel/shared-ui/RotatingText';
 import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling';
 import { useWorkflowStatus } from "@/stores/useWorkflowStatus"

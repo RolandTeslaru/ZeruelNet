@@ -31,7 +31,6 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
         <div
             className={classNames(
                 `relative bg-neutral-950 ${theme} ${className}`,
-                // {"!bg-blue-900/20": currentPage === "scraper"}
             )} {...rest}
         >
             <AuroraBackground asLayer />
