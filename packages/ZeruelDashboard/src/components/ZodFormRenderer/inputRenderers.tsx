@@ -5,8 +5,11 @@ import {
     Button,
 } from '@zeruel/shared-ui/foundations'
 import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "./types"
-import { Control, ControllerRenderProps, useFieldArray } from "react-hook-form";
+import { Control, ControllerRenderProps, useController, useFieldArray } from "react-hook-form";
 import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker';
+import { useCallback, useEffect } from 'react';
+import { DateRange } from 'react-day-picker';
+import { useTrendsStore } from '../pages/Trends/context';
 
 export const stringInputRenderer = (zodStringObject: ZodStringObject, field: ControllerRenderProps, control: Control, className?: string) => {
     if (zodStringObject.format === "date-time") {
@@ -75,6 +78,24 @@ export const arrayInputRender = (zodArrayObject: ZodArrayObject, field: Controll
 }
 
 export const dateRangeInputRenderer = (zodObject: any, field: ControllerRenderProps, control: Control) => {
+
+
+    console.log("ZOD OBJECT", zodObject, "FIELD :", field, "CONTROL ", control, "FIELDS")
+
+
+    const { field: sinceField } = useController({
+        name: "since",
+        control,
+        defaultValue: zodObject.default
+    })
+
+    const setSlidingWindowRange = useTrendsStore(state => state.setSlidingWindowRange)
+
+
+    const onRangeUpdate = useCallback((values: {range: DateRange}) => {
+
+    }, [])    
+
     return (
         <DateRangePicker horizontal={true}/>
     )

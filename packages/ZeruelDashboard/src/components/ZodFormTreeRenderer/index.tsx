@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from "zod"
 import { DummyTree, DummyTreeBranch, RenderBranchFunction } from '@zeruel/shared-ui/Tree/types'
-import { buildZodTree } from './utils'
+import { buildZodTree, BuildZodTreeRuleCallback, overrideTimeRangeRule } from './utils'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger, Form, FormField, FormItem, FormLabel, FormMessage, Popover, PopoverContent, PopoverTrigger } from '@zeruel/shared-ui/foundations'
 import Tree from '@zeruel/shared-ui/Tree'
 import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper'
@@ -14,17 +14,27 @@ interface Props {
     onSubmit?: (data: any) => void
     schema: z.ZodObject
     rootTreeName: string
+    children?: React.ReactNode
 }
 
 const ZodFromTreeRenderer: React.FC<Props> = memo(({
-    form, onSubmit, schema, rootTreeName
+    form, onSubmit, schema, rootTreeName, children
 }) => {
 
     const [tree] = useMemo(() => {
-        const tree = buildZodTree(rootTreeName, schema)
+        const tree = buildZodTree(rootTreeName, schema, [
+            overrideTimeRangeRule
+        ])
 
         return [tree]
     }, [schema])
+
+    const handleOnSumbit = useCallback((form: React.FormEventHandler) => {
+        
+        console.log("INTERIOR ZOD FORM TREE RENDERER FORM ", form)
+        
+        onSubmit?.(form)
+    }, [])
 
     const renderBranch: RenderBranchFunction = useCallback((branch, BranchTemplate) => {
         const data = branch?.data
@@ -76,11 +86,12 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
     return (
         <>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form onSubmit={form.handleSubmit(handleOnSumbit)}>
                     <Tree
                         src={tree}
                         renderBranch={renderBranch}
                     />
+                    {children}
                 </form>
             </Form>
         </>

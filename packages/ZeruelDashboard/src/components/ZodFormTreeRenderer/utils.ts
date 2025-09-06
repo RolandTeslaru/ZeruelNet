@@ -16,7 +16,7 @@ export const buildZodBranchTree = (
         const hasForm = "format" in zodProp
         const isInline = typeof key === "string" && key.length < 10 && !hasForm
 
-        if(isInline){
+        if (isInline) {
             branch.data = {
                 schema: zodProp,
                 fieldKey: key,
@@ -39,7 +39,14 @@ export const buildZodBranchTree = (
     return branch
 }
 
-export const buildZodTree = (rootTreeName: string, schema: z.ZodObject) => {
+export type BuildZodTreeRuleCallback = (
+    properties: Record<string, z.core.JSONSchema._JSONSchema>,
+    tree: DummyTree,
+    rootTreeName: string,
+) => void
+
+
+export const buildZodTree = (rootTreeName: string, schema: z.ZodObject, rules?: BuildZodTreeRuleCallback[]) => {
     const properties = z.toJSONSchema(schema).properties
     const rootBranch: DummyTreeBranch = {
         isExpanded: true,
@@ -49,7 +56,52 @@ export const buildZodTree = (rootTreeName: string, schema: z.ZodObject) => {
         [rootTreeName]: rootBranch
     }
 
-    if ("since" in properties && "until" in properties){
+    rules.forEach(rule => {
+        rule(properties, tree, rootTreeName)
+    })
+
+    
+
+    Object.entries(properties).forEach(([key, zodProp]:
+        [a: string, b: z.core.JSONSchema._JSONSchema & Object,]
+    ) => {
+        const minMatch = key.match(/^min_(.+)$/)
+        const maxMatch = key.match(/^max_(.+)$/)
+
+        if (minMatch || maxMatch) {
+            const baseKey = (minMatch?.[1] || maxMatch?.[1]) as string
+
+            if (!tree[rootTreeName].children[baseKey]) {
+                tree[rootTreeName].children[baseKey] = {
+                    isExpanded: true,
+                    children: {}
+                }
+            }
+
+            // Create a leaf under the base branch, but keep the original key for form binding
+            tree[rootTreeName].children[baseKey].children[key] = {
+                isExpanded: true,
+                children: {},
+                data: {
+                    schema: zodProp,
+                    fieldKey: key,
+                    renderType: "inline",
+                    isMin: minMatch,
+                    isMax: maxMatch
+                }
+            }
+        } else {
+            const branch = buildZodBranchTree(rootBranch, zodProp, key)
+            tree[rootTreeName].children[key] = branch
+        }
+    })
+
+    return tree
+}
+
+
+export const overrideTimeRangeRule: BuildZodTreeRuleCallback = (properties, tree, rootTreeName) => {
+    if ("since" in properties && "until" in properties) {
         delete properties["since"]
         delete properties["until"]
 
@@ -70,40 +122,4 @@ export const buildZodTree = (rootTreeName: string, schema: z.ZodObject) => {
             }
         }
     }
-
-    Object.entries(properties).forEach(([key, zodProp]: 
-        [a: string, b:z.core.JSONSchema._JSONSchema & Object,]
-    ) => {
-        const minMatch = key.match(/^min_(.+)$/)
-        const maxMatch = key.match(/^max_(.+)$/)
-
-        if (minMatch || maxMatch) {
-            const baseKey = (minMatch?.[1] || maxMatch?.[1]) as string
-
-            if (!tree[rootTreeName].children[baseKey]) {
-                tree[rootTreeName].children[baseKey] = {
-                    isExpanded: true,
-                    children: {}
-                }
-            }
-
-            // Create a leaf under the base branch, but keep the original key for form binding
-            tree[rootTreeName].children[baseKey].children[key] = {
-                isExpanded: true,
-                children: {},
-                data: { 
-                    schema: zodProp, 
-                    fieldKey: key,
-                    renderType: "inline", 
-                    isMin: minMatch, 
-                    isMax: maxMatch 
-                }
-            }
-        } else {
-            const branch = buildZodBranchTree(rootBranch, zodProp, key)
-            tree[rootTreeName].children[key] = branch
-        }
-    })
-
-    return tree
 }
