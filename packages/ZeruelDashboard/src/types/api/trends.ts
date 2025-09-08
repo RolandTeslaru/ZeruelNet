@@ -49,7 +49,8 @@ export namespace TrendsAPI {
                     since: z.iso.datetime(),
                     until: z.iso.datetime()
                 }),
-                used_knowledge_join: z.boolean()  // Indicates if knowledge data was included
+                used_knowledge_join: z.boolean(),  // Indicates if knowledge data was included
+                max_total_mentions: z.number()
             })
         })
         export type Response = z.infer<typeof Response>

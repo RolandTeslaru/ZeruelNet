@@ -11,12 +11,7 @@ import { fetchDataBounds } from '@/lib/api/trends';
 import { TrendsAPI } from '@/types/api';
 
 type State = {
-    slidingWindow: {
-        start: Date
-        end: Date
-        size: number
-        bucketInterval: TrendsAPI.ComposedData.BucketInterval
-    }
+    composedDataParams: TrendsAPI.ComposedData.Query
     dataBounds: {
         start_video_date: Date
         end_video_date: Date
@@ -24,8 +19,7 @@ type State = {
 }
 
 type Actions = {
-    setSlidingWindowRange: (props: {start: Date, end:Date}) => void
-    setSlidingWindowInterval: (value: TrendsAPI.ComposedData.BucketInterval) => void
+    setComposedDataParams: (params: TrendsAPI.ComposedData.Query) => void
 }
 
 interface TrendsStoreInitialProps {
@@ -35,9 +29,6 @@ interface TrendsStoreInitialProps {
 export type TrendsStoreProps = State & Actions
 
 const createTrendsStore = (props: TrendsStoreInitialProps) => {
-
-    console.log("Create Trends Store")
-
     const { initialDataBounds } = props
 
     const start_video_date = initialDataBounds ? new Date(initialDataBounds.start_video_date) : new Date()
@@ -46,34 +37,25 @@ const createTrendsStore = (props: TrendsStoreInitialProps) => {
     const slidingWindowEnd = new Date(Math.min(new Date().getTime(), end_video_date.getTime()))
     // 7 day window
     const slidingWindowStart = subDays(slidingWindowEnd, 40)
-    const slidingWindowSize = differenceInMilliseconds(slidingWindowEnd, slidingWindowStart)
 
     return createStore<State & Actions>()(
         immer(
             (set, get) => ({
-                slidingWindow: {
-                    start: slidingWindowStart,
-                    end: slidingWindowEnd,
-                    size: slidingWindowSize,
-                    bucketInterval: "hour"
+                composedDataParams: {
+                    interval: "hour",
+                    since: slidingWindowStart.toISOString(),
+                    until: slidingWindowEnd.toISOString()
                 },
                 dataBounds: {
                     start_video_date: start_video_date,
                     end_video_date: end_video_date
                 },
-                setSlidingWindowRange: ({start, end}) => {
-                    set((state) => {
-                        if(start)
-                            state.slidingWindow.start = start;
-                        if(end)
-                            state.slidingWindow.end = end;
-
-                        state.slidingWindow.size = differenceInMilliseconds(state.slidingWindow.end, state.slidingWindow.start)
-                    });
-                },
-                setSlidingWindowInterval: (value) => {
+                setComposedDataParams: (params) => {
                     set(state => {
-                        state.slidingWindow.bucketInterval = value
+                        state.composedDataParams = {
+                            ...state.composedDataParams,
+                            ...params
+                        }
                     })
                 }
             })

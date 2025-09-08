@@ -148,6 +148,8 @@ export async function GET(request: NextRequest) {
             return subject;
         });
 
+        const max_total_mentions = Math.max(...subjects.map(s => s.total_mentions))
+
         const response: TrendsAPI.Subjects.Response = {
             subjects,
             meta: {
@@ -156,7 +158,8 @@ export async function GET(request: NextRequest) {
                     since,
                     until
                 },
-                used_knowledge_join: needsKnowledgeJoin
+                used_knowledge_join: needsKnowledgeJoin,
+                max_total_mentions
             }
         };
 

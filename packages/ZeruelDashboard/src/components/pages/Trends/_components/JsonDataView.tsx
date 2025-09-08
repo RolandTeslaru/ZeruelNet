@@ -6,24 +6,15 @@ import { useTrendsStore } from '../context'
 import JsonView from 'react18-json-view'
 
 const JsonDataView = () => {
-    const [slidingWindow] = useTrendsStore(state => [
-        state.slidingWindow
-    ])
+    const composedDataParams = useTrendsStore(state => state.composedDataParams)
 
     const { data, isLoading } = useQuery({
         queryKey: [
             'composed-data',
-            slidingWindow.start.getTime(),
-            slidingWindow.end.getTime(),
-            slidingWindow.bucketInterval
+            JSON.stringify(composedDataParams)
         ],
         queryFn: () => {
-            const query: TrendsAPI.ComposedData.Query = {
-                interval: slidingWindow.bucketInterval,
-                since: slidingWindow.start.toISOString(),
-                until: slidingWindow.end.toISOString()
-            }
-            const data = fetchComposedData(query)
+            const data = fetchComposedData(composedDataParams)
             return data
         }
     })

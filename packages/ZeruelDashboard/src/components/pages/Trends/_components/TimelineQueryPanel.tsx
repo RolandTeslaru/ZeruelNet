@@ -21,23 +21,25 @@ import z from 'zod'
 import JsonView from 'react18-json-view'
 import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
 
-const optionalQuerySchema = TrendsAPI.ComposedData.Query.partial();
-
 const TimelineQueryPanel = () => {
     const form = useForm({
-        resolver: zodResolver(optionalQuerySchema),
+        resolver: zodResolver(TrendsAPI.ComposedData.Query),
         defaultValues: {}
     })
 
-    const handleOnSubmit = useCallback((data: z.infer<typeof optionalQuerySchema>) => {
+    const setComposedDataParams = useTrendsStore(state => state.setComposedDataParams)
+
+    const handleOnSubmit = useCallback((data: TrendsAPI.ComposedData.Query) => {
         console.log("TIMELINE QUERY PANEL FORM DATA:", data)
+        setComposedDataParams(data);
     }, [])
 
     return (
         <div className='size-full overflow-y-scroll'>
             <ZodFromTreeRenderer 
+            // @ts-expect-error
                 form={form} 
-                schema={optionalQuerySchema} 
+                schema={TrendsAPI.ComposedData.Query} 
                 rootTreeName='Query'
                 onSubmit={handleOnSubmit}
             >

@@ -58,7 +58,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           <div className='size-full relative flex flex-row gap-4'>
             <HorizontalCollapsiblePanel 
               title='VOLUME ALIGNMENT'
-              contentClassName='pp-0'
+              contentClassName='!py-0'
               openWidth={"100%"}
               closedWidth={"40"}
               defaultOpen={true}
@@ -102,7 +102,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           <CollapsiblePanel 
             title='LLM IDENTIFIED SUBJECTS ALIGNMENT'
             className='!h-[100%]'
-            contentClassName='overflow-y-scroll'
+            contentClassName='overflow-y-scroll !size-full'
           >
             <SubjectAlignmentChart/>
           </CollapsiblePanel>

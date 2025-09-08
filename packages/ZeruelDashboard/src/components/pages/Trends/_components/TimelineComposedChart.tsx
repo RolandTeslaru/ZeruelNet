@@ -15,26 +15,15 @@ import ChartTooltip from '@zeruel/shared-ui/charts/sharedComponents/ChartTooltip
 
 const TimelineComposedChart = memo(() => {
 
-    const [slidingWindow, setSlidingWindowRange, setSlidingWindowInterval] = useTrendsStore(state => [
-        state.slidingWindow,
-        state.setSlidingWindowRange,
-        state.setSlidingWindowInterval
-    ])
+    const composedDataParams = useTrendsStore(state => state.composedDataParams)
 
     const { data, isLoading } = useQuery({
         queryKey: [
             'composed-data',
-            slidingWindow.start.getTime(),
-            slidingWindow.end.getTime(),
-            slidingWindow.bucketInterval
+            JSON.stringify(composedDataParams)
         ],
         queryFn: () => {
-            const query: TrendsAPI.ComposedData.Query = {
-                interval: slidingWindow.bucketInterval,
-                since: slidingWindow.start.toISOString(),
-                until: slidingWindow.end.toISOString()
-            }
-            const data = fetchComposedData(query)
+            const data = fetchComposedData(composedDataParams)
             return data
         }
     })
@@ -75,72 +64,13 @@ interface ChartProps {
     data: TrendsAPI.ComposedData.Response
 }
 
-type UpperBarProps = {
-    data: TrendsAPI.ComposedData.Response
-    slidingWindow: { start: Date; end: Date; bucketInterval: TrendsAPI.ComposedData.BucketInterval }
-    setSlidingWindowInterval: (value: TrendsAPI.ComposedData.BucketInterval) => void
-    setSlidingWindowRange: (range: { start: Date; end: Date }) => void
-}
-
-const UpperBar = ({
-    slidingWindow, data, setSlidingWindowInterval, setSlidingWindowRange
-}: UpperBarProps
-): React.ReactElement => {
-
-    const onRangeUpdate = useCallback((values: { range: DateRange }) => {
-        setSlidingWindowRange({
-            start: values.range.from,
-            end: values.range.to,
-        })
-    }, [])
-
-    return (
-        <div className='absolute top-01 w-full flex flex-row justify-between '>
-            <div className='flex flex-row gap-2'>
-                <Popover>
-                    <PopoverTrigger className='w-fit'>
-                        <Info />
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        <DataViewerWrapper src={data} title="Data" />
-                    </PopoverContent>
-                </Popover>
-
-                <Select
-                    onValueChange={(value: TrendsAPI.ComposedData.BucketInterval) => setSlidingWindowInterval(value)}
-                    defaultValue={slidingWindow.bucketInterval}
-                >
-                    <SelectTrigger className="w-[100px]">
-                        <SelectValue placeholder="Select Interval" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Bucket Intervals</SelectLabel>
-                            {Object.values(
-                                TrendsAPI.ComposedData.BucketInterval.enum
-                            ).map((value) =>
-                                <SelectItem value={value} key={value}>{value}</SelectItem>
-                            )}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-                <DateRangePicker
-                    initialDateFrom={slidingWindow.start}
-                    initialDateTo={slidingWindow.end}
-                    onUpdate={onRangeUpdate}
-                    horizontal={true}
-                />
-            </div>
-        </div>
-    )
-}
 
 const ChartComponent: React.FC<ChartProps> = memo(({ data }) => {
     const buckets = data.buckets
     return (
         <div className='w-full h-full [&_*]:outline-none [&_*]:focus:outline-none'>
             <ResponsiveContainer width={"100%"} height={"100%"}>
-                <ComposedChart data={buckets} margin={{ left: -35, bottom: -10, right: -10, top: 5 }}>
+                <ComposedChart data={buckets} margin={{ left: -40, bottom: -12, right: -10, top: 5 }}>
                     <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                     <YAxis yAxisId="left" tick={{ fontSize: 11 }} /> {/* Primary Y-axis for the bars */}
                     <YAxis yAxisId="right" domain={[-1, 1]} orientation="right" tick={{ fontSize: 11 }} /> {/* Secondary Y-axis for the lines */}
