@@ -1,10 +1,7 @@
 import { VXWindow } from '@zeruel/shared-ui/VXWindow'
-import { WindowStylingProps } from '@zeruel/shared-ui/VXWindow/useWindowContext';
-import { HTMLMotionProps, Variants } from 'framer-motion';
 import { BracketsWindowStyling, CrossesWindowStyling } from '@zeruel/shared-ui/WindowStyling';
 import React, { memo } from 'react';
 import { TrendsProvider } from './context';
-import { useQuery } from '@tanstack/react-query';
 import StateVisualization from './_components/StateVisualization';
 import SubjectAlignmentChart from './_components/SubjectAlignmentChart';
 import TimelineComposedChart from './_components/TimelineComposedChart';

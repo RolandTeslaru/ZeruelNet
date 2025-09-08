@@ -29,12 +29,10 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
         return [tree]
     }, [schema])
 
-    const handleOnSumbit = useCallback((form: React.FormEventHandler) => {
-        
-        console.log("INTERIOR ZOD FORM TREE RENDERER FORM ", form)
-        
-        onSubmit?.(form)
-    }, [])
+    const handleOnSubmit = useCallback((data: any) => {
+        console.log("INTERIOR ZOD FORM TREE RENDERER FORM DATA:", data)
+        onSubmit?.(data)
+    }, [onSubmit])
 
     const renderBranch: RenderBranchFunction = useCallback((branch, BranchTemplate) => {
         const data = branch?.data
@@ -86,7 +84,7 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
     return (
         <>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleOnSumbit)}>
+                <form onSubmit={form.handleSubmit(handleOnSubmit)}>
                     <Tree
                         src={tree}
                         renderBranch={renderBranch}

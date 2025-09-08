@@ -7,7 +7,7 @@ import {
 import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "./types"
 import { Control, ControllerRenderProps, useController, useFieldArray } from "react-hook-form";
 import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { DateRange } from 'react-day-picker';
 import { useTrendsStore } from '../pages/Trends/context';
 
@@ -62,6 +62,7 @@ export const integerInputRenderer = (zodIntegerObject: ZodIntegerObject, field: 
                 min={zodIntegerObject.minimum || zodIntegerObject.exclusiveMinimum}
                 max={zodIntegerObject.maximum || zodIntegerObject.exclusiveMaximum}
                 placeholder="INTEGER"
+                step={0.1}
             />
         </>
     )
@@ -78,26 +79,25 @@ export const arrayInputRender = (zodArrayObject: ZodArrayObject, field: Controll
 }
 
 export const dateRangeInputRenderer = (zodObject: any, field: ControllerRenderProps, control: Control) => {
-
-
-    console.log("ZOD OBJECT", zodObject, "FIELD :", field, "CONTROL ", control, "FIELDS")
-
-
     const { field: sinceField } = useController({
         name: "since",
         control,
         defaultValue: zodObject.default
     })
 
-    const setSlidingWindowRange = useTrendsStore(state => state.setSlidingWindowRange)
+    const { field: untilField } = useController({
+        name: "until",
+        control,
+        defaultValue: zodObject.default
+    })
 
-
-    const onRangeUpdate = useCallback((values: {range: DateRange}) => {
-
-    }, [])    
+    const onRangeUpdate = useCallback(({ range }: { range: DateRange }) => {
+        sinceField.onChange(range?.from ? new Date(range.from).toISOString() : undefined)
+        untilField.onChange(range?.to ? new Date(range.to).toISOString() : undefined)
+    }, [sinceField, untilField])    
 
     return (
-        <DateRangePicker horizontal={true}/>
+        <DateRangePicker horizontal={true} onUpdate={onRangeUpdate} />
     )
 }
 
