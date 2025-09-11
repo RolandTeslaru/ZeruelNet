@@ -1,69 +1,75 @@
-import { DummyTree, DummyTreeBranch } from "@zeruel/shared-ui/Tree/types"
+import { DummyTree } from "@zeruel/shared-ui/Tree/types"
 import { z } from "zod"
+import { BuildZodTreeRuleCallback, ZodBranchDataObject, ZodDummyBranch } from "./types"
+
+
+const defaultDataObject: ZodBranchDataObject = {
+    renderKind: "plain",
+    renderOrder: "inline"
+}
 
 export const buildZodBranchTree = (
-    parentBranch: DummyTreeBranch,
-    zodProp: z.core.JSONSchema._JSONSchema & Object,
+    parentBranch: ZodDummyBranch,
+    zodProp: z.core.JSONSchema._JSONSchema & z.ZodObject,
     key?: string,
-): DummyTreeBranch => {
-    const branch: DummyTreeBranch = {
+): ZodDummyBranch => {
+    const branch: ZodDummyBranch = {
         isExpanded: true,
-        children: {}
+        children: {},
+        data: {...defaultDataObject}
     }
 
-    // @ts-expect-error
-    if (zodProp.type === "string" || zodProp.type === "number") {
-        const hasForm = "format" in zodProp
-        const isInline = typeof key === "string" && key.length < 10 && !hasForm
+    const hasFormat = "format" in zodProp
+    let renderOrder = "inline"
 
-        if (isInline) {
-            branch.data = {
+    if(key.length > 10 || hasFormat)
+        renderOrder = "columm"
+
+    if(renderOrder === "inline"){
+        branch.data = {
+            schema: zodProp,
+            fieldKey: key,
+            renderOrder: "row",
+            renderkind: "plain",
+        }
+    } else {
+        branch.children["value"] = {
+            isExpanded: true,
+            children: {},
+            data: {
                 schema: zodProp,
                 fieldKey: key,
-                renderType: "inline"
-            }
-        } else {
-            branch.children["value"] = {
-                isExpanded: true,
-                children: {},
-                data: {
-                    schema: zodProp,
-                    fieldKey: key,
-                    renderType: "stacked"
-                }
+                renderOrder: "column",
+                renderKind: zodProp.type,
             }
         }
-
     }
 
     return branch
 }
 
-export type BuildZodTreeRuleCallback = (
-    properties: Record<string, z.core.JSONSchema._JSONSchema>,
-    tree: DummyTree,
-    rootTreeName: string,
-) => void
 
 
-export const buildZodTree = (rootTreeName: string, schema: z.ZodObject, rules?: BuildZodTreeRuleCallback[]) => {
-    const properties = z.toJSONSchema(schema).properties
-    const rootBranch: DummyTreeBranch = {
-        isExpanded: true,
-        children: {}
+
+export const buildZodTree = (rootTreeName: string, properties: Record<string, z.core.JSONSchema._JSONSchema>, rules?: BuildZodTreeRuleCallback[], allExpanded: boolean = true) => {
+  
+    const rootBranch: ZodDummyBranch = {
+        isExpanded: allExpanded,
+        children: {},
+        data: {...defaultDataObject}
     }
     const tree: DummyTree = {
         [rootTreeName]: rootBranch
     }
 
-    rules.forEach(rule => {
+    rules?.forEach(rule => {
         rule(properties, tree, rootTreeName)
     })
 
     
 
     Object.entries(properties).forEach(([key, zodProp]:
-        [a: string, b: z.core.JSONSchema._JSONSchema & Object,]
+        [a: string, b: z.core.JSONSchema._JSONSchema & z.ZodObject,]
     ) => {
         const minMatch = key.match(/^min_(.+)$/)
         const maxMatch = key.match(/^max_(.+)$/)
@@ -73,19 +79,21 @@ export const buildZodTree = (rootTreeName: string, schema: z.ZodObject, rules?: 
 
             if (!tree[rootTreeName].children[baseKey]) {
                 tree[rootTreeName].children[baseKey] = {
-                    isExpanded: true,
+                    isExpanded: allExpanded,
+                    data: {...defaultDataObject},
                     children: {}
                 }
             }
 
             // Create a leaf under the base branch, but keep the original key for form binding
             tree[rootTreeName].children[baseKey].children[key] = {
-                isExpanded: true,
+                isExpanded: allExpanded,
                 children: {},
                 data: {
                     schema: zodProp,
                     fieldKey: key,
-                    renderType: "inline",
+                    renderOrder: "inline",
+                    renderKind: zodProp.type,
                     isMin: minMatch,
                     isMax: maxMatch
                 }
@@ -107,19 +115,14 @@ export const overrideTimeRangeRule: BuildZodTreeRuleCallback = (properties, tree
 
         tree[rootTreeName].children["range"] = {
             isExpanded: true,
-            children: {
-                value: {
-                    isExpanded: true,
-                    data: {
-                        schema: {
-                            type: "daterange"
-                        },
-                        isDateRange: true,
-                        fieldKey: "range"
-                    },
-                    children: {}
-                }
-            }
+            data: {
+                schema: {
+                    type: "daterange"
+                },
+                isDateRange: true,
+                fieldKey: "range"
+            },
+            children: {}
         }
     }
 }

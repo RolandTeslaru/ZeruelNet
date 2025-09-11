@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useImperativeHandle, useMemo, useRef } from 'react'
 import { Control, ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 import { Button, Form, FormField, FormItem, FormLabel, FormMessage, } from '@zeruel/shared-ui/foundations'
 import {z} from "zod"
@@ -23,7 +23,7 @@ const ZodFormRenderer: React.FC<Props> = ({ form, onSubmit, children, schema, su
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-full flex flex-col gap-1'>
                 {children}
-                {propertiesArray.map(([key, zodProp]: [key: string, zodProp: ZodPropertyObject]) =>
+                {propertiesArray.map(([key, zodObject]: [key: string, zodObject: ZodPropertyObject]) =>
                     <FormField
                         control={form.control}
                         key={key}
@@ -32,7 +32,11 @@ const ZodFormRenderer: React.FC<Props> = ({ form, onSubmit, children, schema, su
                             <FormItem className='gap-1'>
                                 <FormLabel className='font-sans text-neutral-400'>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</FormLabel>
                                 <FormItem className='relative'>
-                                    {INPUT_RENDERER_MAP[zodProp.type]?.(zodProp, field, form.control)}
+                                    {INPUT_RENDERER_MAP[zodObject.type]?.({
+                                        zodObject, 
+                                        field, 
+                                        control: form.control
+                                    })}
                                 </FormItem>
                                 <FormMessage />
                             </FormItem>

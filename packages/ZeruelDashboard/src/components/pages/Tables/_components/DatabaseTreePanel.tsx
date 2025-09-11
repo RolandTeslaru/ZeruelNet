@@ -68,7 +68,7 @@ const ICON_MAP = {
 }
 
 
-const renderBranchContent: RenderBranchFunction = (branch, BranchTemplate) => {
+const renderBranchContent: RenderBranchFunction = ({branch, BranchTemplate}) => {
     const fetchedDataType = branch.data?.fetchedDataType;
     return (
         <BranchTemplate className='h-[30px] min-w-fit'>
@@ -79,19 +79,17 @@ const renderBranchContent: RenderBranchFunction = (branch, BranchTemplate) => {
                 <p className='w-fit'>
                     {branch.key}
                 </p>
-                {Object.keys(NAME_KEY_MAP).includes(fetchedDataType) &&
                     <div className='absolute right-0 -mt-1'>
                         <Popover>
                             <PopoverTrigger className='ml-auto cursor-pointer'>
                                 <Info className='w-[16px]' />
                             </PopoverTrigger>
                             <PopoverContent side="right" align="start">
-                                <DataViewerWrapper src={branch.data?.item} title="Data" />
+                                <DataViewerWrapper src={branch} title="Data" />
                             </PopoverContent>
                         </Popover>
 
                     </div>
-                }
             </div>
         </BranchTemplate>
     )
@@ -129,12 +127,14 @@ const loadBranchChildren: LoadBranchChildrenFunction = async (parentBranch, stat
             children: new Map(), // These are leaf nodes
             isExpanded: false,
             canBeExpanded: false,
+            needsLazyLoading: false,
             parentPaths: new Set([parentBranch.currentPath]),
             data: {
                 item,
                 "fetchedDataType": parentKey
             },
-            isLoading: false
+            isLoading: false,
+            isMounted: true
         });
     });
 

@@ -190,7 +190,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
         }}
       >
         <PopoverTrigger asChild>
-          <Button variant="input" size={"xs"} className={`flex ${horizontal ? "flex-row gap-2 min-w-[160px] max-w-[160px]" : "flex-col px-2 "} text-xs `}>
+          <Button variant="input" size={"xs"} className={`flex ${horizontal ? "flex-row gap-2 min-w-[140px] max-w-[140px]" : "flex-col px-2 "}`}>
             <p>{formatDate(range.from, locale)}</p>
             <p>{formatDate(range.to, locale)}</p>
           </Button>

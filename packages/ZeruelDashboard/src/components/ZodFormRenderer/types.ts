@@ -13,9 +13,15 @@ export type ZodStringObject = {
     format?: "date-time",
     enum?: string[],
     default?: string
+    minLength?: number
 }
 
 export type ZodArrayObject = {
     type: "array",
-    minItems: number
+    minItems: number,
+    items: {
+        type: "object",
+        properties: Record<string, ZodPropertyObject>,
+        required: string[],
+    }
 }

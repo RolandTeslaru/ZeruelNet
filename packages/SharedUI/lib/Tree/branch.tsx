@@ -2,6 +2,7 @@ import { memo, useCallback } from "react";
 import { BranchComponentProps } from "./types";
 import { getTreeStore, useBranch, useTree } from "./context";
 import { Spinner } from "../foundations";
+import { AlertTriangle } from "../icons";
 
 
 const BranchComponent: React.FC<BranchComponentProps> = memo(({
@@ -19,6 +20,14 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
 
     const branchCanBeLazyLoaded = loadBranchChildren && branch.canBeExpanded && !branch.children
 
+    if(!branch)
+        return (
+            <div className="flex flex-row text-red-600 gap-2 animate-pulse">
+                <AlertTriangle size={35} className=""/>
+                <p className="text-red-600">{`BRANCH '${path}' DOES NOT EXIST IN FLAT MAP TREE CONTEXT`}</p>
+            </div>
+        )
+
     const onExpandButtonClick = useCallback(async () => {
         if (branch.isExpanded)
             store.getState().setExpanded(false, branch.currentPath)
@@ -27,7 +36,6 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
                 store.getState().setExpanded(true, branch.currentPath)
             else {
                 store.getState().setBranchLoading(path, true);
-
                 try {
                     const maybe = loadBranchChildren?.(branch, store.getState())
                     const children = await Promise.resolve(maybe) // handles sync and async
@@ -40,6 +48,9 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
         }
     }, [branch.isExpanded, branch.children, branch.isLoading])
 
+    if(branch.isMounted === false)
+        return null
+
     const BranchTemplate = ({ children, className, listClassName, ...rest }) => (
         <li
             role="treeItem"
@@ -49,7 +60,7 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             tabIndex={-1}
             className={listClassName + " relative min-w-full w-fit"}
         >
-            <div className={`${className} relative h-8 min-w-full flex items-center gap-2`}
+            <div className={`${className} relative min-h-8 h-fit min-w-full flex items-center gap-2`}
                 style={{ paddingLeft: `${level * 24}px` }}
                 {...rest}
             >
@@ -63,7 +74,7 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
                             level={level}
                         />
                         {!branch.isExpanded && !isFinalSibling && (
-                            <div className={`content-[""] absolute bottom-0 min-w-[1px] h-[calc(50%_-_6px)] bg-neutral-500  ml-[7.5px]`}/>
+                            <div className={`content-[""] absolute bottom-0 min-w-[1px] h-[calc(50%_-_6px)] bg-neutral-500  ml-[7.5px]`} />
                         )}
                     </>
                     : <>
@@ -94,11 +105,11 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             )}
         </li>
     )
-    
+
     if (branch.overrideRenderBranch)
-        return branch.overrideRenderBranch(branch, BranchTemplate)
-    else if(renderBranch)
-        return renderBranch(branch, BranchTemplate)
+        return branch.overrideRenderBranch({branch, BranchTemplate})
+    else if (renderBranch)
+        return renderBranch({branch, BranchTemplate})
 
     return null
 })
@@ -121,8 +132,8 @@ const BranchExpandButton: React.FC<BranchExpandButtonProps> = ({
             className="!cursor-pointer transition-transform duration-200"
             {...props}
         >
-            {isLoading 
-                ? <Spinner className="w-4"/>
+            {isLoading
+                ? <Spinner className="w-4" />
                 : <svg
                     className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : 'rotate-0'}`}
                     xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth={1} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
@@ -130,8 +141,8 @@ const BranchExpandButton: React.FC<BranchExpandButtonProps> = ({
                     <path d="m10 8 4 4-4 4" />
                 </svg>
             }
-            
-            
+
+
         </button>
     )
 }

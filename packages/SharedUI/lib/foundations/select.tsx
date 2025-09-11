@@ -31,17 +31,20 @@ function SelectValue({
 function SelectTrigger({
   className,
   children,
+  size = 'sm',
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger>) {
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & { size?: 'sm' | 'xs' }) {
+  const sizeClasses = size === 'xs' ? '!h-5 text-[11px]' : '!h-6';
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        `flex w-full items-center justify-between rounded-lg shadow-md shadow-black/20 !h-6 
-         border border-border-input  bg-input px-2 text-xs antialiased font-medium
+        `flex w-full items-center justify-between rounded-lg shadow-md shadow-black/20
+         border border-border-input  bg-input px-2 antialiased font-medium
          ring-offset-background placeholder:text-white disabled:cursor-not-allowed disabled:opacity-50 
          [&>span]:line-clamp-1
-        
-      `,
+        `,
+        sizeClasses,
+        size === 'sm' && 'text-xs',
         className
       )}
       {...props}

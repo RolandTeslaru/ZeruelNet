@@ -1,9 +1,9 @@
 import { createStore, useStore } from 'zustand';
-import { createContext, useContext } from 'react';
+import { createContext, memo, useContext, useImperativeHandle, useMemo } from 'react';
 import type { StoreApi } from 'zustand';
-import { InternalTree, InternalTreeBranch } from './types';
+import { DummyTree, DummyTreeBranch, InternalTree, InternalTreeBranch, TreeProviderProps } from './types';
 import { immer } from "zustand/middleware/immer"
-import { enableMapSet } from "immer"
+import { enableMapSet, WritableDraft } from "immer"
 import { shallow } from 'zustand/shallow';
 
 enableMapSet()
@@ -16,9 +16,12 @@ type State = {
 
 type Actions = {
     setExpanded: (value: boolean, branchPath: string) => void
-    addBranch: (branch: InternalTreeBranch, parentPaths: string[]) => void
+    addInternalBranch: (props: { branch: InternalTreeBranch, state?: WritableDraft<TreeStore> }) => void
+    // addMultipleBranches: (branchesToBeAdded: Set<InternalTreeBranch>) => void,
     attachLoadedChildren: (children: Map<string, InternalTreeBranch>, parentPath: string) => void
     eraseBranch: (branchPath: string) => void
+    recursivelyEraseBranch: (props: { branchPath: string, state?: WritableDraft<TreeStore> }) => void
+    setBranchMounted: (value: boolean, branchPath: string) => void
     setBranchLoading: (branchPath: string, value: boolean) => void
 }
 
@@ -34,46 +37,75 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                 queuedBranches: new Map(),
                 setBranchLoading: (branchPath, value) => set(s => {
                     const branch = s.branchesFlatMap.get(branchPath)
-                    if(!branch)
+                    if (!branch)
                         return
 
                     branch.isLoading = value;
                 }),
-                addBranch: (branch, parentPaths) => set(s => {
-                    // Ceck for queued branches
-                    const queuedBranches = s.queuedBranches.get(branch.currentPath)
-                    if (queuedBranches) {
-                        branch.children ??= new Map() // make sure the map exists
+                addInternalBranch: ({ branch, state }) => {
+                    const execute = (s: WritableDraft<TreeStore>) => {
+                        // Ceck for queued branches
+                        const queuedBranches = s.queuedBranches.get(branch.currentPath)
+                        if (queuedBranches) {
+                            branch.children ??= new Map() // make sure the map exists
 
-                        branch.children = new Map([
-                            ...branch.children,
-                            ...queuedBranches
-                        ])
+                            branch.children = new Map([
+                                ...branch.children,
+                                ...queuedBranches
+                            ])
 
-                        queuedBranches.forEach(qBranch => {
-                            qBranch.parentPaths.add(branch.currentPath)
+                            queuedBranches.forEach(qBranch => {
+                                qBranch.parentPaths.add(branch.currentPath)
+                            })
+
+                            s.queuedBranches.delete(branch.currentPath)
+                        }
+
+                        // Add in the flat Map
+                        s.branchesFlatMap.set(branch.currentPath, branch)
+
+                        // Recursively add all children of this branch
+                        if (branch.children && branch.children.size > 0) {
+                            branch.children.forEach(childBranch => {
+                                if (!s.branchesFlatMap.has(childBranch.currentPath)) {
+                                    // Ensure child's parentPaths contains current branch
+                                    childBranch.parentPaths.add(branch.currentPath)
+                                    // Reuse same logic for each child
+                                    s.addInternalBranch({ branch: childBranch, state: s })
+                                }
+                            })
+                        }
+
+                        // Add the branch itself to every parent it requires it
+                        branch.parentPaths.forEach(parentPath => {
+                            if (!s.branchesFlatMap.has(parentPath))
+                                return
+                            const parentBranch = s.branchesFlatMap.get(parentPath)
+                            if (!parentBranch.children)
+                                parentBranch.children = new Map()
+
+                            parentBranch.children.set(branch.key, branch)
+                            parentBranch.canBeExpanded = true;
                         })
-
-                        s.queuedBranches.delete(branch.currentPath)
                     }
 
-                    // Add in the flat Map
-                    s.branchesFlatMap.set(branch.currentPath, branch)
+                    if (state)
+                        execute(state)
+                    else
+                        set(s => { execute(s) })
+                },
+                // addMultipleBranches: (branchesToBeAdded) => set(s => {
+                //     branchesToBeAdded.forEach(branch => {
+                //       s.addInternalBranch({branch, state: s})
+                //     })
+                // }),
+                setBranchMounted: (value, branchPath) => set(s => {
+                    if (!s.branchesFlatMap.has(branchPath))
+                        return
 
-                    // Add the branch itself to every parent it requires it
-                    parentPaths.forEach(parentPath => {
-                        if (!s.branchesFlatMap.has(parentPath))
-                            return
-                        const parentBranch = s.branchesFlatMap.get(parentPath)
-                        if (!parentBranch.children)
-                            parentBranch.children = new Map()
-
-                        parentBranch.children.set(branch.currentPath, branch)
-                        parentBranch.canBeExpanded = true;
-                        branch.parentPaths.add(parentPath)
-                    })
+                    const branch = s.branchesFlatMap.get(branchPath)
+                    branch.isMounted = value
                 }),
-
                 setExpanded: (value, branchPath) => set(s => {
                     if (!s.branchesFlatMap.has(branchPath))
                         return
@@ -81,20 +113,20 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                     const branch = s.branchesFlatMap.get(branchPath)
                     branch.isExpanded = value
                 }),
-                attachLoadedChildren: (children, parentPath) => {
-                    if(children.size === 0){
-                        set(s => {
-                            const branch = s.branchesFlatMap.get(parentPath)
-                            if(branch){
-                                branch.children = children
-                                branch.canBeExpanded = false
-                            }
+                attachLoadedChildren: (internalBranches, parentPath) => set(s => {
+                    if (internalBranches.size === 0) {
+                        const branch = s.branchesFlatMap.get(parentPath)
+                        if (branch) {
+                            branch.children = internalBranches
+                            branch.canBeExpanded = false
+                        }
+                    } else {
+                        internalBranches.forEach(_branch => {
+                            s.addInternalBranch({ branch: _branch, state: s })
                         })
                     }
-                    children.forEach(child => {
-                        get().addBranch(child, [parentPath])
-                    })
-                },
+                }),
+                // Erases the Branch but not its children
                 eraseBranch: (branchPath) => set(s => {
                     if (!s.branchesFlatMap.has(branchPath))
                         return
@@ -102,34 +134,71 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                     const branch = s.branchesFlatMap.get(branchPath)
 
                     // Delete every refrence its parents could have
-                    branch.parentPaths.forEach((_parentPath) => {
-                        const _parentBranch = s.branchesFlatMap.get(_parentPath)
-                        if (!_parentBranch.children) return
-                        _parentBranch.children.delete(branch.currentPath)
-
-                        if (_parentBranch.children.size === 0)
-                            _parentBranch.canBeExpanded = false;
-                    })
+                    deleteCurrentBranchFromParents(branch, s)
 
                     // finally delete the branch itself
                     s.branchesFlatMap.delete(branchPath)
                     branch.children = new Map()
                     branch.data = undefined
                     branch.parentPaths = new Set()
-                })
+                }),
+                // Erases the Branch and recursivly its child branches
+                recursivelyEraseBranch: ({ branchPath, state }) => {
+                    const execute = (s: WritableDraft<TreeStore>) => {
+                        if (!s.branchesFlatMap.has(branchPath))
+                            return
+
+                        const branch = s.branchesFlatMap.get(branchPath)
+
+                        // Delete every refrence its parents could have
+                        deleteCurrentBranchFromParents(branch, s)
+
+                        // Delete every child recursevly
+                        branch.children?.forEach(_childBranch => {
+                            s.recursivelyEraseBranch({
+                                branchPath: _childBranch.currentPath,
+                                state: s
+                            })
+                            branch.children.delete(_childBranch.key)
+                        })
+
+                        // finally delete the branch itself
+                        s.branchesFlatMap.delete(branchPath)
+                        branch.children = null
+                        branch.data = undefined
+                        branch.parentPaths = null
+                    }
+
+                    if (state)
+                        execute(state)
+                    else
+                        set(s => execute(s))
+                }
             }))
     );
 
 
 const Context = createContext<StoreApi<TreeStore> | null>(null)
 
-export const TreeProvider = ({ children, processedTree, branchFlatMap }) => {
+
+export const TreeProvider: React.FC<TreeProviderProps> = memo(({ children, processedTree, branchFlatMap, ref }) => {
+
+    const storeObject = useMemo(() =>
+        createTreeStore(processedTree, branchFlatMap),
+        [processedTree, branchFlatMap])
+
+    useImperativeHandle(ref, () => {
+        return {
+            store: storeObject
+        }
+    }, [storeObject])
+
     return (
-        <Context.Provider value={createTreeStore(processedTree, branchFlatMap)}>
+        <Context.Provider value={storeObject}>
             {children}
         </Context.Provider>
     )
-}
+})
 
 
 export function useTree<T>(
@@ -140,7 +209,7 @@ export function useTree<T>(
     return useStore(store, selector);
 }
 
-export function getTreeStore(){
+export function getTreeStore() {
     const store = useContext(Context)
     return store
 }
@@ -156,3 +225,16 @@ export function useBranch(path: string) {
 //         })
 //     })
 // }
+
+
+
+const deleteCurrentBranchFromParents = (currentBranch: InternalTreeBranch, s: WritableDraft<TreeStore>) => {
+    currentBranch.parentPaths.forEach((_parentPath) => {
+        const _parentBranch = s.branchesFlatMap.get(_parentPath)
+        if (!_parentBranch.children) return
+        _parentBranch.children.delete(currentBranch.key)
+
+        if (_parentBranch.children.size === 0)
+            _parentBranch.canBeExpanded = false;
+    })
+}

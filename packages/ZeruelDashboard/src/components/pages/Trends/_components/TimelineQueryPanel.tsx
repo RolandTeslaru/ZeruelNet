@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import { useTrendsStore } from '../context'
 import { fetchComposedData } from '@/lib/api/trends'
 import { TrendsAPI } from '@/types/api'
@@ -20,22 +20,25 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import z from 'zod'
 import JsonView from 'react18-json-view'
 import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
+import Search from '@zeruel/shared-ui/Search'
 
-const TimelineQueryPanel = () => {
+const TimelineQueryPanel = memo(() => {
+    const [composedDataParams, setComposedDataParams] = useTrendsStore(state => [
+        state.composedDataParams, state.setComposedDataParams
+    ])
+    
     const form = useForm({
         resolver: zodResolver(TrendsAPI.ComposedData.Query),
-        defaultValues: {}
+        defaultValues: composedDataParams
     })
 
-    const setComposedDataParams = useTrendsStore(state => state.setComposedDataParams)
-
     const handleOnSubmit = useCallback((data: TrendsAPI.ComposedData.Query) => {
-        console.log("TIMELINE QUERY PANEL FORM DATA:", data)
+        // console.log("TIMELINE QUERY PANEL FORM DATA:", data)
         setComposedDataParams(data);
     }, [])
 
     return (
-        <div className='size-full overflow-y-scroll'>
+        <div className='h-auto overflow-y-scroll'>
             <ZodFromTreeRenderer 
             // @ts-expect-error
                 form={form} 
@@ -43,17 +46,17 @@ const TimelineQueryPanel = () => {
                 rootTreeName='Query'
                 onSubmit={handleOnSubmit}
             >
-                <Button 
+                {/* <Button 
                     type="submit" 
                     className='absolute top-0 right-0 z-10 px-4 !cursor-pointer' 
                     variant="dashed1" 
                     size='xs'
                 >
                     Send Query
-                </Button>
+                </Button> */}
             </ZodFromTreeRenderer>
         </div>
     )
-}
+})
 
 export default TimelineQueryPanel

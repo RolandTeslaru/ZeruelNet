@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchComments, fetchKnowledgeSubjects, fetchTableColumns, fetchTableMeta, fetchVideoFeatures, fetchVideos } from '@/lib/api/database';
 import { Checkbox, Spinner } from '@zeruel/shared-ui/foundations';
 import { DataTable } from '@/components/DataTable';
+import DataLoadingIndicator from '@zeruel/shared-ui/DataLoadingIndicator';
 
 const EMPTY_DATA = []
 
@@ -74,7 +75,7 @@ const DatabaseTableViewer = memo(() => {
     });
 
     if (isSchemaLoading || isDataLoading) {
-        return <div className='size-full'><Spinner /></div>;
+        return <DataLoadingIndicator/>
     }
 
     return (

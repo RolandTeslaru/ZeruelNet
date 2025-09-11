@@ -53,7 +53,7 @@ const TabsList = ({
     // This is the most reliable way to get accurate dimensions for an element on initial render.
     const frameId = requestAnimationFrame(() => {
       const activeTab = listRef.current?.querySelector('[data-state="active"]') as HTMLElement;
-      console.log("Active Tab client ", activeTab.clientHeight, activeTab.clientWidth)
+      // console.log("Active Tab client ", activeTab.clientHeight, activeTab.clientWidth)
       if (activeTab && indicatorRef.current) {
         indicatorRef.current.style.width = `${activeTab.clientWidth}px`;
         indicatorRef.current.style.height = `${activeTab.clientHeight + 2}px`;

@@ -3,6 +3,9 @@ import {
     FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,
     Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
     Button,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
 } from '@zeruel/shared-ui/foundations'
 import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "./types"
 import { Control, ControllerRenderProps, useController, useFieldArray } from "react-hook-form";
@@ -10,30 +13,41 @@ import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker';
 import { useCallback, useEffect, useMemo } from 'react';
 import { DateRange } from 'react-day-picker';
 import { useTrendsStore } from '../pages/Trends/context';
+import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper';
+import { DummyTreeBranch, InternalTreeBranch } from '@zeruel/shared-ui/Tree/types';
+import { getTreeStore, useTree } from '@zeruel/shared-ui/Tree/context';
+import { createInternalBranch } from '@zeruel/shared-ui/Tree/utils';
+import { buildZodTree } from '../ZodFormTreeRenderer/utils';
 
-export const stringInputRenderer = (zodStringObject: ZodStringObject, field: ControllerRenderProps, control: Control, className?: string) => {
-    if (zodStringObject.format === "date-time") {
+export const stringInputRenderer = (
+    { zodObject, field, control, className }: RenderProps & { zodObject: ZodStringObject }
+) => {
+    if (zodObject.format === "date-time") {
         return (
             <Input
                 {...field}
                 type="date"
                 className={className + ' w-1/2 ml-auto'}
-                value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                value={field.value ? new Date().toISOString().split('T')[0] : ''}
                 onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+                size="xs"
             />
         )
     }
-    if (zodStringObject.enum) {
+    if (zodObject.enum) {
         return (
             <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value ?? zodStringObject.default}
+                defaultValue={field.value ?? zodObject.default}
             >
-                <SelectTrigger className={className + " w-1/2 ml-auto focus:outline-hidden text-xs!"}>
+                <SelectTrigger
+                    className={className + " w-1/2 ml-auto focus:outline-hidden text-xs!"}
+                    size='xs'
+                >
                     <SelectValue placeholder="ENUM" className={field.value ? "text-white" : "text-neutral-200"} />
                 </SelectTrigger>
                 <SelectContent>
-                    {zodStringObject.enum.map((value) => (
+                    {zodObject.enum.map((value) => (
                         <SelectItem key={value} value={value}>
                             {value}
                         </SelectItem>
@@ -48,56 +62,135 @@ export const stringInputRenderer = (zodStringObject: ZodStringObject, field: Con
             type='text'
             className={className + ' w-1/2 ml-auto'}
             placeholder='STRING'
+            size="xs"
         />
     )
 }
 
-export const integerInputRenderer = (zodIntegerObject: ZodIntegerObject, field: ControllerRenderProps, control: Control, className?: string) => {
+export const integerInputRenderer = (
+    { zodObject, field, control, className }: RenderProps & { zodObject: ZodIntegerObject }
+) => {
     return (
         <>
             <Input
                 {...field}
                 className={className + ' w-1/2 ml-auto'}
                 type="number"
-                min={zodIntegerObject.minimum || zodIntegerObject.exclusiveMinimum}
-                max={zodIntegerObject.maximum || zodIntegerObject.exclusiveMaximum}
+                min={zodObject.minimum || zodObject.exclusiveMinimum}
+                max={zodObject.maximum || zodObject.exclusiveMaximum}
                 placeholder="INTEGER"
                 step={0.1}
+                size="xs"
             />
         </>
     )
 }
 
-export const arrayInputRender = (zodArrayObject: ZodArrayObject, field: ControllerRenderProps, control: Control) => {
+export const arrayInputRender = (
+    { zodObject, field, control, className, branch }: RenderProps & { zodObject: ZodArrayObject }
+) => {
     if (field.name === 'identified_subjects') {
         return <IdentifiedSubjectsInput control={control} name={field.name} />
     }
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: field.name
+    });
+    const store = getTreeStore()
+    const firstRequiredProperty = zodObject.items.required[0]
+
+    const onBranchAdd = (itemName: string) => {
+        append({ firstRequiredProperty: itemName })
+        
+        // Delete the field used to actually add the field item in the array
+        // example: "subject" string field for the subjects fields array 
+        if (firstRequiredProperty in zodObject.items.properties ){
+            delete zodObject.items.properties[firstRequiredProperty] 
+        }
+        
+        const valueObject = buildZodTree("value", zodObject.items.properties, [], false)
+
+        const newDummyBranch: DummyTreeBranch = {
+            isExpanded: true,
+            data: {
+                canBeDeleted: true,
+                schema: {
+                    type: "arrayItem"
+                }
+            },
+            children: {
+                ...valueObject["value"].children
+            }
+        }
+        const {newBranch, allBranchesToBeAdded} = createInternalBranch(itemName, newDummyBranch, branch)
+        store.getState().addInternalBranch({branch: newBranch})
+    }
+
+
+
     return (
-        <>
-        </>
+        <div className='flex flex-col gap-1'>
+            {/* <Button 
+                className='border-neutral-400/50 w-auto ml-auto '
+                variant='accent' 
+                size='xs' 
+                onClick={() => {onBranchAdd("something")}}
+            >
+                Add Item
+            </Button> */}
+          
+            <Input
+                className={className + ' w-1/2 ml-auto'}
+                placeholder={`ADD ITEM  (${firstRequiredProperty})`}
+                size="xs"
+                role="none"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        const value = e.currentTarget.value;
+                        if (!value) return;
+                        
+                        onBranchAdd(value)
+                        e.currentTarget.value = ''; // clear input
+                        e.preventDefault()
+                    }
+                }}
+            />
+        </div>
     )
 }
 
-export const dateRangeInputRenderer = (zodObject: any, field: ControllerRenderProps, control: Control) => {
+
+export const arrayItemRenderer = ({zodObject, field}) => {
+
+}
+
+
+export const dateRangeInputRenderer = ({ zodObject, field, control, className }: RenderProps) => {
     const { field: sinceField } = useController({
         name: "since",
         control,
-        defaultValue: zodObject.default
     })
 
     const { field: untilField } = useController({
         name: "until",
         control,
-        defaultValue: zodObject.default
     })
 
     const onRangeUpdate = useCallback(({ range }: { range: DateRange }) => {
         sinceField.onChange(range?.from ? new Date(range.from).toISOString() : undefined)
         untilField.onChange(range?.to ? new Date(range.to).toISOString() : undefined)
-    }, [sinceField, untilField])    
+    }, [sinceField, untilField])
 
     return (
-        <DateRangePicker horizontal={true} onUpdate={onRangeUpdate} />
+        <div className='w-auto ml-auto'>
+            <DateRangePicker
+                horizontal={true}
+                onUpdate={onRangeUpdate}
+                initialDateFrom={sinceField.value}
+                initialDateTo={untilField.value}
+            />
+        </div>
     )
 }
 
@@ -165,10 +258,16 @@ const IdentifiedSubjectsInput = ({ control, name }: { control: Control<any>, nam
     );
 }
 
-export type INPUT_RENDERER_MAP_RETURN_TYPE = (
-    zodProp: ZodPropertyObject,
+export interface RenderProps {
+    zodObject: ZodPropertyObject,
     field: ControllerRenderProps,
     control: Control
+    className?: string
+    branch: InternalTreeBranch
+}
+
+export type INPUT_RENDERER_MAP_RETURN_TYPE = (
+    props: RenderProps
 ) => React.ReactNode
 
 export const INPUT_RENDERER_MAP = {

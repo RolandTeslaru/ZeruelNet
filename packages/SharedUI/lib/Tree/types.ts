@@ -1,5 +1,6 @@
 import React from "react"
 import { TreeStore } from "./context"
+import type { StoreApi } from 'zustand';
 
 export interface DummyTreeBranch{
     children?: Record<string, DummyTreeBranch>
@@ -15,6 +16,8 @@ export interface TreeComponentProps {
     className?: string
     renderBranch?: RenderBranchFunction
     loadBranchChildren?: LoadBranchChildrenFunction
+    onFilterChange?: (value: string) => void
+    ref?: TreeProviderRef
 }
 
 export interface InternalTreeBranch {
@@ -23,11 +26,12 @@ export interface InternalTreeBranch {
     children: Map<string, InternalTreeBranch> | null, // if null then it means it will sbhow the option to check and load branches if any
     isExpanded: boolean,
     canBeExpanded: boolean
-    needsLazyLoading?: boolean
+    needsLazyLoading: boolean
     parentPaths: Set<string>
     data?: any
     overrideRenderBranch?: RenderBranchFunction
     isLoading: boolean
+    isMounted: boolean
 }
 
 export type InternalTree = Record<string, InternalTreeBranch>
@@ -49,7 +53,9 @@ export type LoadBranchChildrenFunction = (
     treeState: TreeStore
 ) => Map<string, InternalTreeBranch> | Promise<Map<string, InternalTreeBranch>>
 
-export type RenderBranchFunction = (branch: InternalTreeBranch, BranchTemplate: BranchTemplateProps) => React.ReactNode
+export type RenderBranchFunction = (
+    {branch, BranchTemplate} : {branch: InternalTreeBranch, BranchTemplate: BranchTemplateProps}
+) => React.ReactNode
 export interface BranchComponentProps {
     path: string
     level: number
@@ -62,5 +68,16 @@ export interface BranchComponentProps {
 
 
 
+
+export type TreeProviderRef = React.RefObject<{
+    store?: StoreApi<TreeStore>
+}>
+
+export interface TreeProviderProps {
+    children: React.ReactNode
+    processedTree: InternalTree,
+    branchFlatMap: Map<string, InternalTreeBranch>,
+    ref?: TreeProviderRef
+}
 
 

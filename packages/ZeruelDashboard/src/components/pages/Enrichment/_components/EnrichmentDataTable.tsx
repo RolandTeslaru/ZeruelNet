@@ -7,6 +7,7 @@ import { DataTable } from '@/components/DataTable';
 import { useEnrichmentViewer } from '../context';
 import Search from '@zeruel/shared-ui/Search';
 import { DataTableBulkEditorProps } from '@/components/Table/TableBulkEditor';
+import DataLoadingIndicator from '@zeruel/shared-ui/DataLoadingIndicator';
 
 const EMPTY_DATA: any[] = []
 
@@ -97,7 +98,7 @@ const EnrichmentDataTable = memo(() => {
     }, [data])
 
     if (isSchemaLoading || isDataLoading) {
-        return <div className='size-full flex items-center justify-center'><Spinner /></div>;
+        return <DataLoadingIndicator/>;
     }
 
     return (

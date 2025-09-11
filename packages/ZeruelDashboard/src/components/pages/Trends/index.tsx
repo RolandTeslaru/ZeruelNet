@@ -27,7 +27,12 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
             show={show}
           />}
         >
-          <DatabaseTreePanel />
+          <CollapsiblePanel 
+            title='QUERY TOOL'
+            contentClassName='!pb-0'
+          >
+            <TimelineQueryPanel />
+          </CollapsiblePanel>
         </VXWindow>
 
         <VXWindow
@@ -65,7 +70,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
             >
               <TimelineComposedChart/>
             </HorizontalCollapsiblePanel>
-            <HorizontalCollapsiblePanel 
+            {/* <HorizontalCollapsiblePanel 
               title='QUERY'
               contentClassName='!py-0'
               openWidth={"25%"}
@@ -73,7 +78,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
               defaultOpen={true}
             >
               <TimelineQueryPanel/>
-            </HorizontalCollapsiblePanel>
+            </HorizontalCollapsiblePanel> */}
             <HorizontalCollapsiblePanel 
               title='JSON DATA'
               contentClassName='!py-0'
