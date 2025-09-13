@@ -4,15 +4,16 @@ import { Switch, Input, Button, Label, Tabs, TabsContent, TabsList, TabsTrigger,
 import { useForm } from 'react-hook-form'
 import { scraperApi, sendScrapeCommand } from '@/lib/api/scraper'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from "zod" 
+import { z } from "zod"
 import ZodFormRenderer from '@/components/ZodFormRenderer'
 import { useSystem } from '@/stores/useSystem'
 import { ScraperAPI } from '@zeruel/scraper-types'
+import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
 
 const SCHEMA_MAP = {
     "hashtag": ScraperAPI.Workflow.Variants.ByHashtag,
     "video-id": ScraperAPI.Workflow.Variants.ByVideoId
-} 
+}
 
 const CommandPanel = memo(() => {
 
@@ -39,17 +40,17 @@ const CommandPanel = memo(() => {
             return acc;
         }, {});
 
-        if(scrapeBy === "hashtag"){
+        if (scrapeBy === "hashtag") {
             const parsed = ScraperAPI.Workflow.Variants.ByHashtag.safeParse(filteredData)
-            if(parsed.error){
+            if (parsed.error) {
                 console.error(z.treeifyError(parsed.error))
             }
 
             const { data } = await sendScrapeCommand("/api/v1/workflow/scrape-by-hashtag", parsed.data)
-        } 
-        else if (scrapeBy === "video-id"){
+        }
+        else if (scrapeBy === "video-id") {
             const parsed = ScraperAPI.Workflow.Variants.ByVideoId.safeParse(filteredData)
-            if(parsed.error){
+            if (parsed.error) {
                 console.error(z.treeifyError(parsed.error))
             }
 
@@ -59,33 +60,43 @@ const CommandPanel = memo(() => {
     }, [scrapeBy])
 
     return (
-        <CollapsiblePanel title="Command Panel" contentClassName='overflow-y-scroll'>
-            <ZodFormRenderer 
-                // TODO: Fix stupid typescript form missmatch
-                form={form} 
-                schema={schema} 
-                onSubmit={onSubmit}
-                submitButtonTitle='Send Command'
-            >
-                <Tabs defaultValue='hashtag' className='w-full !gap-0'
-                    onValueChange={(value: "hashtag" | "video-id") => {setScrapeBy(value)}}
-                >
-                    <div className='flex flex-col w-full gap-1.5'>
-                        <p className='h-auto my-auto text-xs font-medium font-roboto-mono text-white'>Scrape by</p>
+        <CollapsiblePanel title="Command Panel" contentClassName='overflow-y-scroll !pb-0' >
+            {/* <Tabs defaultValue='hashtag' className='w-full !gap-0'
 
-                        <div className='flex flex-row relative w-full'>
-                            <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
-                            <div className='ml-auto w-auto'>
-                                <TabsList>
-                                    <TabsTrigger value='hashtag' className='w-1/2'>Hashtag</TabsTrigger>
-                                    <TabsTrigger value='video-id' className='w-1/2'>Video ID</TabsTrigger>
-                                </TabsList>
-                            </div>
+                onValueChange={(value: "hashtag" | "video-id") => { setScrapeBy(value) }}
+            >
+                <div className='flex flex-col w-full gap-1.5'>
+                    <p className='h-auto my-auto text-xs font-medium font-roboto-mono text-white'>Scrape by</p>
+
+                    <div className='flex flex-row relative w-full'>
+                        <div className='h-1/2 w-[20px] border-b border-l border-neutral-600 absolute left-2' />
+                        <div className='ml-auto w-auto'>
+                            <TabsList>
+                                <TabsTrigger value='hashtag' className='w-1/2'>Hashtag</TabsTrigger>
+                                <TabsTrigger value='video-id' className='w-1/2'>Video ID</TabsTrigger>
+                            </TabsList>
                         </div>
                     </div>
-                </Tabs>
-
-            </ZodFormRenderer>
+                </div>
+            </Tabs> */}
+            <div className='size-full relative'>
+                <ZodFromTreeRenderer
+                    form={form}
+                    schema={schema}
+                    onSubmit={onSubmit}
+                    rootTreeName='Scrape Workflow Request Query'
+                    formDefaultValues={defaultValues}
+                    showSearchBar={false}
+                >
+                    <Button
+                        variant="dashed1"
+                        type="submit"
+                        className='w-full border-blue-400/60 min-h-9 rounded-none bg-blue-500/30 hover:bg-blue-400/30 text-blue-100 font-roboto-mono font text-xs '
+                    >
+                        Send Request
+                    </Button>
+                </ZodFromTreeRenderer>
+            </div>
         </CollapsiblePanel>
     )
 })

@@ -6,8 +6,15 @@ import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel';
 import { TABLES_MAP } from './lib';
 import CurrentTableSelector from './components/CurrentTableSelector';
 import ZodFormRenderer from '@/components/ZodFormRenderer';
+import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer';
+import { ZodTreeBuildOpts } from '@/components/ZodFormTreeRenderer/types';
 
-
+const buildOpts: ZodTreeBuildOpts = {
+    maxTitleLengthUntilCutoff: 8,
+    overrideRenderOrder: {
+        range: "column"
+    }
+}
 
 const DatabaseQueryPanel = memo(() => {
     const { selectedTable, setQueryParams } = useTablesContext()
@@ -41,14 +48,25 @@ const DatabaseQueryPanel = memo(() => {
             title='Query Tool'
             contentClassName='overflow-y-scroll'
         >
-            <ZodFormRenderer 
+            <CurrentTableSelector form={form}/>
+            <div className='relative'>
+                <ZodFromTreeRenderer
+                    form={form}
+                    schema={table.schema}
+                    rootTreeName='Query'
+                    onSubmit={onSubmit}
+                    formDefaultValues={currentDefaultValues}
+                    zodTreeBuildOpts={buildOpts}
+                />
+            </div>
+            {/* <ZodFormRenderer 
                 form={form} 
                 schema={table.schema} 
                 onSubmit={onSubmit}
                 submitButtonTitle='Query Database'
             >
                 <CurrentTableSelector form={form} />
-            </ZodFormRenderer>
+            </ZodFormRenderer> */}
         </CollapsiblePanel>
     )
 })

@@ -50,14 +50,10 @@ const createTrendsStore = (props: TrendsStoreInitialProps) => {
                     start_video_date: start_video_date,
                     end_video_date: end_video_date
                 },
-                setComposedDataParams: (params) => {
-                    set(state => {
-                        state.composedDataParams = {
-                            ...state.composedDataParams,
-                            ...params
-                        }
-                    })
-                }
+                setComposedDataParams: (params) => set(s => {
+                    s.composedDataParams = params
+                })
+
             })
         )
     )
@@ -69,22 +65,22 @@ interface TreeProviderProps {
     children: React.ReactNode
 }
 
-export const TrendsProvider: React.FC<TreeProviderProps> = memo(({children}) => {
-    
+export const TrendsProvider: React.FC<TreeProviderProps> = memo(({ children }) => {
+
     const { data: initialDataBounds, isLoading } = useQuery({
         queryKey: ["trends", "data-bounds"],
         queryFn: async () => {
-          const data = await fetchDataBounds();
-          return data
+            const data = await fetchDataBounds();
+            return data
         },
-        retry: false, 
+        retry: false,
     })
 
     const value = useMemo(() => {
         return createTrendsStore({ initialDataBounds })
-    },[initialDataBounds])
+    }, [initialDataBounds])
 
-      
+
     return (
         <Context.Provider value={value}>
             {children}
@@ -97,11 +93,11 @@ export function useTrendsStore<T>(selector: (state: State & Actions) => T): T;
 export function useTrendsStore<T>(selector?: (state: State & Actions) => T) {
     const store = useContext(Context);
     if (!store) throw new Error('Missing TrendsProvider in the tree');
-    
+
     if (selector) {
         return useStoreWithEqualityFn(store, selector, shallow);
     }
-    
+
     // Return entire state if no selector provided
     return useStoreWithEqualityFn(store, (state) => state, shallow);
 };

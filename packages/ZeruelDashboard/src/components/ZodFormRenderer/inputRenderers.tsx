@@ -109,6 +109,7 @@ export const arrayInputRender = (
             delete zodObject.items.properties[firstRequiredProperty] 
         }
         
+        // @ts-expect-error
         const valueObject = buildZodTree("value", zodObject.items.properties, [], false)
 
         const newDummyBranch: DummyTreeBranch = {
@@ -131,15 +132,6 @@ export const arrayInputRender = (
 
     return (
         <div className='flex flex-col gap-1'>
-            {/* <Button 
-                className='border-neutral-400/50 w-auto ml-auto '
-                variant='accent' 
-                size='xs' 
-                onClick={() => {onBranchAdd("something")}}
-            >
-                Add Item
-            </Button> */}
-          
             <Input
                 className={className + ' w-1/2 ml-auto'}
                 placeholder={`ADD ITEM  (${firstRequiredProperty})`}
@@ -158,11 +150,6 @@ export const arrayInputRender = (
             />
         </div>
     )
-}
-
-
-export const arrayItemRenderer = ({zodObject, field}) => {
-
 }
 
 

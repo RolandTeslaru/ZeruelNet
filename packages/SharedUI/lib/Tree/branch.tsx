@@ -1,5 +1,5 @@
 import { memo, useCallback } from "react";
-import { BranchComponentProps } from "./types";
+import { BranchComponentProps, InternalTreeBranch, LoadBranchChildrenFunction, RenderBranchFunction } from "./types";
 import { getTreeStore, useBranch, useTree } from "./context";
 import { Spinner } from "../foundations";
 import { AlertTriangle } from "../icons";
@@ -16,17 +16,6 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
     const isFinalSibling = siblingsLen - 1 === indexToParent
     const store = getTreeStore();
     const branch = useTree(s => s.branchesFlatMap.get(path))
-    // const branch = useBranch(path)
-
-    const branchCanBeLazyLoaded = loadBranchChildren && branch.canBeExpanded && !branch.children
-
-    if(!branch)
-        return (
-            <div className="flex flex-row text-red-600 gap-2 animate-pulse">
-                <AlertTriangle size={35} className=""/>
-                <p className="text-red-600">{`BRANCH '${path}' DOES NOT EXIST IN FLAT MAP TREE CONTEXT`}</p>
-            </div>
-        )
 
     const onExpandButtonClick = useCallback(async () => {
         if (branch.isExpanded)
@@ -47,9 +36,6 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
             }
         }
     }, [branch.isExpanded, branch.children, branch.isLoading])
-
-    if(branch.isMounted === false)
-        return null
 
     const BranchTemplate = ({ children, className, listClassName, ...rest }) => (
         <li
@@ -88,32 +74,52 @@ const BranchComponent: React.FC<BranchComponentProps> = memo(({
                 }
                 {children}
             </div>
-            {branch.isExpanded && branch.canBeExpanded && (
-                <ul role="group" className='m-0 p-0'>
-                    {!!branch.children && Array.from(branch.children).map(([childKey, childBranch], i) =>
-                        <BranchComponent
-                            key={`tree-${branch.key}-${i}`}
-                            path={childBranch.currentPath}
-                            siblingsLen={branch.children.size}
-                            indexToParent={i}
-                            level={level + 1}
-                            renderBranch={renderBranch}
-                            loadBranchChildren={loadBranchChildren}
-                        />
-                    )}
-                </ul>
-            )}
+            {renderBranchChildren({
+                branch,
+                level,
+                renderBranch,
+                loadBranchChildren
+            })}
         </li>
     )
 
+    if(branch.isMounted === false)
+        return null
+
     if (branch.overrideRenderBranch)
-        return branch.overrideRenderBranch({branch, BranchTemplate})
+        return branch.overrideRenderBranch({ branch, BranchTemplate })
     else if (renderBranch)
-        return renderBranch({branch, BranchTemplate})
+        return renderBranch({ branch, BranchTemplate })
 
     return null
 })
 
+
+const renderBranchChildren = (
+    { branch, level, renderBranch, loadBranchChildren }:
+        { branch: InternalTreeBranch, level: number, renderBranch: RenderBranchFunction, loadBranchChildren: LoadBranchChildrenFunction }
+) => {
+    if (branch.canBeExpanded && branch.isExpanded) {
+        const mountedChildBranchesArray = Array.from(branch.children).filter(([_, cb]) => cb.isMounted === true)
+        return (
+            <ul role="group" className="!m-0 !p-0">
+                {mountedChildBranchesArray.map(([_, childBranch], i) =>
+                    <BranchComponent
+                        key={`tree-${branch.key}-${i}`}
+                        path={childBranch.currentPath}
+                        siblingsLen={branch.children.size}
+                        indexToParent={i}
+                        level={level + 1}
+                        renderBranch={renderBranch}
+                        loadBranchChildren={loadBranchChildren}
+                    />
+                )}
+            </ul>
+        )
+    }
+
+    return <></>
+}
 
 interface BranchExpandButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
     isExpanded: boolean

@@ -15,7 +15,7 @@ const Search:React.FC<Props> = (props) => {
     return (
         <div 
             className={className + " " + `flex flex-row gap-1 px-1 bg-input w-24 
-                       border border-border-input rounded-full`} 
+                       border border-border-input rounded-md`} 
         >
             <input
                 className={`h-auto my-auto w-full text-neutral-400 bg-transparent

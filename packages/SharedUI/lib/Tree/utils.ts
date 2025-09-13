@@ -13,8 +13,6 @@ export const createInternalTree = (src: Record<string, DummyTreeBranch>) => {
         })
     })
 
-    console.log("CREATED TREE", root)
-
     return { processedTree: root, branchFlatMap };
 }
 

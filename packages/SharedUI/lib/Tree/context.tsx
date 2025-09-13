@@ -23,6 +23,7 @@ type Actions = {
     recursivelyEraseBranch: (props: { branchPath: string, state?: WritableDraft<TreeStore> }) => void
     setBranchMounted: (value: boolean, branchPath: string) => void
     setBranchLoading: (branchPath: string, value: boolean) => void
+    dangerouslyOverridePropertyOnDataObjectInBranch: (props: {branchPath: string, propertyKey: string, propertyData: any}) => void
 }
 
 export type TreeStore = State & Actions
@@ -173,7 +174,16 @@ const createTreeStore = (processedTree: InternalTree, branchFlatMap: Map<string,
                         execute(state)
                     else
                         set(s => execute(s))
-                }
+                },
+                dangerouslyOverridePropertyOnDataObjectInBranch: ({branchPath, propertyKey, propertyData}) => set(s => {
+                    if(!s.branchesFlatMap.has(branchPath)){
+                        console.error("COULD NOT DANGEROUSLY OVERRIDE PROPERTY", propertyKey, " IN BRANCH", branchPath, " WITH DATA", propertyData)
+                        return
+                    }
+                    const branch = s.branchesFlatMap.get(branchPath)
+
+                    branch.data[propertyKey] = propertyData
+                })
             }))
     );
 

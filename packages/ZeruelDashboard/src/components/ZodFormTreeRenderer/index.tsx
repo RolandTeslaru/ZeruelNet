@@ -10,6 +10,7 @@ import { RENDERERS } from './branchRenderers'
 import { ArrowRight, Info } from '@zeruel/shared-ui/icons'
 import Search from '@zeruel/shared-ui/Search'
 import classNames from 'classnames'
+import { ZodTreeBuildOpts } from './types'
 
 interface Props {
     form: UseFormReturn,
@@ -17,14 +18,23 @@ interface Props {
     schema: z.ZodObject
     rootTreeName: string
     children?: React.ReactNode
+    formDefaultValues?: Record<string, any>
+    zodTreeBuildOpts?: ZodTreeBuildOpts
+    showSearchBar?: boolean
 }
 
 const ZodFromTreeRenderer: React.FC<Props> = memo(({
-    form, onSubmit, schema, rootTreeName, children
+    form, onSubmit, schema, rootTreeName, children, formDefaultValues, zodTreeBuildOpts, showSearchBar = true
 }) => {
     const tree = useMemo(() => {
-        const properties =  z.toJSONSchema(schema).properties
-        const tree = buildZodTree(rootTreeName, properties, [overrideTimeRangeRule])
+        const properties = z.toJSONSchema(schema).properties
+        const tree = buildZodTree({
+            rootTreeName,
+            properties,
+            rules: [overrideTimeRangeRule],
+            defaultValues: formDefaultValues,
+            buildOpts: zodTreeBuildOpts
+        })
 
         return tree
     }, [schema])
@@ -52,13 +62,6 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
         });
     }, [tree, treeComponentRef.current])
 
-
-    const handleOnSubmit = useCallback((data: any) => {
-        form.reset(form.getValues()); // Current value become default so dirty is set to false
-        onSubmit?.(data)
-    }, [onSubmit])
-
-
     // Reset the form after the tree render 
     // (because it gets dirty when it registers the fields)
     useEffect(() => {
@@ -69,16 +72,31 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
     return (
         <>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleOnSubmit)}>
+                <form
+                    onKeyDown={e => {
+                        if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+                            // allow Enter in a textarea or if a button has focus, otherwise block
+                            if (e.target.type !== 'textarea' && e.target.type !== 'submit') {
+                                e.preventDefault();
+                            }
+                        }
+                    }}
+                    onSubmit={form.handleSubmit((data) => {
+                        form.reset(form.getValues()); // Current value become default so dirty is set to false
+                        onSubmit?.(data)
+                    })}
+                >
                     <Tree
                         src={tree}
                         renderBranch={(props) => renderFormBranch({ ...props, form })}
                         ref={treeComponentRef}
                     />
-                    <div className='absolute flex flex-row top-3 right-0 gap-2'>
-                        <FormSubmitButton form={form}/>
-                        <Search className='h-auto my-auto ' onChange={onSearchChange} />
-                    </div>
+                    {showSearchBar &&
+                        <div className='absolute flex flex-row top-3 right-0 gap-1'>
+                            <FormSubmitButton form={form} />
+                            <Search className='h-auto my-auto' onChange={onSearchChange} />
+                        </div>
+                    }
                     {children}
                 </form>
             </Form>
@@ -89,11 +107,11 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
 export default ZodFromTreeRenderer
 
 
-const FormSubmitButton = ({form}: {form: UseFormReturn}) => {
+const FormSubmitButton = ({ form }: { form: UseFormReturn }) => {
     const { isDirty } = useFormState({ control: form.control });
 
     return (
-        <Button 
+        <Button
             variant="accent"
             className={classNames(
                 '!p-0 !h-5 !w-5 rounded-full',
@@ -107,10 +125,9 @@ const FormSubmitButton = ({form}: {form: UseFormReturn}) => {
 
 const renderFormBranch = (
     { branch, BranchTemplate, form }:
-    { branch: InternalTreeBranch, BranchTemplate: BranchTemplateProps, form: UseFormReturn }
+        { branch: InternalTreeBranch, BranchTemplate: BranchTemplateProps, form: UseFormReturn }
 ) => {
     const data = branch?.data
-    const zodObject = data?.schema
 
     let title = null
     if (branch.key === "value")
@@ -122,6 +139,7 @@ const renderFormBranch = (
     else
         title = branch.key
 
+
     return (
         <ContextMenu>
             <ContextMenuTrigger>
@@ -131,14 +149,15 @@ const renderFormBranch = (
                             {title}
                         </p>
                     }
-                    {zodObject && (() => {
-                        const entry = RENDERERS[(zodObject as any).type as keyof typeof RENDERERS] ?? RENDERERS.plain
-                        return entry.render({ form, branch, className: '!w-full max-w-[130px]' })
-                    })()}
+                    {RENDERERS[data.renderKind as keyof typeof RENDERERS]?.({
+                        form,
+                        branch: branch as any,
+                        className: '!w-full max-w-[100px]'
+                    })}
                 </BranchTemplate>
             </ContextMenuTrigger>
             <ContextMenuContent>
-                <DataViewerWrapper src={branch} title="Branch"/>
+                <DataViewerWrapper src={branch}/>
             </ContextMenuContent>
         </ContextMenu>
     )
