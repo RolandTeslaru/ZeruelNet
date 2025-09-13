@@ -78,9 +78,9 @@ const DatabaseTableViewer = memo(() => {
         return <DataLoadingIndicator/>
     }
 
+    
     return (
         <div className='flex flex-col h-full'>
-
             <DataTable data={data ? data.items : EMPTY_DATA} columns={columns} table={table} />
         </div>
     );

@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { DatabaseAPI } from "./database"
+import { ScraperAPI } from "@zeruel/scraper-types"
 
 export namespace TrendsAPI {
     export namespace Subjects {
@@ -91,16 +92,32 @@ export namespace TrendsAPI {
             shares:                     z.number(),
         })
 
+        export const DisplayItem = z.object({
+            video_id:                 z.number(),
+            author_username:          z.string(),
+            video_url:                z.number(),
+            likes_count:              z.number(),
+            share_count:              z.number(),
+            comment_count:            z.number(),
+            play_count:               z.number(),
+            video_description:        z.string(),
+            final_alignment:          z.number(),
+            llm_overall_alignment:    z.number(),
+            deterministic_alignment:  z.number()
+        })
+        export type DisplayItem = z.infer<typeof DisplayItem>
+
         export const Response = z.object({
-            buckets: z.array(ResponseBucket),
+            buckets:        z.array(ResponseBucket),
+            displayVideos:  z.array(DisplayItem),
             meta: z.object({
-                interval: BucketInterval,
+                interval:       BucketInterval,
                 date_range: z.object({
-                    since: z.iso.datetime(),
-                    until: z.iso.datetime()
+                    since:      z.iso.datetime(),
+                    until:      z.iso.datetime()
                 }),
-                total_buckets: z.number(),
-                queryParams: z.any()
+                total_buckets:  z.number(),
+                queryParams:    z.any()
             })
         })
         export type Response = z.infer<typeof Response>

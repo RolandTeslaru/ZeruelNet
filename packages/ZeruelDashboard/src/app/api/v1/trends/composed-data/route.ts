@@ -128,42 +128,70 @@ export async function GET(request: NextRequest) {
 
 
     const sqlQuery = `--sql
+    WITH
+    filtered AS (                       -- all query-param constraints applied here
         SELECT
-            date_trunc($1, v.created_at) as bucket,
-            COUNT(vf.video_id) as volume,
-            AVG(vf.final_alignment) as avg_final_alignment,
-            AVG(vf.llm_overall_alignment) as avg_llm_overall_alignment,
-            AVG(vf.deterministic_alignment) as avg_deterministic_alignment,
-            AVG(vf.polarity) as avg_polarity,
-            percentile_cont(0.5) WITHIN GROUP (ORDER BY ((v.likes_count + v.comment_count + v.share_count)::numeric)) as median_engagement,
-            AVG((v.likes_count + v.comment_count + v.share_count)::numeric) as mean_engagement,
-            SUM(v.likes_count)   AS likes,
-            SUM(v.comment_count) AS comments,
-            SUM(v.share_count)   AS shares
-
-        FROM video_features vf
-        JOIN videos v ON v.video_id = vf.video_id
+          v.*,                          -- full video metadata, inc. thumbnail_url, stats etc.
+          vf.final_alignment,
+          vf.llm_overall_alignment,
+          vf.deterministic_alignment,
+          vf.polarity
+        FROM videos v
+        JOIN video_features vf ON vf.video_id = v.video_id
         WHERE v.created_at BETWEEN $2 AND $3
-            AND ($4::numeric IS NULL OR vf.final_alignment >= $4)
-            AND ($5::numeric IS NULL OR vf.final_alignment <= $5)
-            AND ($6::numeric IS NULL OR vf.deterministic_alignment >= $6)
-            AND ($7::numeric IS NULL OR vf.deterministic_alignment <= $7)
-            AND ($8::numeric IS NULL OR vf.llm_overall_alignment >= $8)
-            AND ($9::numeric IS NULL OR vf.llm_overall_alignment <= $9)
-            AND ($10::numeric IS NULL OR vf.polarity >= $10)
-            AND ($11::numeric IS NULL OR vf.polarity <= $11)${subjectSqlClause}
+          AND ($4::numeric  IS NULL OR vf.final_alignment         >= $4)
+          AND ($5::numeric  IS NULL OR vf.final_alignment         <= $5)
+          AND ($6::numeric  IS NULL OR vf.deterministic_alignment >= $6)
+          AND ($7::numeric  IS NULL OR vf.deterministic_alignment <= $7)
+          AND ($8::numeric  IS NULL OR vf.llm_overall_alignment   >= $8)
+          AND ($9::numeric  IS NULL OR vf.llm_overall_alignment   <= $9)
+          AND ($10::numeric IS NULL OR vf.polarity               >= $10)
+          AND ($11::numeric IS NULL OR vf.polarity               <= $11)
+          ${subjectSqlClause}
+    ),
+    
+    bucket_stats AS (                   -- reuse the pre-filtered rows
+        SELECT
+          date_trunc($1, created_at)                     AS bucket,
+          COUNT(*)                                       AS volume,
+          AVG(final_alignment)                           AS avg_final_alignment,
+          AVG(llm_overall_alignment)                     AS avg_llm_overall_alignment,
+          AVG(deterministic_alignment)                   AS avg_deterministic_alignment,
+          AVG(polarity)                                  AS avg_polarity,
+          percentile_cont(0.5) WITHIN GROUP (
+              ORDER BY (likes_count + comment_count + share_count)::numeric
+          )                                             AS median_engagement,
+          AVG((likes_count + comment_count + share_count)::numeric)
+                                                        AS mean_engagement,
+          SUM(likes_count)                              AS likes,
+          SUM(comment_count)                            AS comments,
+          SUM(share_count)                              AS shares
+        FROM filtered
         GROUP BY bucket
-        ORDER BY bucket;
+        ORDER BY bucket
+    ),
+    
+    display_videos AS (
+        SELECT *, (likes_count + comment_count + share_count) AS engagement
+        FROM filtered
+        ORDER BY engagement DESC
+        LIMIT 12
+    )
+    
+    SELECT
+      (SELECT json_agg(bs) FROM bucket_stats  bs) AS buckets,
+      (SELECT json_agg(dv) FROM display_videos dv) AS display_videos;
     `
 
     try {
         const { rows } = await pool.query(sqlQuery, queryParams)
 
         const response: TrendsAPI.ComposedData.Response = {
-            buckets: rows,
+            buckets: rows[0].buckets,
+            displayVideos: rows[0].display_videos,
             meta: {
                 interval,
-                date_range: {since, until},
+                date_range: { since, until },
                 total_buckets: rows.length,
                 queryParams
             }

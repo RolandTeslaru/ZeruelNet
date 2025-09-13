@@ -53,3 +53,10 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
 })
 
 export default Tables
+
+
+
+
+const DataJsonPanel = () => {
+    
+}

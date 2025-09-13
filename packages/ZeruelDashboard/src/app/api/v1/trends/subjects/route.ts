@@ -43,7 +43,6 @@ export async function GET(request: NextRequest) {
     let queryParams: any[];
 
     if (needsKnowledgeJoin) {
-        // Query WITH knowledge JOIN for filtering and/or including knowledge data
         sqlQuery = `--sql
             SELECT
                 (subj_data->>'subject')::text as subject_name,
@@ -78,7 +77,7 @@ export async function GET(request: NextRequest) {
                 ks.category, 
                 ks.weight, 
                 ks.country_code
-            ORDER BY AVG((subj_data->>'alignment_score')::numeric) DESC
+            ORDER BY popularity DESC
             LIMIT 50
         `;
         
@@ -112,7 +111,7 @@ export async function GET(request: NextRequest) {
               AND vf.llm_identified_subjects IS NOT NULL
               AND jsonb_array_length(vf.llm_identified_subjects) > 0
             GROUP BY (subj_data->>'subject')::text
-            ORDER BY AVG((subj_data->>'alignment_score')::numeric) DESC
+            ORDER BY popularity DESC
             LIMIT 50
         `;
         

@@ -11,6 +11,7 @@ import HorizontalCollapsiblePanel from "@zeruel/shared-ui/HorizontalCollapsibleP
 import TimelineQueryPanel from './_components/TimelineQueryPanel';
 import JsonDataView from './_components/JsonDataView';
 import TrendingCharts from './_components/TrendingCharts';
+import VideosPreview from './_components/VideosPreview';
 
 
 const Trends = React.memo(({ show }: { show: boolean }) => {
@@ -43,13 +44,13 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends: Main'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden col-span-3 row-span-2 w-full h-full mt-auto'
-            contentClassName='!px-0 !pb-0'
+            className='hidden col-span-3 row-span-2 w-full h-full mt-auto !p-0'
+            contentClassName='!p-0'
             detachedClassName=''
             show={show}
           />}
         >
-          <StateVisualization/>
+          <VideosPreview/>
         </VXWindow>
 
         <VXWindow
