@@ -10,6 +10,7 @@ import DatabaseTreePanel from '../Tables/_components/DatabaseTreePanel';
 import HorizontalCollapsiblePanel from "@zeruel/shared-ui/HorizontalCollapsiblePannel"
 import TimelineQueryPanel from './_components/TimelineQueryPanel';
 import JsonDataView from './_components/JsonDataView';
+import TrendingCharts from './_components/TrendingCharts';
 
 
 const Trends = React.memo(({ show }: { show: boolean }) => {
@@ -21,18 +22,20 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden row-span-3 h-full flex-col'
-            contentClassName=''
+            className='hidden row-span-3 h-full'
             detachedClassName=''
             show={show}
           />}
         >
-          <CollapsiblePanel 
-            title='QUERY TOOL'
-            contentClassName='!pb-0'
-          >
-            <TimelineQueryPanel />
-          </CollapsiblePanel>
+          <div className='flex flex-col gap-4'>
+            <TrendingCharts/>
+            <CollapsiblePanel 
+              title='QUERY TOOL'
+              contentClassName='!pb-0'
+            >
+              <TimelineQueryPanel />
+            </CollapsiblePanel>
+          </div>
         </VXWindow>
 
         <VXWindow
@@ -40,7 +43,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
           title='ZeruelNet Trends: Main'
           windowClasses=''
           StylingComponent={<BracketsWindowStyling
-            className='hidden col-span-3 row-span-2 w-full h-full mt-auto flex-col'
+            className='hidden col-span-3 row-span-2 w-full h-full mt-auto'
             contentClassName='!px-0 !pb-0'
             detachedClassName=''
             show={show}

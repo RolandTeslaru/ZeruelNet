@@ -10,6 +10,7 @@ import DataLoadingIndicator from "@zeruel/shared-ui/DataLoadingIndicator"
 import { useRef, useLayoutEffect, useState } from 'react';
 import Search from '@zeruel/shared-ui/Search'
 import { el } from 'date-fns/locale'
+import SafeData from '@/components/SafeData'
 
 const SubjectAlignmentChart = memo(() => {
 
@@ -45,44 +46,36 @@ const SubjectAlignmentChart = memo(() => {
   }, [searchQuery, data?.subjects])
 
   return (
-    <>
-      {isLoading ? <DataLoadingIndicator />
-        :
-        <>
-          <div className='flex flex-row w-full justify-between'>
-            <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30' />
+    <SafeData isLoading={isLoading}>
+      <div className='flex flex-row w-full justify-between'>
+        <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30' />
 
-            <p className='text-[11px] font-roboto-mono'>
-              {searchQuery && searchQuery.length > 0 ?
-                `found ${filteredSubjects.length} subjects`
-                :
-                `${data?.subjects.length} subjects`
-              }
-            </p>
-          
+        <p className='text-[11px] font-roboto-mono'>
+          {searchQuery && searchQuery.length > 0 ?
+            `found ${filteredSubjects.length} subjects`
+            :
+            `${data?.subjects.length} subjects`
+          }
+        </p>
+
+      </div>
+
+      <div className='flex flex-col gap-1'>
+        {filteredSubjects.map(subject =>
+          <div key={subject.subject_name} className='flex flex-row justify-between gap-1 px-1 h-6 w-full '>
+            <TitleVisualizer text={subject.subject_name} />
+
+            <div className='flex flex-row gap-1'>
+              <RangeNumberVisualizer value={subject.avg_stance} />
+              <RangeNumberVisualizer value={subject.avg_alignment_score} />
+              <RangeNumberVisualizer value={subject.expect_alignment} />
+              <BinaryNumberVisualizer value={subject.total_mentions} max={data.meta.max_total_mentions} />
+            </div>
           </div>
+        )}
 
-          <div className='flex flex-col gap-1'>
-            {filteredSubjects.map(subject =>
-              <div key={subject.subject_name} className='flex flex-row justify-between gap-1 px-1 h-6 w-full '>
-                <TitleVisualizer text={subject.subject_name} />
-
-                <div className='flex flex-row gap-1'>
-                  <RangeNumberVisualizer value={subject.avg_stance} />
-                  <RangeNumberVisualizer value={subject.avg_alignment_score} />
-                  <RangeNumberVisualizer value={subject.expect_alignment} />
-                  <BinaryNumberVisualizer value={subject.total_mentions} max={data.meta.max_total_mentions} />
-                </div>
-              </div>
-            )}
-
-          </div>
-          {/* <JsonView src={data} className='text-xs' /> */}
-        </>
-
-      }
-
-    </>
+      </div>
+    </SafeData>
   )
 })
 

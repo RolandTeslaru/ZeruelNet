@@ -9,9 +9,10 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchComposedData } from '@/lib/api/trends';
 import DataLoadingIndicator from '@zeruel/shared-ui/DataLoadingIndicator';
 import { Popover, PopoverContent, PopoverTrigger } from '@zeruel/shared-ui/foundations';
-import { Info } from '@zeruel/shared-ui/icons';
+import { AlertTriangle, Info } from '@zeruel/shared-ui/icons';
 import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper';
 import ChartTooltip from '@zeruel/shared-ui/charts/sharedComponents/ChartTooltip';
+import SafeData from '@/components/SafeData';
 
 const TimelineComposedChart = memo(() => {
 
@@ -30,29 +31,9 @@ const TimelineComposedChart = memo(() => {
 
     return (
         <div className='relative size-full flex flex-col'>
-            {/* <UpperBar 
-                data={data} 
-                slidingWindow={slidingWindow} 
-                setSlidingWindowInterval={setSlidingWindowInterval} 
-                setSlidingWindowRange={setSlidingWindowRange}
-            /> */}
-            {isLoading ? <DataLoadingIndicator /> :
-                <>
-                    <Popover>
-                        <PopoverTrigger className='w-fit absolute right-0'>
-                            <Info />
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <DataViewerWrapper src={data} title="Data" />
-                        </PopoverContent>
-                    </Popover>
-                    <ChartComponent data={data} />
-                    {/* <div className='text-xs'>
-                        <JsonView src={data} />
-                    </div> */}
-                </>
-            }
-
+            <SafeData isLoading={isLoading}>
+                <ChartComponent data={data} />
+            </SafeData>
         </div>
     )
 })
@@ -69,6 +50,12 @@ const ChartComponent: React.FC<ChartProps> = memo(({ data }) => {
     const buckets = data.buckets
     return (
         <div className='w-full h-full [&_*]:outline-none [&_*]:focus:outline-none'>
+            {buckets.length === 0 && (
+                <div className='absolute animate-pulse flex flex-row gap-2 top-1/2 left-1/2 -translate-1/2 text-red-600 '>
+                    <AlertTriangle size={20} className='h-auto my-auto'/>
+                    <p className='h-auto my-auto font-roboto-mono text-base font-semibold '>Data Buckets Are Empty!</p>
+                </div>
+            )}
             <ResponsiveContainer width={"100%"} height={"100%"}>
                 <ComposedChart data={buckets} margin={{ left: -40, bottom: -12, right: -10, top: 5 }}>
                     <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
@@ -109,7 +96,7 @@ const ChartComponent: React.FC<ChartProps> = memo(({ data }) => {
                             <stop offset="100%" stopColor="oklch(62.3% 0.214 259.815)" stopOpacity={0.1} />
                         </linearGradient>
                     </defs>
-                    <Line type="monotone" dataKey="avg_polarity" stroke="purple" yAxisId="right" />
+                    <Line type="monotone" dataKey="avg_polarity" stroke="#14b8a6" yAxisId="right" />
                 </ComposedChart>
             </ResponsiveContainer>
         </div>

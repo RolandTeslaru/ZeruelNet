@@ -15,7 +15,7 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
                     title='ZeruelNet Dashboard: Table Info Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className='hidden min-w-[250px] max-w-[250px] h-full flex-col'
+                        className='hidden min-w-[280px] max-w-[280px] h-full flex-col'
                         detachedClassName=''
                         show={show}
                     />}
@@ -27,7 +27,7 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
                     title='ZereulNet Dashboard: Table Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className='hidden bg-neutral-950/30 h-full max-w-[calc(100%-580px)] min-w-[calc(100%-580px)] flex-col'
+                        className='hidden bg-neutral-950/30 h-full max-w-[calc(100%-640px)] min-w-[calc(100%-640px)] flex-col'
                         contentClassName='!px-0'
                         detachedClassName=''
                         show={show}
@@ -40,7 +40,7 @@ const Tables = React.memo(({ show }: { show: boolean }) => {
                     title='ZeruelNet Dashboard: Table Query Window'
                     windowClasses=''
                     StylingComponent={<BracketsWindowStyling
-                        className=' hidden min-w-[250px] h-full flex-col'
+                        className=' hidden min-w-[280px] h-full flex-col'
                         detachedClassName=''
                         show={show}
                     />}

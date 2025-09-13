@@ -4,7 +4,7 @@ import { useTrendsStore } from '../context'
 
 const StateVisualization = memo(() => {
 
-    const state = useTrendsStore()
+    const state = useTrendsStore(state => state)
 
   return (
     <div className='text-xs'>

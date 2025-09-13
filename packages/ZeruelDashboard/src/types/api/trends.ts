@@ -83,7 +83,12 @@ export namespace TrendsAPI {
             avg_final_alignment:        z.number().nullable(),
             avg_llm_overall_alignment:  z.number().nullable(),
             avg_deterministic_alignment:z.number().nullable(),
-            avg_polarity:               z.number().nullable()
+            avg_polarity:               z.number().nullable(),
+            median_engagement:          z.number().nullable(),
+            mean_engagement:            z.number().nullable(),
+            likes:                      z.number(),
+            comments:                   z.number(),
+            shares:                     z.number(),
         })
 
         export const Response = z.object({
@@ -94,7 +99,8 @@ export namespace TrendsAPI {
                     since: z.iso.datetime(),
                     until: z.iso.datetime()
                 }),
-                total_buckets: z.number()
+                total_buckets: z.number(),
+                queryParams: z.any()
             })
         })
         export type Response = z.infer<typeof Response>
