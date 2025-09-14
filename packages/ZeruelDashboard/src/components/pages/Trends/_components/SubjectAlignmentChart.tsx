@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, ResponsiveContainer, ReferenceLine, Cell } from 'recharts'
 import { useTrendsStore } from '../context'
 import { useQuery } from '@tanstack/react-query'
-import { fetchSujects } from '@/lib/api/trends'
+import { fetchSubjects } from '@/lib/api/trends'
 import JsonView from 'react18-json-view'
 import { Spinner } from '@zeruel/shared-ui/foundations'
 import ChartTooltip from '@zeruel/shared-ui/charts/sharedComponents/ChartTooltip'
@@ -15,21 +15,24 @@ import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker'
 
 const SubjectAlignmentChart = memo(() => {
 
-  const [start, end] = useTrendsStore(state => [
+  const [start, end, identified_subjects] = useTrendsStore(state => [
     state.composedDataParams.since,
-    state.composedDataParams.until
+    state.composedDataParams.until,
+    state.composedDataParams.subjects
   ])
 
   const { data, isLoading } = useQuery({
     queryKey: [
       'subjectsAlignment',
       start,
-      end
+      end,
+      JSON.stringify(identified_subjects)
     ],
     queryFn: () => {
-      return fetchSujects({
+      return fetchSubjects({
         since: start,
-        until: end
+        until: end,
+        subjects: identified_subjects,
         // include_knowledge defaults to false, so we don't need to pass it
       })
     }
@@ -48,36 +51,39 @@ const SubjectAlignmentChart = memo(() => {
 
   return (
     <SafeData isLoading={isLoading} data={data?.subjects}>
-      <div className='flex flex-row w-full justify-between'>
-        <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30' />
+      {(safeData) => (
+        <>
+          <JsonView src={identified_subjects} collapsed={2} />
+          <div className='flex flex-row w-full justify-between'>
+            <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30' />
 
-        <DateRangePicker />
+            <p className='text-[11px] font-roboto-mono'>
+              {searchQuery && searchQuery.length > 0 ?
+                `found ${filteredSubjects.length} subjects`
+                :
+                `${data?.subjects.length} subjects`
+              }
+            </p>
 
-        <p className='text-[11px] font-roboto-mono'>
-          {searchQuery && searchQuery.length > 0 ?
-            `found ${filteredSubjects.length} subjects`
-            :
-            `${data?.subjects.length} subjects`
-          }
-        </p>
-
-      </div>
-
-      <div className='flex flex-col gap-1'>
-        {filteredSubjects.map(subject =>
-          <div key={subject.subject_name} className='flex flex-row justify-between gap-1 px-1 h-6 w-full '>
-            <TitleVisualizer text={subject.subject_name} />
-
-            <div className='flex flex-row gap-1'>
-              <RangeNumberVisualizer value={subject.avg_stance} />
-              <RangeNumberVisualizer value={subject.avg_alignment_score} />
-              <RangeNumberVisualizer value={subject.expect_alignment} />
-              <BinaryNumberVisualizer value={subject.total_mentions} max={data.meta.max_total_mentions} />
-            </div>
           </div>
-        )}
 
-      </div>
+          <div className='flex flex-col gap-1'>
+            {filteredSubjects.map(subject =>
+              <div key={subject.subject_name} className='flex flex-row justify-between gap-1 px-1 h-6 w-full '>
+                <TitleVisualizer text={subject.subject_name} />
+
+                <div className='flex flex-row gap-1'>
+                  <RangeNumberVisualizer value={subject.avg_stance} />
+                  <RangeNumberVisualizer value={subject.avg_alignment_score} />
+                  <RangeNumberVisualizer value={subject.expect_alignment} />
+                  <BinaryNumberVisualizer value={subject.total_mentions} max={data.meta.max_total_mentions} />
+                </div>
+              </div>
+            )}
+
+          </div>
+        </>
+      )}
     </SafeData>
   )
 })

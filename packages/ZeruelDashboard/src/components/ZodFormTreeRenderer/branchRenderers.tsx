@@ -265,17 +265,34 @@ export const DateRangePlainRenderer: INPUT_RENDERER_MAP_RETURN_TYPE = ({ form, b
     const { field: untilField } = useController({ name: 'until', control: form.control })
 
     const onRangeUpdate = useCallback(({ range }: { range: DateRange }) => {
-        sinceField.onChange(range?.from ? new Date(range.from).toISOString() : undefined)
-        untilField.onChange(range?.to ? new Date(range.to).toISOString() : undefined)
-    }, [sinceField, untilField])
+        const newSince = range?.from ? new Date(range.from) : undefined;
+        if (newSince) {
+            newSince.setDate(newSince.getDate() + 1);
+        }
+        const newSinceISO = newSince?.toISOString();
+
+        if (newSinceISO !== sinceField.value) {
+            sinceField.onChange(newSinceISO);
+        }
+
+        const newUntil = range?.to ? new Date(range.to) : undefined;
+        if (newUntil) {
+            newUntil.setDate(newUntil.getDate() + 1);
+        }
+        const newUntilISO = newUntil?.toISOString();
+
+        if (newUntilISO !== untilField.value) {
+            untilField.onChange(newUntilISO);
+        }
+    }, [sinceField, untilField]);
 
     return (
         <div className='w-auto ml-auto'>
             <DateRangePicker 
                 horizontal 
-                onPopoverClose={onRangeUpdate}
                 initialDateFrom={sinceField.value} 
-                initialDateTo={untilField.value} 
+                initialDateTo={untilField.value}
+                onUpdate={onRangeUpdate} 
             />
         </div>
     )

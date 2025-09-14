@@ -1,6 +1,6 @@
 'use client'
 
-import React, { type FC, useState, useEffect, useRef, JSX } from 'react'
+import React, { type FC, useState, useEffect, useRef, JSX, memo } from 'react'
 import { Button } from '../button'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 import { Calendar } from '../calendar'
@@ -19,13 +19,12 @@ import { DateRange, DateRangePickerProps } from './types'
 import { formatDate, getDateAdjustedForTimezone, getPresetRange, PRESETS } from './utils'
 import PresetSelector from './PresetSelector'
 
-export const DateRangePicker: React.FC<DateRangePickerProps> = ({
+export const DateRangePicker: React.FC<DateRangePickerProps> = memo(({
     initialDateFrom = new Date(new Date().setHours(0, 0, 0, 0)),
     initialDateTo,
     onUpdate,
     locale = 'en-US',
     popoverContentProps,
-    onPopoverClose
 }) => {
 
     const [range, setRange] = useState<DateRange>({
@@ -44,15 +43,20 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     const onCalendarSelect = (value: { from?: Date, to?: Date }) => {
         if (value?.from != null) {
             setRange({ from: value.from, to: value?.to })
-            onUpdate?.({ range: { from: value.from, to: value?.to } })
         }
     }
 
+    const [isOpen, setIsOpen] = useState(false)
+
     return (
-        <Popover onOpenChange={(newOpenState) => {
-            if(!newOpenState)
-                onPopoverClose?.({range})
-        }}>
+        <Popover
+            open={isOpen}
+            onOpenChange={value => {
+                if (!value) {
+                    onUpdate?.({ range })
+                }
+                setIsOpen(value)
+            }}>
             <PopoverTrigger className='text-[11px] font-normal cursor-pointer flex flex-row gap-1 bg-input border border-border-input rounded-mx py-0.45 px-0.5 rounded-md'>
                 <p>{formatDate(range.from, locale)}</p>
                 <div className='!h-0'>
@@ -90,7 +94,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             </PopoverContent>
         </Popover>
     )
-}
+})
 
 const DateRangeVisualizer = ({
     range, setRange, className

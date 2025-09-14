@@ -47,33 +47,26 @@ const VideosPreview = () => {
 
 
   return (
-    <SafeData isLoading={isLoading} data={data?.displayVideos}>
-      <div className='size-full overflow-y-scroll flex flex-wrap gap-6 p-4 '>
-        {data?.displayVideos ?
-          (
-            <AnimatePresence mode='popLayout'>
-              {data?.displayVideos.map((video, index) => (
-                <motion.div
-                  key={video.video_id}
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  transition={{ ease: 'linear', duration: 0.2 }}
-                  className="w-auto mx-auto"
-                  layout
-                >
-                  <VideoPreview video={video} key={index} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          )  
-          : (
-            <>
-              <p className='text-red-600 text-sm font-roboto-mono'>No Videos With The Current Query Params</p>
-            </>
-          )
-      }
-      </div>
+    <SafeData isLoading={isLoading} data={data?.displayVideos} noDataTile='Null Response With The Current Query Params'>
+      {(safeData) => (
+        <div className='size-full overflow-y-scroll flex flex-wrap gap-6 p-4 '>
+          <AnimatePresence mode='popLayout'>
+            {safeData.map((video, index) => (
+              <motion.div
+                key={video.video_id}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ ease: 'linear', duration: 0.2 }}
+                className="w-auto mx-auto"
+                layout
+              >
+                <VideoPreview video={video} key={index} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
     </SafeData>
   )
 }
@@ -105,8 +98,8 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video }) => {
     >
       <div className='absolute top-2 left-2 z-1 font-roboto-mono text-shadow-none'>
         <div className={`text-xs font-bold flex justify-between gap-2 
-            ${video.final_alignment > 0.1 && video.final_alignment <= 1 
-              ? 'text-green-400' : video.final_alignment >= -0.1 && video.final_alignment <= 0.1 
+            ${video.final_alignment > 0.1 && video.final_alignment <= 1
+            ? 'text-green-400' : video.final_alignment >= -0.1 && video.final_alignment <= 0.1
               ? 'text-white/80' : 'text-red-400'}`}
         >
           <p>ALIGNMENT</p>
@@ -115,24 +108,24 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video }) => {
           </div>
         </div>
         <div className={`text-xs font-semibold flex justify-between gap-2 
-            ${video.llm_overall_alignment > 0.1 && video.llm_overall_alignment <= 1 
-              ? 'text-green-400' : video.llm_overall_alignment >= -0.1 && video.llm_overall_alignment <= 0.1 
+            ${video.llm_overall_alignment > 0.1 && video.llm_overall_alignment <= 1
+            ? 'text-green-400' : video.llm_overall_alignment >= -0.1 && video.llm_overall_alignment <= 0.1
               ? 'text-white/80' : 'text-red-400'}`}
         >
           <p>LLM</p>
           <div className='w-10'>
-          <p>{formatAlignment(video.llm_overall_alignment)}</p>
+            <p>{formatAlignment(video.llm_overall_alignment)}</p>
 
           </div>
         </div>
         <div className={`text-xs font-semibold flex justify-between gap-2 
-            ${video.deterministic_alignment > 0.1 && video.deterministic_alignment <= 1 
-              ? 'text-green-400' : video.deterministic_alignment >= -0.1 && video.deterministic_alignment <= 0.1 
+            ${video.deterministic_alignment > 0.1 && video.deterministic_alignment <= 1
+            ? 'text-green-400' : video.deterministic_alignment >= -0.1 && video.deterministic_alignment <= 0.1
               ? 'text-white/80' : 'text-red-400'}`}
         >
           <p>DET</p>
           <div className='w-10'>
-          <p>{formatAlignment(video.deterministic_alignment)}</p>
+            <p>{formatAlignment(video.deterministic_alignment)}</p>
 
           </div>
         </div>
@@ -140,19 +133,19 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video }) => {
 
       <div className='absolute right-2 z-1 bottom-1/2 translate-y-1/2 w-fit text-xs font-roboto-mono font-medium text-center flex flex-col gap-1 text-white'>
         <div className='flex flex-col'>
-          <Heart size={15} className='w-auto mx-auto text-red-400'/>
+          <Heart size={15} className='w-auto mx-auto text-red-400' />
           <p className='text-shadow-md text-shadow-black/20'>{formatNumber(video.likes_count)}</p>
         </div>
         <div className='flex flex-col'>
-          <Share size={15} className='w-auto mx-auto text-green-400'/>
+          <Share size={15} className='w-auto mx-auto text-green-400' />
           <p className='text-shadow-md text-shadow-black/20'>{formatNumber(video.share_count)}</p>
         </div>
         <div className='flex flex-col'>
-          <Comment size={15} className='w-auto mx-auto text-orange-400'/>
+          <Comment size={15} className='w-auto mx-auto text-orange-400' />
           <p className='text-shadow-md text-shadow-black/20'>{formatNumber(video.comment_count)}</p>
         </div>
         <div className='flex flex-col'>
-          <Eye size={15}  className='w-auto mx-auto text-blue-400'/>
+          <Eye size={15} className='w-auto mx-auto text-blue-400' />
           <p className='text-shadow-md text-shadow-black/20'>{formatNumber(video.play_count)}</p>
         </div>
       </div>

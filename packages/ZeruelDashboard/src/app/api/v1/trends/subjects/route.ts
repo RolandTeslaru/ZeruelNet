@@ -5,7 +5,37 @@ import { TrendsAPI } from '@/types/api/trends';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
-    const query = Object.fromEntries(searchParams.entries());
+    const rawQuery = Object.fromEntries(searchParams.entries());
+
+    // Handle bracket-notation e.g. subjects[0][subject]=Putin&subjects[1][subject]=NATO
+    if (!rawQuery.subjects) {
+        const bracketRe = /^subjects\[(\d+)]\[(\w+)]$/;
+        const subjectObjects: Record<string, any> = {};
+        searchParams.forEach((value, key) => {
+            const m = key.match(bracketRe);
+            if (m) {
+                const [_, idx, field] = m;
+                if (!subjectObjects[idx]) subjectObjects[idx] = {};
+                subjectObjects[idx][field] = value;
+            }
+        });
+        const keys = Object.keys(subjectObjects);
+        if (keys.length > 0) {
+            const arr = keys.sort().map((k) => subjectObjects[k]);
+            rawQuery.subjects = JSON.stringify(arr);
+        }
+    }
+
+    // Fallback: allow simple repetition like ?subject=a&subject=b
+    if (rawQuery.subjects) {
+        try {
+            rawQuery.subjects = JSON.parse(rawQuery.subjects);
+        } catch (_) {
+            return NextResponse.json({ error: "Invalid 'subjects' JSON" }, { status: 400 });
+        }
+    }
+
+    const query = rawQuery;
 
     const parsed = TrendsAPI.Subjects.Query.safeParse(query);
     if (!parsed.success) {
@@ -25,7 +55,8 @@ export async function GET(request: NextRequest) {
         category,
         min_weight,
         max_weight,
-        country_code
+        country_code,
+        subjects
     } = parsed.data;
 
     // Determine if we need to JOIN with knowledge_subjects table
@@ -39,8 +70,85 @@ export async function GET(request: NextRequest) {
         include_knowledge
     );
 
+    const queryParams: any[] = [
+        since,                      // $1
+        until,                      // $2
+        min_alignment_score,        // $3
+        max_alignment_score,        // $4
+        min_polarity,              // $5
+        max_polarity,              // $6
+    ];
+
+    if (needsKnowledgeJoin) {
+        queryParams.push(
+            category,               // $7
+            min_weight,            // $8
+            max_weight,            // $9
+            country_code,          // $10
+            min_alignment_tendency, // $11
+            max_alignment_tendency  // $12
+        );
+    }
+
+    // Build subject filtering to apply to the result set (not video filtering)
+    let subjectResultFilter = "";
+    if (subjects && subjects.length > 0) {
+        const subjectConditions: string[] = [];
+        let paramIdx = queryParams.length + 1;
+
+        subjects.forEach((s) => {
+            const conditions: string[] = [];
+
+            if (s.subject) {
+                conditions.push(`LOWER(subj_data->>'subject') = LOWER($${paramIdx})`);
+                queryParams.push(s.subject);
+                paramIdx++;
+            }
+
+            if (s.min_stance !== undefined) {
+                conditions.push(`(subj_data->>'stance')::numeric >= $${paramIdx}`);
+                queryParams.push(s.min_stance);
+                paramIdx++;
+            }
+            if (s.max_stance !== undefined) {
+                conditions.push(`(subj_data->>'stance')::numeric <= $${paramIdx}`);
+                queryParams.push(s.max_stance);
+                paramIdx++;
+            }
+
+            if (s.min_alignment_score !== undefined) {
+                conditions.push(`(subj_data->>'alignment_score')::numeric >= $${paramIdx}`);
+                queryParams.push(s.min_alignment_score);
+                paramIdx++;
+            }
+            if (s.max_alignment_score !== undefined) {
+                conditions.push(`(subj_data->>'alignment_score')::numeric <= $${paramIdx}`);
+                queryParams.push(s.max_alignment_score);
+                paramIdx++;
+            }
+
+            if (s.min_expected_alignment !== undefined) {
+                conditions.push(`(subj_data->>'expected_alignment')::numeric >= $${paramIdx}`);
+                queryParams.push(s.min_expected_alignment);
+                paramIdx++;
+            }
+            if (s.max_expected_alignment !== undefined) {
+                conditions.push(`(subj_data->>'expected_alignment')::numeric <= $${paramIdx}`);
+                queryParams.push(s.max_expected_alignment);
+                paramIdx++;
+            }
+
+            if (conditions.length > 0) {
+                subjectConditions.push(`(${conditions.join(' AND ')})`);
+            }
+        });
+
+        if (subjectConditions.length > 0) {
+            subjectResultFilter = `\n              AND (${subjectConditions.join(' OR ')})`;
+        }
+    }
+
     let sqlQuery: string;
-    let queryParams: any[];
 
     if (needsKnowledgeJoin) {
         sqlQuery = `--sql
@@ -72,6 +180,7 @@ export async function GET(request: NextRequest) {
               AND ($12::numeric IS NULL OR ks.alignment_tendency <= $12)
               AND vf.llm_identified_subjects IS NOT NULL
               AND jsonb_array_length(vf.llm_identified_subjects) > 0
+              ${subjectResultFilter}
             GROUP BY 
                 (subj_data->>'subject')::text,
                 ks.category, 
@@ -80,15 +189,6 @@ export async function GET(request: NextRequest) {
             ORDER BY popularity DESC
             LIMIT 50
         `;
-        
-        queryParams = [
-            since, until,
-            min_alignment_score, max_alignment_score,
-            min_polarity, max_polarity,
-            category, min_weight, max_weight, country_code,
-            min_alignment_tendency, max_alignment_tendency
-        ];
-        
     } else {
         // Fast query WITHOUT knowledge JOIN
         sqlQuery = `--sql
@@ -110,16 +210,11 @@ export async function GET(request: NextRequest) {
               AND ($6::numeric IS NULL OR vf.polarity <= $6)
               AND vf.llm_identified_subjects IS NOT NULL
               AND jsonb_array_length(vf.llm_identified_subjects) > 0
+              ${subjectResultFilter}
             GROUP BY (subj_data->>'subject')::text
             ORDER BY popularity DESC
             LIMIT 50
         `;
-        
-        queryParams = [
-            since, until,
-            min_alignment_score, max_alignment_score,
-            min_polarity, max_polarity
-        ];
     }
 
     try {

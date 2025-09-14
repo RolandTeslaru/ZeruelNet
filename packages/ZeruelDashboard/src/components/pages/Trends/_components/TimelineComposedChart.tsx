@@ -31,8 +31,10 @@ const TimelineComposedChart = memo(() => {
 
     return (
         <div className='relative size-full flex flex-col'>
-            <SafeData isLoading={isLoading} data={data?.buckets}>
-                <ChartComponent data={data} />
+            <SafeData isLoading={isLoading} data={data?.buckets} noDataTile='No Data Buckets Available'>
+                {(safeData) => (
+                    <ChartComponent data={data} />
+                )}
             </SafeData>
         </div>
     )

@@ -9,7 +9,7 @@ export async function fetchDataBounds(): Promise<TrendsAPI.Metadata.DataBounds.R
 }
 
 
-export async function fetchSujects(
+export async function fetchSubjects(
     
     params: TrendsAPI.Subjects.Query
 
