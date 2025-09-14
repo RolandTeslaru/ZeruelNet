@@ -229,6 +229,7 @@ function CalendarDayButton({
       ref={ref}
       variant="ghost"
       size="icon"
+      role="none"
       data-day={day.date.toLocaleDateString()}
       data-selected-single={
         modifiers.selected &&
@@ -267,6 +268,7 @@ function CalendarDayButton({
         className
       )}
       {...props}
+      type="button"
     />
   )
 }

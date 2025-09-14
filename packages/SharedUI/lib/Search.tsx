@@ -23,7 +23,6 @@ const Search:React.FC<Props> = (props) => {
                 type="text"
                 placeholder='search'
                 style={{ fontSize: "11px" }}
-                value={searchQuery ?? undefined}
                 onChange={(e) => {
                     onChange?.(e.target.value)
                     setSearchQuery?.(e.target.value)

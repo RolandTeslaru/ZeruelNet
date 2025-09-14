@@ -47,23 +47,32 @@ const VideosPreview = () => {
 
 
   return (
-    <SafeData isLoading={isLoading}>
+    <SafeData isLoading={isLoading} data={data?.displayVideos}>
       <div className='size-full overflow-y-scroll flex flex-wrap gap-6 p-4 '>
-        <AnimatePresence mode='popLayout'>
-          {data?.displayVideos.map((video, index) => (
-            <motion.div
-              key={video.video_id}
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ ease: 'linear', duration: 0.2 }}
-              className="w-auto mx-auto"
-              layout
-            >
-              <VideoPreview video={video} key={index} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {data?.displayVideos ?
+          (
+            <AnimatePresence mode='popLayout'>
+              {data?.displayVideos.map((video, index) => (
+                <motion.div
+                  key={video.video_id}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  transition={{ ease: 'linear', duration: 0.2 }}
+                  className="w-auto mx-auto"
+                  layout
+                >
+                  <VideoPreview video={video} key={index} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )  
+          : (
+            <>
+              <p className='text-red-600 text-sm font-roboto-mono'>No Videos With The Current Query Params</p>
+            </>
+          )
+      }
       </div>
     </SafeData>
   )

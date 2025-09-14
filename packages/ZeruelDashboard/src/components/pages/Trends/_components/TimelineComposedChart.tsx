@@ -31,7 +31,7 @@ const TimelineComposedChart = memo(() => {
 
     return (
         <div className='relative size-full flex flex-col'>
-            <SafeData isLoading={isLoading}>
+            <SafeData isLoading={isLoading} data={data?.buckets}>
                 <ChartComponent data={data} />
             </SafeData>
         </div>
@@ -48,6 +48,7 @@ interface ChartProps {
 
 const ChartComponent: React.FC<ChartProps> = memo(({ data }) => {
     const buckets = data.buckets
+
     return (
         <div className='w-full h-full [&_*]:outline-none [&_*]:focus:outline-none'>
             {buckets.length === 0 && (

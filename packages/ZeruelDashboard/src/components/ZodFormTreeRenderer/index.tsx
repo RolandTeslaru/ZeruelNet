@@ -11,6 +11,7 @@ import { ArrowRight, Info } from '@zeruel/shared-ui/icons'
 import Search from '@zeruel/shared-ui/Search'
 import classNames from 'classnames'
 import { ZodTreeBuildOpts } from './types'
+import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker'
 
 interface Props {
     form: UseFormReturn,
@@ -82,6 +83,7 @@ const ZodFromTreeRenderer: React.FC<Props> = memo(({
                         }
                     }}
                     onSubmit={form.handleSubmit((data) => {
+                        console.log("FORM SUBMIT")
                         form.reset(form.getValues()); // Current value become default so dirty is set to false
                         onSubmit?.(data)
                     })}

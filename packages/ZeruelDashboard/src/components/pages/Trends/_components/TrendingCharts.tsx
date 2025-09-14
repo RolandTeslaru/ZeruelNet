@@ -25,7 +25,7 @@ const TrendingCharts = () => {
                 contentClassName='!pb-0 !px-0 !pb-0 min-h-[150px]'
                 className='!px-0 !pb-0'
             >
-                <SafeData isLoading={isLoading}>
+                <SafeData isLoading={isLoading} data={data?.buckets}>
                     <ResponsiveContainer width="100%" height={150}>
                         <LineChart data={data?.buckets} margin={{ left: -30, right: 10, top: 0, bottom: -9 }}>
                             <CartesianGrid strokeDasharray="3 3" />
@@ -53,7 +53,7 @@ const TrendingCharts = () => {
                 contentClassName='!pb-0 !px-0 !pb-0 min-h-[150px]'
                 className='!px-0 !pb-0'
             >
-                <SafeData isLoading={isLoading}>
+                <SafeData isLoading={isLoading} data={data?.buckets}>
                     <ResponsiveContainer width="100%" height={150}>
                         <ComposedChart data={data?.buckets} margin={{ left: -20, right: 10, top: 0, bottom: -9 }}>
                             <CartesianGrid strokeDasharray="3 3" />

@@ -5,8 +5,6 @@ import { useForm } from 'react-hook-form'
 import { scraperApi, sendScrapeCommand } from '@/lib/api/scraper'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod"
-import ZodFormRenderer from '@/components/ZodFormRenderer'
-import { useSystem } from '@/stores/useSystem'
 import { ScraperAPI } from '@zeruel/scraper-types'
 import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
 

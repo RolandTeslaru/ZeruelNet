@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import CollapsiblePanel from '@zeruel/shared-ui/CollapsiblePanel';
 import { TABLES_MAP } from './lib';
 import CurrentTableSelector from './components/CurrentTableSelector';
-import ZodFormRenderer from '@/components/ZodFormRenderer';
 import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer';
 import { ZodTreeBuildOpts } from '@/components/ZodFormTreeRenderer/types';
 
@@ -59,14 +58,6 @@ const DatabaseQueryPanel = memo(() => {
                     zodTreeBuildOpts={buildOpts}
                 />
             </div>
-            {/* <ZodFormRenderer 
-                form={form} 
-                schema={table.schema} 
-                onSubmit={onSubmit}
-                submitButtonTitle='Query Database'
-            >
-                <CurrentTableSelector form={form} />
-            </ZodFormRenderer> */}
         </CollapsiblePanel>
     )
 })

@@ -11,7 +11,7 @@ import {
     ContextMenuContent,
     ContextMenuTrigger,
 } from '@zeruel/shared-ui/foundations'
-import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "../ZodFormRenderer/types"
+import { ZodArrayObject, ZodIntegerObject, ZodPropertyObject, ZodStringObject } from "./types"
 import { Control, ControllerRenderProps, FieldValues, useController, useFieldArray, UseFormReturn } from "react-hook-form";
 import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -271,7 +271,12 @@ export const DateRangePlainRenderer: INPUT_RENDERER_MAP_RETURN_TYPE = ({ form, b
 
     return (
         <div className='w-auto ml-auto'>
-            <DateRangePicker horizontal onUpdate={onRangeUpdate} initialDateFrom={sinceField.value} initialDateTo={untilField.value} />
+            <DateRangePicker 
+                horizontal 
+                onPopoverClose={onRangeUpdate}
+                initialDateFrom={sinceField.value} 
+                initialDateTo={untilField.value} 
+            />
         </div>
     )
 }

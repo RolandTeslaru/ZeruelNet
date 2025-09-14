@@ -6,6 +6,8 @@ import { cn } from "../utils/cn"
 import { useUIManagerAPI } from "../UIManager/store"
 import { cva } from "class-variance-authority"
 import { useWindowContext } from "../VXWindow/useWindowContext"
+import { CrossesWindowStyling, CrossIcon } from "../WindowStyling"
+import classNames from "classnames"
 
 const Popover = PopoverPrimitive.Root
 
@@ -40,7 +42,7 @@ const PopoverTrigger: FC<PopoverTriggerProps> =
   }
 
 const PopoverContent: FC<ComponentProps<typeof PopoverPrimitive.Content>> =
-  ({ ref, className, align = "center", side = "bottom", sideOffset = 1, ...props }) => {
+  ({ ref, className, align = "center", side = "bottom", sideOffset = 1, children, ...props }) => {
     const { externalContainer } = useWindowContext();
     const theme = useUIManagerAPI(state => state.theme)
     return (
@@ -51,15 +53,20 @@ const PopoverContent: FC<ComponentProps<typeof PopoverPrimitive.Content>> =
           side={side}
           sideOffset={sideOffset}
           className={cn(
-            `${theme} backdrop-blur-xs z-50 rounded-xl border-[1px] border-border-popover bg-popover
-           p-1 text-popover-foreground shadow-xl shadow-black/40 outline-hidden 
+            `${theme} z-50 backdrop-blur-lg border p-1 bg-black/50 border-white/20 shadow-black/50 shadow-xl
          data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 
          data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 
          data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2`,
             className
           )}
           {...props}
-        />
+        >
+          <CrossIcon className={classNames("absolute h-3 w-3 top-0 left-0 transform -translate-x-1/2 -translate-y-1/2")} />
+          <CrossIcon className={classNames("absolute h-3 w-3 top-0 right-0 transform translate-x-1/2 -translate-y-1/2")} />
+          <CrossIcon className={classNames("absolute h-3 w-3 bottom-0 left-0 transform -translate-x-1/2 translate-y-1/2")} />
+          <CrossIcon className={classNames("absolute h-3 w-3 bottom-0 right-0 transform translate-x-1/2 translate-y-1/2")} />
+          {children}
+        </PopoverPrimitive.Content>
       </PopoverPrimitive.Portal>)
   }
 PopoverContent.displayName = PopoverPrimitive.Content.displayName
@@ -81,14 +88,14 @@ const popoverItemVaritans = cva(
   }
 )
 
-const PopoverItem: React.FC<PopoverItemProps & { 
-  variant?: "default" | "destructive" 
+const PopoverItem: React.FC<PopoverItemProps & {
+  variant?: "default" | "destructive"
 }> = (props) => {
   const { children, className, icon, variant = "default", ...rest } = props
   return (
     <div
       className={
-        popoverItemVaritans({variant}) + " " + className
+        popoverItemVaritans({ variant }) + " " + className
       }
       {...rest}
     >
@@ -96,10 +103,14 @@ const PopoverItem: React.FC<PopoverItemProps & {
         {icon}
       </div>
       <div className={`${icon && "pl-7"} text-sm`}>
-          {children}
+        {children}
       </div>
     </div>
   )
 }
 
 export { Popover, PopoverTrigger, PopoverItem, PopoverContent, PopoverAnchor }
+
+
+
+export type PopoverContentProps = ComponentProps<typeof PopoverPrimitive.Content>

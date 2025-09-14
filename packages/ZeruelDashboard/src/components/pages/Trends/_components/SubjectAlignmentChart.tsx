@@ -11,6 +11,7 @@ import { useRef, useLayoutEffect, useState } from 'react';
 import Search from '@zeruel/shared-ui/Search'
 import { el } from 'date-fns/locale'
 import SafeData from '@/components/SafeData'
+import { DateRangePicker } from '@zeruel/shared-ui/foundations/DateRangePicker'
 
 const SubjectAlignmentChart = memo(() => {
 
@@ -46,9 +47,11 @@ const SubjectAlignmentChart = memo(() => {
   }, [searchQuery, data?.subjects])
 
   return (
-    <SafeData isLoading={isLoading}>
+    <SafeData isLoading={isLoading} data={data?.subjects}>
       <div className='flex flex-row w-full justify-between'>
         <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30' />
+
+        <DateRangePicker />
 
         <p className='text-[11px] font-roboto-mono'>
           {searchQuery && searchQuery.length > 0 ?
