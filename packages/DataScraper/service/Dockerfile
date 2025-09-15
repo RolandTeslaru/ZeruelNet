@@ -10,8 +10,13 @@ COPY package*.json ./
 # Install production dependencies
 RUN npm ci --only=production
 
-# Install Playwright browsers (this was missing!)
-RUN npx playwright install chromium
+# Install Playwright browsers with verbose output
+RUN echo "Installing Playwright browsers..." && \
+    npx playwright install chromium && \
+    echo "Playwright installation completed" && \
+    ls -la /root/.cache/ms-playwright/ && \
+    echo "Verifying chromium installation..." && \
+    find /root/.cache/ms-playwright -name "*chrome*" -type f | head -10
 
 # Copy the rest of your application's source code
 COPY . .
