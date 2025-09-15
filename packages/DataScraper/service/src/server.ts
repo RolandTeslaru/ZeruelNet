@@ -18,6 +18,11 @@ const PORT = process.env.PORT ||                        // railway injected env
              process.env.SCRAPER_SERVICE_LOCAL_PORT ||  // used for local development
              3001
 
+// Environment detection
+const isProduction = process.env.NODE_ENV === 'production';
+const isRailway = process.env.RAILWAY_ENVIRONMENT !== undefined;
+const isLocal = !isRailway
+
 
 
 app.use(cors()); 
@@ -32,9 +37,32 @@ app.get('/', (req, res) => {
 
 async function startServer() {
     await redisBroker.connect();
-    app.listen(PORT, () => {
+    
+    const server = app.listen(PORT, () => {
         Logger.info(`Scraper service listening on http://localhost:${PORT}`);
+        
+        if (isRailway) {
+            Logger.info(`Running on Railway (${process.env.RAILWAY_ENVIRONMENT})`);
+            Logger.info(`Project: ${process.env.RAILWAY_PROJECT_ID}`);
+        } else if (isLocal) {
+            Logger.info('Running in local development mode');
+        }
     });
+
+    // Graceful shutdown on Railway triggered by inactivity on HTTPS traffic
+    if (isRailway) {
+        const gracefulShutdown = (signal: string) => {
+            Logger.info(`Received ${signal} on Railway, shutting down gracefully...`);
+            server.close(() => {
+                Logger.info('HTTP server closed');
+                redisBroker.disconnect();
+                process.exit(0);
+            });
+        };
+
+        process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+        process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    }
 }
 
 startServer(); 
