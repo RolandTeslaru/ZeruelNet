@@ -8,8 +8,12 @@ import { Logger } from './logger';
 // Apply the stealth plugin to hide automation metrics
 chromium.use(stealthPlugin());
 
-const USER_DATA_DIR = path.join(__dirname, '..', '..', 'tiktok_user_data');
 const isRailway = process.env.RAILWAY_ENVIRONMENT !== undefined;
+
+// Use the Railway Volume for persistent data, otherwise use the local directory
+const USER_DATA_DIR = isRailway 
+    ? '/data/tiktok_user_data' 
+    : path.join(__dirname, '..', '..', 'tiktok_user_data');
 
 export class BrowserManager {
     private browser: Browser | null = null;
@@ -28,63 +32,55 @@ export class BrowserManager {
         
         const timezoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York"
 
-        Logger.info(`Initializing chromium browser with persistent context with timezone ${timezoneId}`);
-        Logger.info(`User data directory: ${USER_DATA_DIR}`);
+        Logger.info(`Initializing chromium browser...`);
+        Logger.info(`Using user data directory: ${USER_DATA_DIR}`);
 
-        // 1. Test directory permissions
-        try {
-            fs.accessSync(USER_DATA_DIR, fs.constants.R_OK | fs.constants.W_OK);
-            Logger.info('User data directory is readable and writable.');
-        } catch (err) {
-            Logger.error(`User data directory permission error: ${USER_DATA_DIR}`, err);
-            // Don't stop, let launchPersistentContext try and give its own error
+        // On Railway, if the persistent volume is empty, copy the initial data from the repo.
+        if (isRailway) {
+            const sourceDataPath = path.join(__dirname, '..', '..', 'tiktok_user_data');
+            // Check if a core file exists to determine if the directory is populated
+            if (!fs.existsSync(path.join(USER_DATA_DIR, 'Default', 'Cookies'))) {
+                Logger.warn(`Persistent data directory appears empty. Seeding from ${sourceDataPath}...`);
+                // Use cp -r to recursively copy. Ensure destination exists.
+                fs.mkdirSync(USER_DATA_DIR, { recursive: true });
+                const { execSync } = require('child_process');
+                try {
+                    execSync(`cp -r ${sourceDataPath}/* ${USER_DATA_DIR}`);
+                    Logger.success('Successfully seeded persistent data directory.');
+                } catch (e) {
+                    Logger.error('Failed to seed user data directory.', e);
+                }
+            } else {
+                Logger.info('Existing data found in persistent volume.');
+            }
         }
 
-        // 2. Try to launch with persistent context
         try {
             this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
                 headless: true,
+                // IMPORTANT: Tell Playwright where to find the browser in the Docker container
+                executablePath: '/ms-playwright/chromium-1091/chrome-linux/chrome',
                 args: [
                     '--disable-blink-features=AutomationControlled',
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage', // Recommended for Docker
                 ], 
                 viewport: null,
-                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 
+                userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
                 locale: 'en-US',
                 timezoneId
             });
             
             this.browser = this.context.browser()!; 
             
-            if (!this.browser) {
-                throw new Error("Browser object was null after launchPersistentContext.");
-            }
+            if (!this.browser)
+                throw new Error("Failed to initialize browser from persistent context.");
             
-            Logger.info('Browser initialized successfully with persistent context.');
-
-        } catch (error: any) {
-            // 3. Drastically improved error logging
-            Logger.error("launchPersistentContext FAILED. See details below.");
-            Logger.error("Error Message:", error.message);
-            Logger.error("Error Stack:", error.stack);
-
-            // 4. Fallback to non-persistent context for diagnostics
-            Logger.warn("Attempting to launch a NON-persistent browser as a fallback...");
-            try {
-                const browser = await chromium.launch({
-                    headless: true,
-                    args: ['--no-sandbox', '--disable-setuid-sandbox']
-                });
-                this.browser = browser;
-                this.context = await this.browser.newContext();
-                Logger.success("Fallback to NON-persistent browser was SUCCESSFUL.");
-                Logger.warn("This means the issue is with the user data directory, not the browser environment itself.");
-            } catch (fallbackError: any) {
-                Logger.error("Fallback to NON-persistent browser also FAILED.");
-                Logger.error("Fallback Error Message:", fallbackError.message);
-                throw new Error("Both persistent and non-persistent browser launches failed. The environment is likely misconfigured.");
-            }
+            Logger.info('Browser initialized successfully.');
+        } catch (error) {
+            Logger.error("Error during chromium.launchPersistentContext:", error);
+            throw error;
         }
     }
 
