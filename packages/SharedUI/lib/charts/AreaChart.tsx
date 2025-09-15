@@ -277,6 +277,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>(
                             offset={20}
                             position={{ y: 0 }}
                             content={({ active, payload, label }) => {
+                                // @ts-expect-error
                                 const cleanPayload: TooltipProps["payload"] = payload
                                     ? payload
                                           .filter((item) => item.fill !== "transparent")

@@ -259,6 +259,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
                                 x: layout === "horizontal" ? undefined : yAxisWidth + 20,
                             }}
                             content={({ active, payload, label }) => {
+                                // @ts-expect-error
                                 const cleanPayload: TooltipProps["payload"] = payload
                                     ? payload.map((item: any) => ({
                                         category: item.dataKey,
