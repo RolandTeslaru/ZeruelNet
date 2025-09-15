@@ -29,13 +29,23 @@ export class BrowserManager {
         const timezoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York"
 
         Logger.info(`Initializing chromium browser with persistent context with timezone ${timezoneId}`);
+        Logger.info(`User data directory: ${USER_DATA_DIR}`);
 
+        // 1. Test directory permissions
+        try {
+            fs.accessSync(USER_DATA_DIR, fs.constants.R_OK | fs.constants.W_OK);
+            Logger.info('User data directory is readable and writable.');
+        } catch (err) {
+            Logger.error(`User data directory permission error: ${USER_DATA_DIR}`, err);
+            // Don't stop, let launchPersistentContext try and give its own error
+        }
+
+        // 2. Try to launch with persistent context
         try {
             this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
                 headless: true,
                 args: [
                     '--disable-blink-features=AutomationControlled',
-                    // CRITICAL: These two flags are required to run in a Docker container on Railway
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
                 ], 
@@ -47,13 +57,34 @@ export class BrowserManager {
             
             this.browser = this.context.browser()!; 
             
-            if (!this.browser)
-                throw new Error("Failed to initialize browser from persistent context.");
+            if (!this.browser) {
+                throw new Error("Browser object was null after launchPersistentContext.");
+            }
             
-            Logger.info('Browser initialized successfully.');
-        } catch (error) {
-            Logger.error("Error during chromium.launchPersistentContext:", error);
-            throw error;
+            Logger.info('Browser initialized successfully with persistent context.');
+
+        } catch (error: any) {
+            // 3. Drastically improved error logging
+            Logger.error("launchPersistentContext FAILED. See details below.");
+            Logger.error("Error Message:", error.message);
+            Logger.error("Error Stack:", error.stack);
+
+            // 4. Fallback to non-persistent context for diagnostics
+            Logger.warn("Attempting to launch a NON-persistent browser as a fallback...");
+            try {
+                const browser = await chromium.launch({
+                    headless: true,
+                    args: ['--no-sandbox', '--disable-setuid-sandbox']
+                });
+                this.browser = browser;
+                this.context = await this.browser.newContext();
+                Logger.success("Fallback to NON-persistent browser was SUCCESSFUL.");
+                Logger.warn("This means the issue is with the user data directory, not the browser environment itself.");
+            } catch (fallbackError: any) {
+                Logger.error("Fallback to NON-persistent browser also FAILED.");
+                Logger.error("Fallback Error Message:", fallbackError.message);
+                throw new Error("Both persistent and non-persistent browser launches failed. The environment is likely misconfigured.");
+            }
         }
     }
 
