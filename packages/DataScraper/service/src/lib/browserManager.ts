@@ -106,8 +106,7 @@ export class BrowserManager {
         try {
             this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
                 headless: true,
-                // IMPORTANT: Tell Playwright where to find the browser in the Docker container
-                executablePath: '/ms-playwright/chromium-1091/chrome-linux/chrome',
+                // Let Playwright find the browser automatically in the official Docker image
                 args: [
                     '--disable-blink-features=AutomationControlled',
                     '--no-sandbox',
