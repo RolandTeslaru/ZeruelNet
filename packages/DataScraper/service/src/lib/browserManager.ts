@@ -13,7 +13,7 @@ const isRailway = process.env.RAILWAY_ENVIRONMENT !== undefined;
 // Define paths at the top level for clarity
 const LOCAL_USER_DATA_PATH = path.join(__dirname, '..', '..', 'tiktok_user_data');
 const RAILWAY_VOLUME_PATH = '/data/tiktok_user_data';
-const SOURCE_DATA_PATH_IN_CONTAINER = '/app/tiktok_user_data'; // The path where Docker copies the source data
+const SOURCE_DATA_PATH_IN_CONTAINER = path.join(__dirname, '..', '..', 'tiktok_user_data'); // Same as local path since Dockerfile copies everything
 
 const USER_DATA_DIR = isRailway ? RAILWAY_VOLUME_PATH : LOCAL_USER_DATA_PATH;
 
@@ -50,6 +50,22 @@ export class BrowserManager {
                     try {
                         const appContents = fs.readdirSync('/app');
                         Logger.info('Contents:', appContents);
+                        
+                        // Also check what's in the current working directory
+                        Logger.info('Current working directory:', process.cwd());
+                        const cwdContents = fs.readdirSync(process.cwd());
+                        Logger.info('CWD Contents:', cwdContents);
+                        
+                        // Check if tiktok_user_data exists relative to the current directory
+                        const alternativePath = path.join(process.cwd(), 'tiktok_user_data');
+                        if (fs.existsSync(alternativePath)) {
+                            Logger.info(`Found tiktok_user_data at: ${alternativePath}`);
+                            // Use this path instead
+                            this.copyDirRecursive(alternativePath, USER_DATA_DIR);
+                            Logger.success('Successfully seeded persistent data directory from alternative path.');
+                        } else {
+                            Logger.error(`tiktok_user_data not found at ${alternativePath} either`);
+                        }
                     } catch (e) {
                         Logger.error('Could not read /app directory:', e);
                     }
