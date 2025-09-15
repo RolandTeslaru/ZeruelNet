@@ -10,10 +10,12 @@ chromium.use(stealthPlugin());
 
 const isRailway = process.env.RAILWAY_ENVIRONMENT !== undefined;
 
-// Use the Railway Volume for persistent data, otherwise use the local directory
-const USER_DATA_DIR = isRailway 
-    ? '/data/tiktok_user_data' 
-    : path.join(__dirname, '..', '..', 'tiktok_user_data');
+// Define paths at the top level for clarity
+const LOCAL_USER_DATA_PATH = path.join(__dirname, '..', '..', 'tiktok_user_data');
+const RAILWAY_VOLUME_PATH = '/data/tiktok_user_data';
+const SOURCE_DATA_PATH_IN_CONTAINER = '/app/tiktok_user_data'; // The path where Docker copies the source data
+
+const USER_DATA_DIR = isRailway ? RAILWAY_VOLUME_PATH : LOCAL_USER_DATA_PATH;
 
 export class BrowserManager {
     private browser: Browser | null = null;
@@ -37,15 +39,11 @@ export class BrowserManager {
 
         // On Railway, if the persistent volume is empty, copy the initial data from the repo.
         if (isRailway) {
-            const sourceDataPath = path.join(__dirname, '..', '..', 'tiktok_user_data');
             // Check if a core file exists to determine if the directory is populated
             if (!fs.existsSync(path.join(USER_DATA_DIR, 'Default', 'Cookies'))) {
-                Logger.warn(`Persistent data directory appears empty. Seeding from ${sourceDataPath}...`);
-                // Use cp -r to recursively copy. Ensure destination exists.
-                fs.mkdirSync(USER_DATA_DIR, { recursive: true });
-                const { execSync } = require('child_process');
+                Logger.warn(`Persistent data directory appears empty. Seeding from ${SOURCE_DATA_PATH_IN_CONTAINER}...`);
                 try {
-                    execSync(`cp -r ${sourceDataPath}/* ${USER_DATA_DIR}`);
+                    this.copyDirRecursive(SOURCE_DATA_PATH_IN_CONTAINER, USER_DATA_DIR);
                     Logger.success('Successfully seeded persistent data directory.');
                 } catch (e) {
                     Logger.error('Failed to seed user data directory.', e);
@@ -106,6 +104,22 @@ export class BrowserManager {
             this.browser = null;
             this.context = null;
             Logger.info('Browser closed.');
+        }
+    }
+
+    private copyDirRecursive(src: string, dest: string) {
+        fs.mkdirSync(dest, { recursive: true });
+        const entries = fs.readdirSync(src, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const srcPath = path.join(src, entry.name);
+            const destPath = path.join(dest, entry.name);
+
+            if (entry.isDirectory()) {
+                this.copyDirRecursive(srcPath, destPath);
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
         }
     }
 }
