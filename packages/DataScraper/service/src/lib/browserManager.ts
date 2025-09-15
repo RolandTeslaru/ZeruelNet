@@ -125,8 +125,12 @@ export class BrowserManager {
                 throw new Error("Failed to initialize browser from persistent context.");
             
             Logger.info('Browser initialized successfully.');
-        } catch (error) {
-            Logger.error("Error during chromium.launchPersistentContext:", error);
+        } catch (error: any) {
+            Logger.error("Error during chromium.launchPersistentContext:");
+            Logger.error("Error message: " + (error.message || 'No message'));
+            Logger.error("Error stack: " + (error.stack || 'No stack trace'));
+            Logger.error("Error code: " + (error.code || 'No code'));
+            Logger.error("Full error object: " + JSON.stringify(error, null, 2));
             throw error;
         }
     }
