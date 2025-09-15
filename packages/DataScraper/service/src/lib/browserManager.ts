@@ -9,6 +9,7 @@ import { Logger } from './logger';
 chromium.use(stealthPlugin());
 
 const USER_DATA_DIR = path.join(__dirname, '..', '..', 'tiktok_user_data');
+const isRailway = process.env.RAILWAY_ENVIRONMENT !== undefined;
 
 export class BrowserManager {
     private browser: Browser | null = null;
@@ -29,24 +30,31 @@ export class BrowserManager {
 
         Logger.info(`Initializing chromium browser with persistent context with timezone ${timezoneId}`);
 
-        this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
-            headless: true,
-            args: [
-                '--disable-blink-features=AutomationControlled',
-                '--start-maximized',
-            ], 
-            viewport: null,
-            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 
-            locale: 'en-US',
-            timezoneId
-        });
-        
-        this.browser = this.context.browser()!; 
-        
-        if (!this.browser)
-            throw new Error("Failed to initialize browser from persistent context.");
-        
-        console.log('Browser initialized successfully.');
+        try {
+            this.context = await chromium.launchPersistentContext(USER_DATA_DIR, { 
+                headless: true,
+                args: [
+                    '--disable-blink-features=AutomationControlled',
+                    // CRITICAL: These two flags are required to run in a Docker container on Railway
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                ], 
+                viewport: null,
+                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 
+                locale: 'en-US',
+                timezoneId
+            });
+            
+            this.browser = this.context.browser()!; 
+            
+            if (!this.browser)
+                throw new Error("Failed to initialize browser from persistent context.");
+            
+            Logger.info('Browser initialized successfully.');
+        } catch (error) {
+            Logger.error("Error during chromium.launchPersistentContext:", error);
+            throw error;
+        }
     }
 
     async getCookies(): Promise<Cookie[]>{
@@ -66,11 +74,11 @@ export class BrowserManager {
 
     async close(): Promise<void> {
         if (this.browser) {
-            console.log('Closing browser...');
+            Logger.info('Closing browser...');
             await this.browser.close();
             this.browser = null;
             this.context = null;
-            console.log('Browser closed.');
+            Logger.info('Browser closed.');
         }
     }
 }
