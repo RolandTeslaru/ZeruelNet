@@ -58,6 +58,8 @@ export class BrowserManager {
                         
                         // Check if tiktok_user_data exists relative to the current directory
                         const alternativePath = path.join(process.cwd(), 'tiktok_user_data');
+                        Logger.info(`Looking for tiktok_user_data at: ${alternativePath}`);
+                        
                         if (fs.existsSync(alternativePath)) {
                             Logger.info(`Found tiktok_user_data at: ${alternativePath}`);
                             // Use this path instead
@@ -65,6 +67,19 @@ export class BrowserManager {
                             Logger.success('Successfully seeded persistent data directory from alternative path.');
                         } else {
                             Logger.error(`tiktok_user_data not found at ${alternativePath} either`);
+                            
+                            // Check if it exists in the root packages directory
+                            const rootPath = '/app/packages/DataScraper/service/tiktok_user_data';
+                            Logger.info(`Checking root path: ${rootPath}`);
+                            
+                            if (fs.existsSync(rootPath)) {
+                                Logger.info(`Found tiktok_user_data at root path: ${rootPath}`);
+                                this.copyDirRecursive(rootPath, USER_DATA_DIR);
+                                Logger.success('Successfully seeded from root path.');
+                            } else {
+                                Logger.error('tiktok_user_data directory is completely missing from the container!');
+                                Logger.error('This means it was not copied by the Dockerfile or excluded by .gitignore/.dockerignore');
+                            }
                         }
                     } catch (e) {
                         Logger.error('Could not read /app directory:', e);
