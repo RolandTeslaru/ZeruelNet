@@ -13,7 +13,7 @@ export const WindowContext = createContext<WindowContextProps>({
 });
 
 export const VXWindow: FC<VXEngineWindowProps> = memo((props) => {
-    const { children, title = "VXWindow", windowClasses, vxWindowId, showControls = true,
+    const { children, title = "VXWindow", windowClasses, vxWindowId, showControls = false,
         StylingComponent, } = props;
 
     const [theme, registerWindow, vxWindow, isStoreHydrated, attachVXWindow] = useUIManagerAPI(state => [

@@ -136,7 +136,9 @@ class WorkflowStatusManager {
         return WorkflowStatusManager.instance;
     }
 
-    private broadcast(payload: WorkflowStatusAPI.Payload.Type) {
+    private broadcast(
+        payload: WorkflowStatusAPI.Payload.Type
+    ) {
         eventBus.broadcast("system_status", payload)
     }
 

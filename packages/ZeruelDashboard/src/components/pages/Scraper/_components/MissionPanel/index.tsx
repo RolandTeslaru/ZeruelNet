@@ -39,8 +39,8 @@ const MissionPanel = memo(() => {
 
   return (
     <div className='relative max-h-[80vh] gap-4 p-2  flex flex-col overflow-y-scroll !overflow-x-visible'>
-      <p className='text-white/20 font-roboto-mono text-xl font-light'>
-        ACTIVE  WORKFLOW  PANEL
+      <p className='text-white/20 font-nippo text-xl font-meidum'>
+        ACTIVE  SCRAPE  MISSION  PANEL
       </p>
       <div className='flex flex-wrap gap-4'>
         <AnimatePresence mode="popLayout">

@@ -50,6 +50,7 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
             show={show}
           />}
         >
+          <p className='font-nippo text-white/40 font-light text-xl absolute right-4 -top-7'>TOP VIDEOS PICKS</p>
           <VideosPreview/>
         </VXWindow>
 

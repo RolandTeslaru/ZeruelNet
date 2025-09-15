@@ -52,9 +52,12 @@ function withFieldShell(
                 key={data.fieldKey}
                 name={data.fieldKey}
                 render={({ field }) => (
-                    <FormItem className='gap-1 w-full'>
-                        {inner({ ...props, field })}
-                    </FormItem>
+                    <div className='flex flex-col w-full'>
+                        <FormItem className='gap-1 w-full'>
+                            {inner({ ...props, field })}
+                        </FormItem>
+                        <FormMessage/>
+                    </div>
                 )}
             />
         )
