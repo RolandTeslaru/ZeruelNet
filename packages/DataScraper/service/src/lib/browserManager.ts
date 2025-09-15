@@ -49,12 +49,12 @@ export class BrowserManager {
                     Logger.info('Listing contents of /app directory:');
                     try {
                         const appContents = fs.readdirSync('/app');
-                        Logger.info('Contents:', appContents);
+                        Logger.info('Contents: ' + JSON.stringify(appContents));
                         
                         // Also check what's in the current working directory
-                        Logger.info('Current working directory:', process.cwd());
+                        Logger.info('Current working directory: ' + process.cwd());
                         const cwdContents = fs.readdirSync(process.cwd());
-                        Logger.info('CWD Contents:', cwdContents);
+                        Logger.info('CWD Contents: ' + JSON.stringify(cwdContents));
                         
                         // Check if tiktok_user_data exists relative to the current directory
                         const alternativePath = path.join(process.cwd(), 'tiktok_user_data');
