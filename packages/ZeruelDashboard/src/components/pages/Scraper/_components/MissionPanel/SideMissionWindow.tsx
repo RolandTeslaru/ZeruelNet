@@ -31,8 +31,8 @@ const SideMissionWindow: React.FC<Props> = ({ index, scrapeSideMission }) => {
     )
     }>
       <div className='absolute w-full h-full left-0 top-0 p-2'>
-        <h4 className='text-white font-roboto-mono'>{`VIDEO_${index}`}</h4>
-        <p className='text-xs text-white/30 font-roboto-mono'></p>
+        {/* <h4 className='text-white font-roboto-mono'>{`VIDEO_${index}`}</h4> */}
+        {/* <p className='text-xs text-white/30 font-roboto-mono'></p> */}
 
         {status === "SCRAPING" &&
           <div className='absolute top-2 right-2 w-5 h-5'>

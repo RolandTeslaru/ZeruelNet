@@ -143,24 +143,19 @@ const renderFormBranch = (
 
 
     return (
-        <ContextMenu>
-            <ContextMenuTrigger>
-                <BranchTemplate>
-                    {title &&
-                        <p className='w-fit'>
-                            {title}
-                        </p>
-                    }
-                    {RENDERERS[data.renderKind as keyof typeof RENDERERS]?.({
-                        form,
-                        branch: branch as any,
-                        className: '!w-full max-w-[100px]'
-                    })}
-                </BranchTemplate>
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-                <DataViewerWrapper src={branch}/>
-            </ContextMenuContent>
-        </ContextMenu>
+
+        <BranchTemplate>
+            {title &&
+                <p className='w-fit'>
+                    {title}
+                </p>
+            }
+            {RENDERERS[data.renderKind as keyof typeof RENDERERS]?.({
+                form,
+                branch: branch as any,
+                className: '!w-full max-w-[100px]'
+            })}
+        </BranchTemplate>
+
     )
 }

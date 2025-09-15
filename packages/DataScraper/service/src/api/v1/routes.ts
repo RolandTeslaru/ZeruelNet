@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import { scrapeByHashtagWorkflow } from './controllers/scrapeByHashtag';
-import { scrapeByVideoIdWorkflow } from './controllers/scrapeByVideoId';
+import { discoverAndScrapeWorkflow } from './controllers/discover-and-scrape';
 
 const router = Router();
 
-router.post('/workflow/scrape-by-hashtag', scrapeByHashtagWorkflow);
-router.post('/workflow/scrape-by-video-id', scrapeByVideoIdWorkflow);
+router.post('/workflow/discover-and-scrape', discoverAndScrapeWorkflow);
 
 export default router; 

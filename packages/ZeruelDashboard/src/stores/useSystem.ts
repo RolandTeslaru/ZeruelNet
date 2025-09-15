@@ -42,7 +42,7 @@ export const useSystem = create<State & Actions>()(
                 }
             });
         },
-        currentPage: "scraper",
+        currentPage: "trendsanalysis",
         setCurrentPage: (value) => set(s => { s.currentPage = value }),
         isDatabaseReachable: false,
         isServiceReachable: false

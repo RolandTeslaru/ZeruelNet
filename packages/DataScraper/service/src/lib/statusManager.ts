@@ -116,7 +116,7 @@ class WorkflowStatusManager {
             steps: DEFAULT_STEPS["finalizing"]
         },
         success: {
-            stage: { title: 'FINSHED:  WORKFLOW  SUCCESSFUL', variant: 'SUCCESS' },
+            stage: { title: 'FINISHED:  WORKFLOW  SUCCESSFUL', variant: 'SUCCESS' },
             steps: DEFAULT_STEPS["success"]
         },
         error: {

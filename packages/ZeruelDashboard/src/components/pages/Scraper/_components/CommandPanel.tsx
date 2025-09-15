@@ -8,29 +8,19 @@ import { z } from "zod"
 import { ScraperAPI } from '@zeruel/scraper-types'
 import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
 
-const SCHEMA_MAP = {
-    "hashtag": ScraperAPI.Workflow.Variants.ByHashtag,
-    "video-id": ScraperAPI.Workflow.Variants.ByVideoId
-}
+const SCHEMA = ScraperAPI.Workflow.Request
 
 const CommandPanel = memo(() => {
 
-    const [scrapeBy, setScrapeBy] = useState<"hashtag" | "video-id">("hashtag")
-
-    const schema = SCHEMA_MAP[scrapeBy]
-    const defaultValues = schema.partial().safeParse({}).data
+    const defaultValues = SCHEMA.partial().safeParse({}).data
 
     const form = useForm({
-        resolver: schema ? zodResolver(schema) : undefined,
+        resolver: SCHEMA ? zodResolver(SCHEMA) : undefined,
         defaultValues: defaultValues as any || {}
     })
 
-    useEffect(() => {
-        form.reset(defaultValues);
-    }, [scrapeBy])
-
-    const onSubmit = useCallback(async (data) => {
-        const filteredData = Object.entries(data).reduce((acc, [key, value]) => {
+    const onSubmit = useCallback(async (queryData) => {
+        const filteredData = Object.entries(queryData).reduce((acc, [key, value]) => {
             if (value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)) {
                 // @ts-ignore
                 acc[key] = value;
@@ -38,27 +28,16 @@ const CommandPanel = memo(() => {
             return acc;
         }, {});
 
-        if (scrapeBy === "hashtag") {
-            const parsed = ScraperAPI.Workflow.Variants.ByHashtag.safeParse(filteredData)
-            if (parsed.error) {
-                console.error(z.treeifyError(parsed.error))
-            }
-
-            const { data } = await sendScrapeCommand("/api/v1/workflow/scrape-by-hashtag", parsed.data)
+        const parsed = SCHEMA.safeParse(filteredData)
+        if (parsed.error) {
+            console.error(z.treeifyError(parsed.error))
         }
-        else if (scrapeBy === "video-id") {
-            const parsed = ScraperAPI.Workflow.Variants.ByVideoId.safeParse(filteredData)
-            if (parsed.error) {
-                console.error(z.treeifyError(parsed.error))
-            }
 
-            const { data } = await sendScrapeCommand("/api/v1/workflow/scrape-by-video-id", parsed.data)
-
-        }
-    }, [scrapeBy])
+        const { data } = await sendScrapeCommand("/api/v1/workflow/discover-and-scrape", parsed.data)
+    }, [])
 
     return (
-        <CollapsiblePanel title="Command Panel" contentClassName='overflow-y-scroll !pb-0' >
+        <CollapsiblePanel title="QUERY TOOL" contentClassName='overflow-y-scroll !pb-0' >
             {/* <Tabs defaultValue='hashtag' className='w-full !gap-0'
 
                 onValueChange={(value: "hashtag" | "video-id") => { setScrapeBy(value) }}
@@ -80,9 +59,9 @@ const CommandPanel = memo(() => {
             <div className='size-full relative'>
                 <ZodFromTreeRenderer
                     form={form}
-                    schema={schema}
+                    schema={SCHEMA}
                     onSubmit={onSubmit}
-                    rootTreeName='Scrape Workflow Request Query'
+                    rootTreeName="Discover & Scrape Workflow"
                     formDefaultValues={defaultValues}
                     showSearchBar={false}
                 >

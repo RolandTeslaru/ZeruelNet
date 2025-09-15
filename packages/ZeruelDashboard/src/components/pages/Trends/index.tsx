@@ -110,8 +110,8 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
         >
           <CollapsiblePanel 
             title='LLM IDENTIFIED SUBJECTS ALIGNMENT'
-            className='!h-[100%]'
-            contentClassName='overflow-y-scroll !size-full'
+            className='!h-[100%] !pb-0'
+            contentClassName='overflow-y-scroll !size-full !p-0'
           >
             <SubjectAlignmentChart/>
           </CollapsiblePanel>
@@ -123,3 +123,6 @@ const Trends = React.memo(({ show }: { show: boolean }) => {
 })
 
 export default Trends;
+
+
+

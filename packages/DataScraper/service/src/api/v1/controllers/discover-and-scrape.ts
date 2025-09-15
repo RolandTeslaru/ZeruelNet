@@ -8,22 +8,22 @@ import { Platforms } from '@zeruel/types';
 import { ScraperAPI } from '@zeruel/scraper-types';
 let isScraperRunning = false;
 
-export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
+export const discoverAndScrapeWorkflow = async (req: Request, res: Response) => {
     if (isScraperRunning) {
-        Logger.warn('A scrape workflow is already in progress.');
+        Logger.warn('A discover-and-scrape workflow is already in progress.');
         return res.status(409).send({ message: 'A scrape workflow is already in progress. Please wait for it to complete.' });
     }
 
-    const parsed = ScraperAPI.Workflow.Variants.ByHashtag.safeParse(req.body)
+    const parsed = ScraperAPI.Workflow.Request.safeParse(req.body)
     if(parsed.error)
         return res.status(400).send({error: z.treeifyError(parsed.error)})
-    const workflow = parsed.data
+    const workflowReq = parsed.data
 
 
     isScraperRunning = true;
 
 
-    Logger.info(`Received scraper task for ${workflow.source}: ${workflow.identifier}`);
+    Logger.info(`Received scraper task for ${workflowReq.source}: ${workflowReq.identifier}`);
     res.status(202).send({ message: 'Scrape task initiated. See WebSocket stream for live updates.' });
     
     statusManager
@@ -40,33 +40,32 @@ export const scrapeByHashtagWorkflow = async (req: Request, res: Response) => {
             .init()
             .then(() => {
                 statusManager.updateStep('browser_manager_init', 'completed');
-                Logger.info(`Browser Manager Succesfully initializd`)
+                Logger.info(`Browser Manager Successfully initialized`)
             })
             .catch((error) => {
                 statusManager.updateStep('browser_manager_init', "failed", "Failed to retrieve persistent ctxt")
                 Logger.error("BrowserManager failed to retrieve persistent context",error);
             })
         
-
+        // Discover videos based on the workflow request source
         const discoveryMission: ScraperAPI.Mission.Variants.Discover = { 
-            source: workflow.source, 
-            identifier: workflow.identifier, 
-            limit: workflow.limit 
+            source: workflowReq.source, 
+            identifier: workflowReq.identifier, 
+            limit: workflowReq.limit 
         };
         const {newVideoUrls, existingVideoUrls} = await scraper.discover(discoveryMission);
 
+        // Organise side missions for scraping, prioritizing new videos
         const scrapeSideMissions: ScraperAPI.Mission.SideMission[] 
-            = organiseSideMissions(newVideoUrls, existingVideoUrls, workflow, scraper.platform)
+            = organiseSideMissions(newVideoUrls, existingVideoUrls, workflowReq, scraper.platform)
 
         const scrapeMission: ScraperAPI.Mission.Variants.Scrape = {
-            ...workflow,
+            ...workflowReq,
             sideMissions: scrapeSideMissions,
-            batchSize: workflow.batchSize ?? 4
+            batchSize: workflowReq.batchSize ?? 4
         }
 
         await scraper.scrape(scrapeMission)
-
-        
 
     } catch (error) {
         Logger.error('An error occurred during the scraping task:', error);
@@ -100,7 +99,7 @@ const shutdownBrowser = async (browserManager: BrowserManager) => {
 export const organiseSideMissions = (
     newVideoUrls: string[], 
     existingVideoUrls: string[], 
-    workflow: ScraperAPI.Workflow.Variants.ByHashtag,
+    workflow: ScraperAPI.Workflow.Request,
     platform: Platforms
 ): ScraperAPI.Mission.SideMission[] => {
     const scrapeSideMissions: ScraperAPI.Mission.SideMission[] = []    

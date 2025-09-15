@@ -8,9 +8,11 @@ import {
 import { useTablesContext } from '../context';
 import { useQuery } from '@tanstack/react-query';
 import { fetchComments, fetchKnowledgeSubjects, fetchTableColumns, fetchTableMeta, fetchVideoFeatures, fetchVideos } from '@/lib/api/database';
-import { Checkbox, Spinner } from '@zeruel/shared-ui/foundations';
+import { Button, Checkbox, Popover, PopoverContent, PopoverTrigger, Spinner } from '@zeruel/shared-ui/foundations';
 import { DataTable } from '@/components/DataTable';
 import DataLoadingIndicator from '@zeruel/shared-ui/DataLoadingIndicator';
+import SafeData from '@/components/SafeData';
+import DataViewerWrapper from '@zeruel/shared-ui/DataViewerWrapper';
 
 const EMPTY_DATA = []
 
@@ -73,15 +75,28 @@ const DatabaseTableViewer = memo(() => {
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
     });
-
-    if (isSchemaLoading || isDataLoading) {
-        return <DataLoadingIndicator/>
-    }
-
     
     return (
         <div className='flex flex-col h-full'>
-            <DataTable data={data ? data.items : EMPTY_DATA} columns={columns} table={table} />
+            <SafeData isLoading={isDataLoading || isSchemaLoading} data={data?.items}>
+                {(safeData) => (   
+                    <>
+                        <DataTable data={safeData ?? EMPTY_DATA} columns={columns} table={table} />
+                        <div className='absolute bottom-1 left-1/2 -translate-x-1/2'>
+                            <Popover>
+                                <PopoverTrigger>
+                                    <Button variant='dashed1' className=' w-fit'>
+                                        <span className='text-xs font-roboto-mono font-medium'>Show JSON</span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <DataViewerWrapper src={safeData}/>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </> 
+                )}
+            </SafeData>
         </div>
     );
 })

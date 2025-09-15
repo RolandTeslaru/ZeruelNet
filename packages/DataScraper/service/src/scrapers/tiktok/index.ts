@@ -1,4 +1,3 @@
-import { discoverVideos, extractVideoIdFromUrl } from './discover';
 import { scrapeComments } from './parsers';
 import { BrowserManager } from '../../lib/browserManager';
 import { Logger } from '../../lib/logger';
@@ -9,9 +8,11 @@ import { statusManager } from '../../lib/statusManager';
 import { DatabaseManager } from '../../lib/DatabaseManager';
 import { AbstractScraper } from '../AbstractScraper';
 import { Page } from 'playwright';
-import { sleep } from './utils';
+import { checkIfUrlIsVideo, extractVideoIdFromUrl, sleep } from './utils';
 import { redisBroker } from '../../lib/redisBroker';
 import { ScraperAPI } from '@zeruel/scraper-types';
+import { discoverByHashtag } from './discoverByHashtag';
+import { discoverBySearch } from './discoverBySearch';
 
 type StatusUpdateCallback = (message: any) => void;
 
@@ -70,7 +71,17 @@ export class TiktokScraper extends AbstractScraper {
         statusManager.setStage("discovery");
 
         const page = await this.browserManager.getPage();
-        const allFoundUrls = await discoverVideos(mission.identifier, mission.limit, page);
+
+        let allFoundUrls: string[] = [];
+
+        if(mission.source === "search")
+            allFoundUrls = await discoverBySearch(mission.identifier, mission.limit, page);
+        else if (mission.source === "hashtag")
+            allFoundUrls = await discoverByHashtag(mission.identifier, mission.limit, page);
+        else if (mission.source === "video_id")
+            allFoundUrls = [`https://www.tiktok.com/@placeholder/video/${mission.identifier}`]
+        else 
+            throw new Error(`Unknown discovery source: ${mission.source}`)
 
         const videoIds = allFoundUrls.map(url => extractVideoIdFromUrl(url));
         const existingIds = await DatabaseManager.getStoredVideoIds(videoIds);

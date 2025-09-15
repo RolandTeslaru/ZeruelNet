@@ -8,7 +8,7 @@ import AuroraBackground from "./AuroraBackground"
 import { UIManagerDialogLayer } from '@zeruel/shared-ui/UIManager/ui'
 import { StarsBackground } from './StarsBackground'
 import { cn } from '@zeruel/shared-ui/utils/cn'
-import TabSwitcher from './PageSwitcher'
+import PageSwitcher from './PageSwitcher'
 import { useSystem } from '@/stores/useSystem'
 import classNames from 'classnames'
 import StagePanel from './StagePanel'
@@ -58,11 +58,11 @@ const Layout: React.FC<Props> = memo(({ children, className, ...rest }) => {
             )} />
 
             <UIManagerDialogLayer />
-            <div className='fixed left-1/2 -translate-x-1/2 w-fit z-10 bottom-3'>
-                <TabSwitcher />
+            <div className='fixed left-1/2 -translate-x-1/2 w-fit z-10 bottom-2'>
+                <PageSwitcher />
             </div>
             <StagePanel />
-            <MenubarComponent />
+            {/* <MenubarComponent /> */}
             {children}
         </div>
     )

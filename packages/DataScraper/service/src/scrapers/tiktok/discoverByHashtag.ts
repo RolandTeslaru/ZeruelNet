@@ -2,13 +2,14 @@ import { Page } from 'playwright';
 import { Logger } from '../../lib/logger';
 import { statusManager } from '../../lib/statusManager';
 import { DiscoveryLayout, discoveryLayouts } from './pageLayouts';
+import { checkIfUrlIsVideo, extractAllHrefs } from './utils';
 
 const MAX_VIDEOS_TO_FIND = 100
 
 // Explores the tiktok videos grid page for a specifc hastag
 // And extracts the urls for the videos whcih are then opened in difrent tabs in the next step
 
-export const discoverVideos = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
+export const discoverByHashtag = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
     const url = `https://www.tiktok.com/tag/${identifier}`;
 
     statusManager
@@ -85,29 +86,3 @@ export const discoverVideos = async (identifier: string, limit: number, page: Pa
 
     return Array.from(videoUrls);
 }; 
-
-
-
-const checkIfUrlIsVideo = (href: string) => {
-    return href.split("/").includes("video");
-}
-
-
-const extractAllHrefs = async (page: Page, selectorId: string) => {
-    return page.evaluate(selector => {
-        const elements = document.querySelectorAll(selector);
-        const hrefs: string[] = [];
-
-        elements.forEach(el => {
-            if(el instanceof HTMLAnchorElement && el.href)
-                hrefs.push(el.href);
-        })
-
-        return hrefs;
-    }, selectorId)
-}
-
-
-export const extractVideoIdFromUrl = (videoUrl: string): string => {
-    return videoUrl.split('/').pop()
-}

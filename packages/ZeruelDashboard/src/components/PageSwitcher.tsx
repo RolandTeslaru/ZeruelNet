@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from '@zeruel/shared-ui/foundations'
 import { DashboardPages, useSystem } from '@/stores/useSystem'
 import { Activity, Bot, Health, Sparkles, Table } from '@zeruel/shared-ui/icons'
 import { usePageTransition } from '@/stores/usePageTransition'
+import { BracketsWindowStyling } from '@zeruel/shared-ui/WindowStyling'
 
 const PageSwitcher = () => {
 
@@ -11,43 +12,43 @@ const PageSwitcher = () => {
     const transition = usePageTransition(state => state.transition)
 
     return (
-        <div className='relative p-0.5 border border-neutral-400/20 rounded-full'>
-            <Tabs
-                value={currentPage}
-                onValueChange={(value) => {
-                    transition({
-                        toPage: value as DashboardPages,
-                        enterAnimationDelay: false,
-                        bgAnimationDelay: false,
-                        exitAnimationDelay: false
-                    })
-                }}
-            >
-                <TabsList className='gap-2 !bg-neutral-800/40 !border-primary-thin' indicatorStyle={{boxShadow: "0px 0px 10px 3px oklch(0.623 0.214 259.815" }}
+        <BracketsWindowStyling contentClassName='!p-1'>
+                <Tabs
+                    value={currentPage}
+                    onValueChange={(value) => {
+                        transition({
+                            toPage: value as DashboardPages,
+                            enterAnimationDelay: false,
+                            bgAnimationDelay: false,
+                            exitAnimationDelay: false
+                        })
+                    }}
                 >
-                    <TabsTrigger className=' px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="scraper">
-                        <Bot strokeWidth={1.5} size={20}/>
-                        SCRAPER
-                    </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="enrichment">
-                        <Sparkles size={20}/>
-                        ENRICHMENT
-                    </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="tables">
-                        <Table strokeWidth={1.5} size={20}/>
-                        TABLES
-                    </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="trendsanalysis">
-                        <Activity strokeWidth={1.5} size={20}/>
-                        TRENDS & ANALYSIS
-                    </TabsTrigger>
-                    <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="health">
-                        <Health strokeWidth={1.5} size={20}/>
-                        SYS. HEALTH
-                    </TabsTrigger>
-                </TabsList>
-            </Tabs>
-        </div>
+                    <TabsList className='gap-2 !bg-neutral-800/40 !border-primary-thin' indicatorStyle={{boxShadow: "0px 0px 10px 3px oklch(0.623 0.214 259.815" }}
+                    >
+                        <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="trendsanalysis">
+                            <Activity strokeWidth={1.5} size={20}/>
+                            TRENDS & ANALYSIS
+                        </TabsTrigger>
+                        <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="tables">
+                            <Table strokeWidth={1.5} size={20}/>
+                            TABLES
+                        </TabsTrigger>
+                        <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="enrichment">
+                            <Sparkles size={20}/>
+                            ENRICHMENT
+                        </TabsTrigger>
+                        <TabsTrigger className=' px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="scraper">
+                            <Bot strokeWidth={1.5} size={20}/>
+                            SCRAPER
+                        </TabsTrigger>
+                        {/* <TabsTrigger className='px-2.5 py-1.5 gap-1 font-bold tracking-wider' value="health">
+                            <Health strokeWidth={1.5} size={20}/>
+                            SYS. HEALTH
+                        </TabsTrigger> */}
+                    </TabsList>
+                </Tabs>
+        </BracketsWindowStyling>
     )
 }
 

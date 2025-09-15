@@ -4,7 +4,7 @@ import {z} from "zod"
 
 export namespace ScraperAPI {
 
-    export const Sources = z.enum(["hashtag", "user", "url"]).default("hashtag")
+    export const Sources = z.enum(["search", "hashtag", "video_id"]).default("search")
     export type Source = z.infer<typeof Sources>
 
     export const Policy = z.enum(["metadata+comments", "metadata"]).default("metadata+comments")
@@ -28,7 +28,7 @@ export namespace ScraperAPI {
             batchSize:         z.int().max(10).min(1).default(4),
             identifier:        z.string(),
             source:            Sources,
-            scrapeCommentsLen: z.int().min(0).max(200).default(100),
+            scrapeCommentsLen: z.int().min(0).max(200).default(10),
         })
         export type Type = z.infer<typeof Schema>
 
@@ -39,7 +39,7 @@ export namespace ScraperAPI {
                 batchSize:         z.int().max(10).min(1).default(4),
                 identifier:        z.string(),
                 source:            Sources,
-                scrapeCommentsLen: z.int().min(0).max(200).default(100),
+                scrapeCommentsLen: z.int().min(0).max(200).default(10),
             })
             export type Scrape =  z.infer<typeof Scrape>
 
@@ -57,29 +57,8 @@ export namespace ScraperAPI {
 
 
     export namespace Workflow {
-        export namespace Variants { 
-            export const ByVideoId = z.object({
-                videoId:           z.string().regex(/^\d+$/, "videoId must be a numeric string"),
-                scrapeCommentsLen: z.number().min(0).max(200).default(100),
-                policy:            ScraperAPI.Policy
-            })
-            export type ByVideoId = z.infer<typeof ByVideoId>
-    
-            export const ByHashtag = Mission.Schema.omit({sideMissions: true})
-            export type ByHashtag = z.infer<typeof ByHashtag>
-        }
-
-        export const Schema = z.discriminatedUnion("type", [
-            z.object({
-                type:     z.literal("hashtag"),
-                workflow: Variants.ByHashtag
-            }),
-            z.object({
-                type:     z.literal("videoId"),
-                workflow: Variants.ByVideoId
-            })
-        ])
-        export type Type = z.infer<typeof Schema>
+        export const Request = Mission.Schema.omit({sideMissions: true})
+        export type Request = z.infer<typeof Request>
     }
 
 

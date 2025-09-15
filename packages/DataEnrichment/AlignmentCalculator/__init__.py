@@ -70,4 +70,20 @@ def calculate(identified_subjects: List[dict], llm_score: float, alpha: float = 
 
     final_alignment = max(-1.0, min(1.0, final_alignment))
 
+    # Mutate identified_subjects with knowledge base data
+    for subject in identified_subjects:
+        subject_raw: str = subject.get("subject", "")
+        stance: float = float(subject.get("stance", 0.0))
+        
+        # Resolve aliases and fetch KB entry
+        canonical: str = _resolve_alias(subject_raw)
+        kb_entry: dict = MODEL_KNOWLEDGE.get(canonical, {})
+        
+        subject["isInKnowledge"] = bool(kb_entry)
+ 
+        # Add knowledge base data to the subject
+        subject["expected_alignment"] = float(kb_entry.get("alignment_tendency", 0.0))
+        subject["alignment_score"] = stance * subject["expected_alignment"]
+        subject["alignment_gap"] = abs(stance - subject["expected_alignment"])
+
     return final_alignment, det_score, alignment_conflict

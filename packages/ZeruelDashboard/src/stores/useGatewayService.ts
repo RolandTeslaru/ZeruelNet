@@ -5,9 +5,10 @@ import { useSystem } from "./useSystem";
 export const webSocketEvents = new EventTarget();
 
 type State = {
-    socket:             null | WebSocket,
-    isConnected:        boolean
-    subscriptionQueue:  Array<{ topic: string, callback: (data: any) => void }>
+    socket:                 null | WebSocket,
+    isConnected:            boolean
+    subscriptionRegistry:   Record<string, { topic: string, callback: (data: any) => void }>
+    subscriptionQueue:      Array<{ topic: string, callback: (data: any) => void }>
 }
 
 type Actions = {
@@ -22,11 +23,12 @@ export const useGatewayService = create<State & Actions>()(
     immer((set, get) => ({
         socket: null,
         isConnected: false,
+        subscriptionRegistry: {},
         subscriptionQueue: [],
         connect: async () => {
-            console.log("Establashing connection to GatewayService")
+            console.log("Establishing connection to GatewayService")
             if (get().socket) {
-                console.warn("Web Scoket already exists.");
+                console.warn("Web Socket already exists.");
                 return;
             }
 
@@ -62,6 +64,11 @@ export const useGatewayService = create<State & Actions>()(
             ws.onclose = (event) => set((state) => {
                 state.isConnected = false
                 state.socket = null;
+
+                // Re-queue all existing subscriptions
+                set(state => {
+                    state.subscriptionQueue = Object.values(state.subscriptionRegistry);
+                })
 
                 webSocketEvents.dispatchEvent(new Event("close"));
                 
@@ -104,6 +111,11 @@ export const useGatewayService = create<State & Actions>()(
         // topics have the form of "scaper_*" or "trends_*" like scraper_logs
         subscribeToTopic: (topic, callback) => {
             const socket = get().socket;
+
+            set(state => {
+                state.subscriptionRegistry[topic] = { topic, callback };
+            })
+
             if (socket === null || socket.readyState !== WebSocket.OPEN) {
                 // console.error("useGatewayService: socket is null. make sure to connect")
                 // Queue subscription if socket isnt ready

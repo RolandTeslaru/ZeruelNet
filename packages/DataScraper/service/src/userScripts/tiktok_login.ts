@@ -3,7 +3,7 @@ import path from 'path';
 import chalk from 'chalk';
 import readline from 'readline';
 
-import { BrowserManager } from './lib/browserManager';
+import { BrowserManager } from '../lib/browserManager';
 
 const OUTPUT = path.join(__dirname, '..', 'cookies.txt');
 

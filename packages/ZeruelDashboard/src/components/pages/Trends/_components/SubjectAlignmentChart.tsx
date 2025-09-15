@@ -53,23 +53,28 @@ const SubjectAlignmentChart = memo(() => {
     <SafeData isLoading={isLoading} data={data?.subjects}>
       {(safeData) => (
         <>
-          <JsonView src={identified_subjects} collapsed={2} />
+          {/* <JsonView src={safeData} collapsed={2} /> */}
           <div className='flex flex-row w-full justify-between'>
-            <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30' />
-
-            <p className='text-[11px] font-roboto-mono'>
-              {searchQuery && searchQuery.length > 0 ?
-                `found ${filteredSubjects.length} subjects`
-                :
-                `${data?.subjects.length} subjects`
-              }
-            </p>
-
+            <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} className='w-30 h-auto my-auto' />
+            <div className=' h-9 flex flex-row gap-1 text-[10px] text-white/80 font-semibold text-center mr-1'>
+              <div className='w-10 relative overflow-visible'>
+                <p className='absolute bottom-0 left-1/2 -translate-x-1/2 w-max whitespace-nowrap'>STANCE</p>
+              </div>
+              <div className='w-10 relative overflow-visible'>
+                <p className='absolute bottom-4 left-1/2 -translate-x-1/2 w-max whitespace-nowrap'>ALIGN</p>
+              </div>
+              <div className='w-10 relative overflow-visible'>
+                <p className='absolute bottom-0 left-1/2 -translate-x-1/2 w-max whitespace-nowrap'>EXP. STANCE</p>
+              </div>
+              <div className='w-10 relative overflow-visible'>
+                <p className='absolute bottom-4 left-1/2 -translate-x-1/2 w-max whitespace-nowrap'>POPUL.</p>
+              </div>
+            </div>
           </div>
 
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-1 overflow-y-auto'>
             {filteredSubjects.map(subject =>
-              <div key={subject.subject_name} className='flex flex-row justify-between gap-1 px-1 h-6 w-full '>
+              <div key={subject.subject_name} className='flex flex-row justify-between gap-1 px-1 min-h-6 w-full '>
                 <TitleVisualizer text={subject.subject_name} />
 
                 <div className='flex flex-row gap-1'>

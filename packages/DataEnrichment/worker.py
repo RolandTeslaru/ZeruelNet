@@ -44,8 +44,12 @@ def process(video_id: str, db_conn):
         identified_subjects = analysis_result_json["identified_subjects"] 
         llm_overall_alignment = analysis_result_json["overall_alignment"]
 
-        final_alignment, deterministic_alignment, alignment_conflict = AlignmentCalculator.calculate(identified_subjects, llm_overall_alignment, alpha=0.5)
-        
+        final_alignment, deterministic_alignment, alignment_conflict = AlignmentCalculator.calculate(
+            identified_subjects, 
+            llm_overall_alignment, 
+            alpha=0.5
+        )
+
         # Upload to database
         with db_conn.cursor() as cur:
             cur.execute(sqlQueries.UPDATE_SUCCESSFUL_ENRICHMENT_QUERY,
@@ -57,7 +61,7 @@ def process(video_id: str, db_conn):
                 )
             )
             db_conn.commit()
-            vxlog.success(f"Successfully comitted to database")
+            vxlog.success(f"Successfully committed to database")
 
     # if video is deleted from tiktok set the status to "deleted"
     except VideoUnavailableError as e:

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { chromium } from 'playwright';
-import { Logger } from './lib/logger';
-import { BrowserManager } from './lib/browserManager';
+import { Logger } from '../lib/logger';
+import { BrowserManager } from '../lib/browserManager';
 
 const OUTPUT = path.join(__dirname, '..', 'cookies.txt');
 

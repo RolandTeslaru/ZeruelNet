@@ -109,7 +109,8 @@ const VideoFeaturesViewer = () => {
                                     <p>subject: {obj.subject}</p>
                                     <div className='flex flex-col'>
                                         <NumberSignValueNode title='stance' value={obj.stance}/>
-                                        <NumberSignValueNode title='alingment_score' value={obj.alignment_score}/>
+                                        <BooleanValueNode title='isInKnowledge' value={obj.isInKnowledge}/>
+                                        <NumberSignValueNode title='alignment_score' value={obj.alignment_score}/>
                                         <NumberSignValueNode title='expected_alignment' value={obj.expected_alignment}/>
                                         <NumberSignValueNode title='alignment_gap' value={obj.alignment_gap}/>
                                     </div>
@@ -131,24 +132,36 @@ const VideoFeaturesViewer = () => {
 export default VideoFeaturesViewer
 
 
-const NumberSignValueNode = ({title, value}: {title: string, value: number}) => {
-    const formatValue = (val: number) => {
-        if (val > 0) {
-            return `+${val.toFixed(2)}`;
-        }
-        return val.toFixed(2);
-    };
+const formatValue = (val: number) => {
+    if (val > 0) {
+        return `+${val.toFixed(2)}`;
+    }
+    return val.toFixed(2);
+};
+const getColorClass = (val: number) => {
+    if (val > 0) return "text-green-400";
+    if (val < 0) return "text-red-400";
+    return "text-cyan-400";
+};
 
-    const getColorClass = (val: number) => {
-        if (val > 0) return "text-green-400";
-        if (val < 0) return "text-red-400";
-        return "text-cyan-400";
-    };
-
+const BooleanValueNode = ({title, value}: {title: string, value: boolean}) => {
     return (
         <div className='flex flex-row w-full justify-between gap-1'>
             <p>{title}:</p>
-            <p className={getColorClass(value)}>{formatValue(value)}</p>
+            <p className={value ? "text-green-400" : "text-red-400"}>{value ? "true" : "false"}</p>
+        </div>
+    )
+}
+
+const NumberSignValueNode = ({title, value}: {title: string, value: number}) => {
+    return (
+        <div className='flex flex-row w-full justify-between gap-1'>
+            <p>{title}:</p>
+            {typeof value === "number" && !isNaN(value) ? (
+                <p className={getColorClass(value)}>{formatValue(value)}</p>
+            ) : (
+                <p className="text-gray-400">N/A</p>
+            )}
         </div>
     )
 }

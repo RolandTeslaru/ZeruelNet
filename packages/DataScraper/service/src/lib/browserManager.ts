@@ -2,6 +2,7 @@ import { chromium } from 'playwright-extra';
 import stealthPlugin from 'puppeteer-extra-plugin-stealth';
 import type { Browser, BrowserContext, Cookie, Page } from 'playwright';
 import path from 'path';
+import fs from 'fs';
 import { Logger } from './logger';
 
 // Apply the stealth plugin to hide automation metrics
@@ -72,4 +73,4 @@ export class BrowserManager {
             console.log('Browser closed.');
         }
     }
-} 
+}

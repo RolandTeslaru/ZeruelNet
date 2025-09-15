@@ -19,7 +19,7 @@ export default function Home() {
 
   useEffect(() => {
     usePageTransition.getState().transition({
-      toPage: "scraper",
+      toPage: "trendsanalysis",
       enterAnimationDelay: false
     })
   }, [])

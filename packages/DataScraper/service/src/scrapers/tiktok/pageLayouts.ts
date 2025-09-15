@@ -51,7 +51,7 @@ export interface DiscoveryLayout {
 export const discoveryLayouts: DiscoveryLayout[] = [
   {
     name: 'SearchE2E',
-    videoCardSelector: 'div[data-e2e="search-video-list"] div[class*="DivItemContainer"]',
+    videoCardSelector: 'div[data-e2e="search_top-item-list"] div[class*="DivItemContainerForSearch"]',
   },
   {
     name: 'ChallengeE2E',

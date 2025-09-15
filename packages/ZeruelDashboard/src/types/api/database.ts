@@ -52,7 +52,7 @@ export namespace DatabaseAPI {
         export type Query = z.infer<typeof Query>
     
         export const Response = z.object({
-            items: z.array(z.any()),
+            items: z.array(z.string()),
             page: z.object({
                 limit:  z.number(),
                 offset: z.number(),
@@ -83,9 +83,10 @@ export namespace DatabaseAPI {
             export const Response = z.object({
                 subject:            z.string(),
                 stance:             z.number(),
-                alignment_score:    z.number(),
-                expected_alignment: z.number(),
-                alignment_gap:      z.number()
+                isInKnowledge:      z.boolean(),
+                alignment_score:    z.number().optional(),
+                expected_alignment: z.number().optional(),
+                alignment_gap:      z.number().optional(),
             })
         }
 
@@ -94,7 +95,7 @@ export namespace DatabaseAPI {
         export const Query = BaseQuery.extend({
             video_id:          z.string().optional(),
             detected_language: detectedLanguage.optional(),
-            enrichment_status: z.enum(["completed", "failed"]).optional(),
+            enrichment_status: z.enum(["completed", "failed", "deleted"]).optional(),
             // -1 means very pro russia while 1 means pro western
             min_alignment:     z.coerce.number().min(-1).max(1).optional(),
             max_alignment:     z.coerce.number().min(-1).max(1).optional(),
