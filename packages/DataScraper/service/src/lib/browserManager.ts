@@ -42,11 +42,30 @@ export class BrowserManager {
             // Check if a core file exists to determine if the directory is populated
             if (!fs.existsSync(path.join(USER_DATA_DIR, 'Default', 'Cookies'))) {
                 Logger.warn(`Persistent data directory appears empty. Seeding from ${SOURCE_DATA_PATH_IN_CONTAINER}...`);
-                try {
-                    this.copyDirRecursive(SOURCE_DATA_PATH_IN_CONTAINER, USER_DATA_DIR);
-                    Logger.success('Successfully seeded persistent data directory.');
-                } catch (e) {
-                    Logger.error('Failed to seed user data directory.', e);
+                
+                // First, check if the source directory actually exists
+                if (!fs.existsSync(SOURCE_DATA_PATH_IN_CONTAINER)) {
+                    Logger.error(`Source directory does not exist: ${SOURCE_DATA_PATH_IN_CONTAINER}`);
+                    Logger.info('Listing contents of /app directory:');
+                    try {
+                        const appContents = fs.readdirSync('/app');
+                        Logger.info('Contents:', appContents);
+                    } catch (e) {
+                        Logger.error('Could not read /app directory:', e);
+                    }
+                } else {
+                    Logger.info(`Source directory found: ${SOURCE_DATA_PATH_IN_CONTAINER}`);
+                    try {
+                        this.copyDirRecursive(SOURCE_DATA_PATH_IN_CONTAINER, USER_DATA_DIR);
+                        Logger.success('Successfully seeded persistent data directory.');
+                    } catch (e) {
+                        Logger.error('Failed to seed user data directory.', e);
+                        Logger.error('Error details:', {
+                            message: e.message,
+                            stack: e.stack,
+                            code: e.code
+                        });
+                    }
                 }
             } else {
                 Logger.info('Existing data found in persistent volume.');
