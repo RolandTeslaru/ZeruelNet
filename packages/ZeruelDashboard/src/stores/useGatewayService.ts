@@ -36,6 +36,9 @@ export const useGatewayService = create<State & Actions>()(
             if(!gatewayWebsocketUrl)
                 console.error("Public GatewayService Websocket Url has not been provided in the env")
 
+            console.log("CONNECTING TO GATEWAY WEBSOCKET AT:", gatewayWebsocketUrl)
+
+            
             const ws = new WebSocket(process.env.NEXT_PUBLIC_GATEWAY_WEBSOCKET_URL);
 
             ws.onopen = () => {
