@@ -38,7 +38,6 @@ export const discoverAndScrapeWorkflow = async (req: Request, res: Response) => 
     // Set up cancellation function
     currentCancelFunction = async () => {
         Logger.info('Cancellation requested - shutting down browser');
-        statusManager.clearSteps()
         await browserManager.close();
     };
 

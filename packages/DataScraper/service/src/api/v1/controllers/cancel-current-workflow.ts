@@ -5,33 +5,37 @@ import { getCurrentWorkflowState } from './discover-and-scrape';
 
 export const cancelCurrentWorkflow = async (req: Request, res: Response) => {
     const { isRunning, cancelFunction } = getCurrentWorkflowState();
-    
+
     if (!isRunning) {
         Logger.info('No workflow is currently running');
-        return res.status(200).json({ 
+        statusManager
+            .clearSteps()
+            .setStage("idle")
+
+        return res.status(200).json({
             message: 'No active workflows to cancel',
-            status: 'idle' 
+            status: 'idle'
         });
     }
-    
+
     if (!cancelFunction) {
         Logger.warn('Workflow is running but no cancel function available');
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: 'Cannot cancel workflow - no cancel function available',
-            status: 'error' 
+            status: 'error'
         });
     }
-    
+
     try {
         Logger.info('Initiating workflow cancellation');
-        res.status(202).json({ 
+        res.status(202).json({
             message: 'Cancellation initiated. See WebSocket stream for status updates.',
-            status: 'cancelling' 
+            status: 'cancelling'
         });
-        
+
         // Trigger the cancellation
         await cancelFunction();
-        
+
         Logger.info('Workflow cancellation completed');
     } catch (error) {
         Logger.error('Error during workflow cancellation:', error);
