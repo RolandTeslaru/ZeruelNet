@@ -1,15 +1,23 @@
 # Zeruel Net
 
-ZeruelNet is a comprehensive microservices architecture that automatically scrapes TikTok content, processes it through an AI pipeline for sentiment analysis and content understanding, and presents real-time analytics through a modern dashboard.
+ZeruelNet is an intelligence platform for scraping and analyzing geopolitical sentiment and propaganda on Tiktok
 
-
-🚀 **[Live Dashboard](https://zeruel-net-zeruel-dashboard.vercel.app)** | 📊 **[View Demo](https://zeruel-net-zeruel-dashboard.vercel.app)**
+🚀 **[Live Dashboard](https://zeruel-net-zeruel-dashboard.vercel.app)**
 
 ![ZeruelNet UI Demo](assets/zeruelNetDemo.gif)
 
+## Key Features
+
+- **Political Alignment Analysis** - Automatically scores content for political positioning and bias detection
+- **AI-Powered Content Processing** - Whisper transcription, sentiment analysis, and LLM based subject identification and summarization
+- **Distributed Scraping Architecture** - Scalable TikTok data collection
+- **Advanced Analytics** - Correlation analysis between engagement metrics and political alignment
+
 ## Architecture Overview
 
-ZeruelNet operates across multiple hosting platforms with Redis as the central message broker and PostgreSQL for data persistence. The system features real-time communication through WebSocket connections and asynchronous AI processing.
+ZeruelNet is hosted on Railway and Vercel with a distributed microservices design. The system uses event-based messaging through Redis queues to coordinate between services, with a Gateway Service that routes real-time updates to the dashboard.
+
+![System Architecture](assets/arhitecture.png)
 
 - **DataScraper Service** (Railway) - Playwright-based TikTok scraping with persistent authentication
 - **Gateway Service** (Railway) - WebSocket hub for real-time communication across services  
@@ -17,11 +25,10 @@ ZeruelNet operates across multiple hosting platforms with Redis as the central m
 - **ZeruelDashboard** (Vercel) - React/Next.js analytics dashboard with live updates
 - **Redis & PostgreSQL** (Railway) - Message broker and data persistence layer
 
-![System Architecture](assets/arhitecture.png)
 
 ## Data Processing Workflow
 
-The platform transforms raw TikTok content into enriched analytics data through a sophisticated AI pipeline:
+ZeruelNet transforms raw TikTok content into political intelligence through a multi-stage pipeline:
 
 **Process Flow:**
 1. **Discovery** - Search TikTok pages for target content (hashtags, keywords, users)
