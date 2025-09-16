@@ -8,6 +8,7 @@ WORKDIR /app
 COPY packages/DataScraper/service/package*.json /app/packages/DataScraper/service/
 COPY packages/DataScraper/types /app/packages/DataScraper/types
 COPY packages/types /app/packages/types
+RUN npm --prefix /app/packages/types install --omit=dev
 
 # Install deps for the service (include dev deps for ts-node)
 WORKDIR /app/packages/DataScraper/service
