@@ -72,6 +72,6 @@ __pycache__/
 /venv
 /packages/analysis/venv
 
-# TikTok session data
-# packages/DataScraper/service/tiktok_user_data/ 
-# packages/DataScraper/service/tiktok_user_data
+
+# Tiktok Session Data for persistent context
+packages/DataScraper/service/tiktok_user_data/
