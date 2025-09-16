@@ -8,9 +8,9 @@ WORKDIR /app
 COPY packages/DataScraper/service/package*.json /app/packages/DataScraper/service/
 COPY packages/DataScraper/types /app/packages/DataScraper/types
 
-# Install production deps for the service (has a local file dep to ../types)
+# Install deps for the service (include dev deps for ts-node)
 WORKDIR /app/packages/DataScraper/service
-RUN npm install --only=production
+RUN npm install
 
 # Now copy the rest of the service (source files, user data, etc.)
 COPY packages/DataScraper/service/ /app/packages/DataScraper/service/
