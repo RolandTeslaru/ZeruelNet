@@ -6,7 +6,10 @@ import { TiktokScraper } from "../../../scrapers/tiktok"
 import {z} from "zod"
 import { Platforms } from '@zeruel/types';
 import { ScraperAPI } from '@zeruel/scraper-types';
+
 let isScraperRunning = false;
+let currentBrowserManager: BrowserManager | null = null;
+let currentCancelFunction: (() => Promise<void>) | null = null;
 
 export const discoverAndScrapeWorkflow = async (req: Request, res: Response) => {
     if (isScraperRunning) {
@@ -19,9 +22,7 @@ export const discoverAndScrapeWorkflow = async (req: Request, res: Response) => 
         return res.status(400).send({error: z.treeifyError(parsed.error)})
     const workflowReq = parsed.data
 
-
     isScraperRunning = true;
-
 
     Logger.info(`Received scraper task for ${workflowReq.source}: ${workflowReq.identifier}`);
     res.status(202).send({ message: 'Scrape task initiated. See WebSocket stream for live updates.' });
@@ -32,6 +33,15 @@ export const discoverAndScrapeWorkflow = async (req: Request, res: Response) => 
         .updateStep('api_request_received', 'completed')
 
     const browserManager = new BrowserManager();
+    currentBrowserManager = browserManager;
+    
+    // Set up cancellation function
+    currentCancelFunction = async () => {
+        Logger.info('Cancellation requested - shutting down browser');
+        statusManager.clearSteps()
+        await browserManager.close();
+    };
+
     const scraper = new TiktokScraper(browserManager);
 
     try {
@@ -71,13 +81,22 @@ export const discoverAndScrapeWorkflow = async (req: Request, res: Response) => 
         Logger.error('An error occurred during the scraping task:', error);
         statusManager.setStage('error');
     } finally {
+        // Clean up shared state
         isScraperRunning = false;
+        currentBrowserManager = null;
+        currentCancelFunction = null;
+        
         Logger.info('Scrape task finished.');
 
         await shutdownBrowser(browserManager)
-        // Set back to idle after a short delay to allow final messages to be sent.
     }
 }; 
+
+
+export const getCurrentWorkflowState = () => ({
+    isRunning: isScraperRunning,
+    cancelFunction: currentCancelFunction
+});
 
 
 const shutdownBrowser = async (browserManager: BrowserManager) => {

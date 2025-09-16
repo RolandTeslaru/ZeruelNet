@@ -7,12 +7,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod"
 import { ScraperAPI } from '@zeruel/scraper-types'
 import ZodFromTreeRenderer from '@/components/ZodFormTreeRenderer'
+import { useSystem } from '@/stores/useSystem'
 
 const SCHEMA = ScraperAPI.Workflow.Request
 
 const CommandPanel = memo(() => {
 
     const defaultValues = SCHEMA.partial().safeParse({}).data
+    const setOverrideStage = useSystem(state => state.setOverrideStage)
 
     const form = useForm({
         resolver: SCHEMA ? zodResolver(SCHEMA) : undefined,
@@ -56,7 +58,7 @@ const CommandPanel = memo(() => {
                     </div>
                 </div>
             </Tabs> */}
-            <div className='size-full relative'>
+            <div className='size-full relative flex flex-col gap-2'>
                 <ZodFromTreeRenderer
                     form={form}
                     schema={SCHEMA}
@@ -73,6 +75,39 @@ const CommandPanel = memo(() => {
                         Send Request
                     </Button>
                 </ZodFromTreeRenderer>
+                <Button
+                    variant="dashed1"
+                    type="submit"
+                    className='w-full border-red-400/60 min-h-9 rounded-none bg-red-500/30 hover:bg-red-400/30 text-blue-100 font-roboto-mono font text-xs '
+
+                    onClick={async () => {
+                        try {
+                            setOverrideStage({
+                                title: "STANDBY: CANCELLING  CURRENT  WORKFLOW",
+                                variant: "STANDBY"
+                            })
+                            const response = await scraperApi.post('/api/v1/workflow/cancel-current-workflow');
+                            setOverrideStage({
+                                title: "CURRENT WORKFLOW CANCELLED",
+                                variant: "SUCCESS"
+                            })
+                            console.log('Cancel response:', response.data);
+                        } catch (error) {
+                            useSystem.getState().setOverrideStage({
+                                variant: "FAILURE",
+                                title: "COULD NOT SEND CANCEL REQUEST"
+                            }, 4000)
+                            console.error('Error cancelling workflow:', error);
+                        } finally {
+                            setTimeout(() => {
+                                setOverrideStage(null)
+                            }, 4000)
+                        }
+                    }
+                    }
+                >
+                    Cancel Current Workflow
+                </Button>
             </div>
         </CollapsiblePanel>
     )

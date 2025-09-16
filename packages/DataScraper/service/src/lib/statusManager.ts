@@ -83,6 +83,18 @@ const DEFAULT_STEPS: Record<string, Record<string, WorkflowStatusAPI.Step.Type>>
             description: 'An unrecoverable error occurred.',
             variant: "failed"
         }
+    },
+    cancel: {
+        browser_shutdown: {
+            label: 'BROWSER_SHUTDOWN',
+            description: 'Closing browser instance',
+            variant: 'pending'
+        },
+        finalizing: {
+            label: 'FINALIZING',
+            description: 'Finalizing current operations',
+            variant: 'pending'
+        },
     }
 }
 
@@ -122,6 +134,10 @@ class WorkflowStatusManager {
         error: {
             stage: { title: 'ERROR:  WORKFLOW  FAILED', variant: 'FAILURE' },
             steps: DEFAULT_STEPS["error"]
+        },
+        cancel: {
+            stage: { title: 'CANCELLING WORKFLOW', variant: 'FAILURE' },
+            steps: DEFAULT_STEPS["cancel"]
         }
     };
 
