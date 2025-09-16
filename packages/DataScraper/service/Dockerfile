@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/playwright:v1.44.1-focal
 WORKDIR /app/packages/DataScraper/service
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Install Playwright browsers
 RUN npx playwright install chromium
