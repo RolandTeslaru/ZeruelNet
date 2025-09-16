@@ -10,6 +10,7 @@ import { useSystem } from "@/stores/useSystem";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Image from "next/image";
 import { useEffect } from "react";
+import { Analytics } from "@vercel/analytics/next"
 
 const queryClient = new QueryClient()
 
@@ -26,6 +27,7 @@ export default function Home() {
 
   return (
     <Layout>
+      <Analytics/>
       <QueryClientProvider client={queryClient}>
         <div className="flex flex-row min-w-auto min-h-screen max-h-screen w-full px-7 pb-15 pt-20 ">
           <div className=' w-full relative '>
