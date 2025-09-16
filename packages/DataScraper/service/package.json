@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/server.ts",
+  "start": "ts-node src/server.ts",
+  "postinstall": "npx playwright install chromium",
     "login": "ts-node src/tiktok_login.ts",
     "dev:server": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "dev:task": "ts-node src/run.ts"

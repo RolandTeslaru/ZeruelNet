@@ -3,7 +3,7 @@ builder = "dockerfile"
 dockerfilePath = "packages/DataScraper/service/Dockerfile"
 
 [deploy]
-startCommand = "npm run start"
+# Use CMD from Dockerfile
 healthcheckPath = "/"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
