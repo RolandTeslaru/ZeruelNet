@@ -7,6 +7,7 @@ WORKDIR /app
 # Copy only what's needed for install first (better caching)
 COPY packages/DataScraper/service/package*.json /app/packages/DataScraper/service/
 COPY packages/DataScraper/types /app/packages/DataScraper/types
+COPY packages/types /app/packages/types
 
 # Install deps for the service (include dev deps for ts-node)
 WORKDIR /app/packages/DataScraper/service
