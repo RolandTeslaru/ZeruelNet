@@ -14,9 +14,10 @@ RUN npm ci --only=production
 RUN echo "Installing Playwright browsers..." && \
     npx playwright install chromium && \
     echo "Playwright installation completed" && \
-    ls -la /root/.cache/ms-playwright/ && \
+    echo "Browsers installed at:" && \
+    ls -la /ms-playwright/ && \
     echo "Verifying chromium installation..." && \
-    find /root/.cache/ms-playwright -name "*chrome*" -type f | head -10
+    find /ms-playwright -name "*chrome*" -type f | head -5
 
 # Copy the rest of your application's source code
 COPY . .
