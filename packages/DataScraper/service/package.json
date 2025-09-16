@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/uuid": "^9.0.8",
     "@zeruel/scraper-types": "file:../types",
+    "@zeruel/types": "file:../../types",
     "chalk": "^4.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
