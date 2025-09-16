@@ -1,17 +1,41 @@
 # Zeruel Net
 
-Zeruel Net is a platform to detect and analyze foreign propaganda on social media platforms and deploy algorithmic countermeasures.
+ZeruelNet is a comprehensive microservices architecture that automatically scrapes TikTok content, processes it through an AI pipeline for sentiment analysis and content understanding, and presents real-time analytics through a modern dashboard.
 
-## Project Structure
 
-This project is a monorepo containing several packages:
+🚀 **[Live Dashboard](https://zeruel-net-zeruel-dashboard.vercel.app)** | 📊 **[View Demo](https://zeruel-net-zeruel-dashboard.vercel.app)**
 
--   `packages/scrapers`: Python services for scraping data from public sources.
--   `packages/api`: The main backend API (TypeScript).
--   `packages/analysis`: Python services for ML/AI data analysis and enrichment.
--   `packages/frontend`: The React-based dashboard for visualization and control.
--   `data/`: Local directory for storing raw scraped data (should be added to `.gitignore`).
+![ZeruelNet UI Demo](assets/zeruelNetDemo.gif)
 
-## Phase 1, Step 1: Initial Scraper Setup
+## Architecture Overview
 
-See the README inside `packages/scrapers` for setup and usage instructions. 
+ZeruelNet operates across multiple hosting platforms with Redis as the central message broker and PostgreSQL for data persistence. The system features real-time communication through WebSocket connections and asynchronous AI processing.
+
+- **DataScraper Service** (Railway) - Playwright-based TikTok scraping with persistent authentication
+- **Gateway Service** (Railway) - WebSocket hub for real-time communication across services  
+- **DataEnrichment Service** (Local) - AI pipeline with Whisper.cpp, sentiment analysis, and Gemini LLM processing
+- **ZeruelDashboard** (Vercel) - React/Next.js analytics dashboard with live updates
+- **Redis & PostgreSQL** (Railway) - Message broker and data persistence layer
+
+![System Architecture](assets/arhitecture.png)
+
+## Data Processing Workflow
+
+The platform transforms raw TikTok content into enriched analytics data through a sophisticated AI pipeline:
+
+**Process Flow:**
+1. **Discovery** - Search TikTok pages for target content (hashtags, keywords, users)
+2. **Scraping** - Extract video metadata, descriptions, and comments using browser automation  
+3. **Queue Processing** - Videos are queued for AI analysis via Redis message broker
+4. **AI Enrichment** - Download videos, extract transcripts (Whisper.cpp), analyze sentiment, and process with Gemini LLM
+5. **Analytics Storage** - Enriched data stored in PostgreSQL for trend analysis and insights
+
+![System Architecture](assets/workflow.png)
+
+## Tech Stack
+
+**Zeruel Dashboard:** React, Next.js, TypeScript, Tailwind CSS, Zustand  
+**Data Scraper Service:** Playwright, Node.js, Express, Typescript
+**Data Enrichment Service:** Whisper cpp, Google Gemini, Sentiment Analysis, Python, Numpy
+**Gateway Service:** Websocket, Node.js, Express, Typescript
+**Infrastructure:** Redis, PostgreSQL, Playwright  

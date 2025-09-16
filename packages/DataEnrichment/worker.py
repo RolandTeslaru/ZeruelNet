@@ -24,7 +24,7 @@ def process(video_id: str, db_conn):
     try:
         vxlog.info("Starting data enrichment process for video_id: %s", video_id)
 
-        # Download the content
+        # Download the contentSentyment model
         video_url, video_path, audio_path = download.tiktok_full(video_id)
 
         # Run the Processors
