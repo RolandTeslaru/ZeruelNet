@@ -41,8 +41,8 @@ ZeruelNet transforms raw TikTok content into political intelligence through a mu
 
 ## Tech Stack
 
-**Zeruel Dashboard:** React, Next.js, TypeScript, Tailwind CSS, Zustand.
-**Data Scraper Service:** Playwright, Node.js, Express, Typescript.
-**Data Enrichment Service:** Whisper cpp, Gemini, Sentiment Analysis, Python, Numpy.
-**Gateway Service:** Websocket, Node.js, Express, Typescript.
-**Infrastructure:** Redis, PostgreSQL, Playwright.  
+1. **Zeruel Dashboard:** React, Next.js, TypeScript, Tailwind CSS, Zustand.
+2. **Data Scraper Service:** Playwright, Node.js, Express, Typescript.
+3. **Data Enrichment Service:** Whisper cpp, Gemini, Sentiment Analysis, Python, Numpy.
+4. **Gateway Service:** Websocket, Node.js, Express, Typescript.
+5. **Infrastructure:** Redis, PostgreSQL, Playwright.  
