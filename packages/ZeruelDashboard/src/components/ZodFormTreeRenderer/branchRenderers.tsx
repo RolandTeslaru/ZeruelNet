@@ -121,15 +121,25 @@ export const StringFieldRenderer = withFieldShell(({ field, branch, className, f
 const IntegerFieldRenderer = withFieldShell(({ field, branch, className }) => {
     const data = branch.data
     const zodObject = data.schema as ZodIntegerObject
+    const min = zodObject.minimum ?? zodObject.exclusiveMinimum
+    const max = zodObject.maximum ?? zodObject.exclusiveMaximum
+    const getStep = () => {
+        if (min !== undefined && max !== undefined) {
+            if (max - min < 2) {
+                return 0.1
+            }
+        }
+        return 1
+    }
     return (
         <Input
             {...field}
             className={(className ?? '') + ' w-1/2 ml-auto'}
             type="number"
-            min={zodObject.minimum || zodObject.exclusiveMinimum}
-            max={zodObject.maximum || zodObject.exclusiveMaximum}
+            min={min}
+            max={max}
             placeholder="INTEGER"
-            step={0.1}
+            step={getStep()}
             size="xs"
         />
     )
