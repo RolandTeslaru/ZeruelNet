@@ -15,12 +15,12 @@ ZeruelNet is an intelligence platform for scraping and analyzing geopolitical se
 
 ## Architecture Overview
 
-ZeruelNet is hosted on Railway and Vercel with a distributed microservices design. The system uses event-based messaging through Redis queues to coordinate between services, with a Gateway Service that routes real-time updates to the dashboard.
+ZeruelNet is hosted on Railway and Vercel with a distributed microservices design. The system uses event-based messaging through Redis Pub/Sub messaging to coordinate between services, with a Gateway Service that routes real-time updates to multiple ZeruelDashboard clients via WebSockets.
 
 ![System Architecture](assets/arhitecture.png)
 
 - **DataScraper Service** (Railway) - Playwright-based TikTok scraping with persistent authentication
-- **Gateway Service** (Railway) - WebSocket hub for real-time communication across services  
+- **Gateway Service** (Railway) - WebSocket hub for real-time communication across services 
 - **DataEnrichment Service** (Local) - AI pipeline with Whisper.cpp, sentiment analysis, and Gemini LLM processing
 - **ZeruelDashboard** (Vercel) - React/Next.js analytics dashboard with live updates
 - **Redis & PostgreSQL** (Railway) - Message broker and data persistence layer
@@ -41,8 +41,8 @@ ZeruelNet transforms raw TikTok content into political intelligence through a mu
 
 ## Tech Stack
 
-**Zeruel Dashboard:** React, Next.js, TypeScript, Tailwind CSS, Zustand.
-**Data Scraper Service:** Playwright, Node.js, Express, Typescript.
-**Data Enrichment Service:** Whisper cpp, Google Gemini, Sentiment Analysis, Python, Numpy.
-**Gateway Service:** Websocket, Node.js, Express, Typescript.
-**Infrastructure:** Redis, PostgreSQL, Playwright.  
+1. **Zeruel Dashboard:** React, Next.js, TypeScript, Tailwind CSS, Zustand.
+2. **Data Scraper Service:** Playwright, Node.js, Express, Typescript.
+3. **Data Enrichment Service:** Whisper cpp, Gemini, Sentiment Analysis, Python, Numpy.
+4. **Gateway Service:** Websocket, Node.js, Express, Typescript.
+5. **Infrastructure:** Redis, PostgreSQL, Playwright.  
