@@ -57,7 +57,7 @@ const TabsList = ({
       if (activeTab && indicatorRef.current) {
         indicatorRef.current.style.width = `${activeTab.clientWidth}px`;
         indicatorRef.current.style.height = `${activeTab.clientHeight + 2}px`;
-        indicatorRef.current.style.left = `${activeTab.offsetLeft + 2}px`;
+        indicatorRef.current.style.left = `${activeTab.offsetLeft}px`;
       }
     });
 
@@ -70,7 +70,7 @@ const TabsList = ({
         ref={listRef}
         data-slot="tabs-list"
         className={cn(
-          "inline-flex h-auto items-center justify-center rounded-3xl bg-tertiary-opaque border border-secondary-opaque text-muted-foreground relative",
+          "rounded-md inline-flex h-auto items-center justify-center bg-tertiary-opaque border border-secondary-opaque text-muted-foreground relative",
           className
         )}
         {...props}
@@ -83,7 +83,7 @@ const TabsList = ({
         style={{
           ...indicatorStyle,
         }}
-        className={indicatorClassname + " " + "absolute top-[1px] z-[0] !pointer-events-none border bg-accent border-border-accent shadow-accent rounded-full transition-all duration-300 ease-out"}
+        className={indicatorClassname + " " + "rounded-md absolute top-[1px] z-[0] !pointer-events-none border bg-accent border-border-accent shadow-accent transition-all duration-300 ease-out"}
       />
     </div>
   )

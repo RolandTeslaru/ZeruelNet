@@ -74,4 +74,4 @@ __pycache__/
 
 
 # Tiktok Session Data for persistent context
-packages/DataScraper/service/tiktok_user_data/
+packages/DataScraper/service/tiktok_user_data

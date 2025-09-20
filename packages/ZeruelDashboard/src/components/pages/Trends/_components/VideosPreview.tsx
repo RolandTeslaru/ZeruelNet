@@ -126,7 +126,6 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video }) => {
           <p>DET</p>
           <div className='w-10'>
             <p>{formatAlignment(video.deterministic_alignment)}</p>
-
           </div>
         </div>
       </div>
@@ -163,7 +162,7 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video }) => {
       {thumbnailSrc && (
         <img
           src={thumbnailSrc}
-          alt={video.video_description || "video thumbnail"}
+          alt={"video thumbnail"}
           className='absolute z-0 w-full h-full opacity-50'
           style={{
             maskImage: 'linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)',

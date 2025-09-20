@@ -1,5 +1,13 @@
-2025/09/15-20:01:44.345 1800de8 Reusing MANIFEST /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Local Storage/leveldb/MANIFEST-000001
-2025/09/15-20:01:44.352 1800de8 Recovering log #6
-2025/09/15-20:01:44.352 1800de8 Reusing old log /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Local Storage/leveldb/000006.log 
-2025/09/15-20:02:26.591 1800deb Level-0 table #9: started
-2025/09/15-20:02:26.599 1800deb Level-0 table #9: 23529 bytes OK
+2025/09/21-00:41:11.168 217e47b Reusing MANIFEST /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Local Storage/leveldb/MANIFEST-000001
+2025/09/21-00:41:11.180 217e47b Recovering log #8
+2025/09/21-00:41:11.181 217e47b Level-0 table #10: started
+2025/09/21-00:41:11.191 217e47b Level-0 table #10: 22832 bytes OK
+2025/09/21-00:41:11.198 217e47b Delete type=0 #8
+2025/09/21-00:41:11.202 217e47d Compacting 4@0 + 0@1 files
+2025/09/21-00:41:11.208 217e47d Generated table #12@0: 60 keys, 77916 bytes
+2025/09/21-00:41:11.208 217e47d Compacted 4@0 + 0@1 files => 77916 bytes
+2025/09/21-00:41:11.214 217e47d compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/09/21-00:41:11.215 217e47d Delete type=2 #3
+2025/09/21-00:41:11.215 217e47d Delete type=2 #6
+2025/09/21-00:41:11.215 217e47d Delete type=2 #10
+2025/09/21-00:41:11.215 217e47d Delete type=2 #8

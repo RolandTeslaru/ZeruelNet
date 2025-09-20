@@ -12,7 +12,6 @@ const PageSwitcher = () => {
     const transition = usePageTransition(state => state.transition)
 
     return (
-        <BracketsWindowStyling contentClassName='!p-1'>
                 <Tabs
                     value={currentPage}
                     onValueChange={(value) => {
@@ -48,7 +47,6 @@ const PageSwitcher = () => {
                         </TabsTrigger> */}
                     </TabsList>
                 </Tabs>
-        </BracketsWindowStyling>
     )
 }
 
