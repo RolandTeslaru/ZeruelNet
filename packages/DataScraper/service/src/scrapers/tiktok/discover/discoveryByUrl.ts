@@ -1,20 +1,33 @@
 import { Page } from 'playwright';
-import { Logger } from '../../lib/logger';
-import { statusManager } from '../../lib/statusManager';
-import { DiscoveryLayout, discoveryLayouts } from './pageLayouts';
-import { checkIfUrlIsVideo, extractAllHrefs } from './utils';
+import { Logger } from '../../../lib/logger';
+import { statusManager } from '../../../lib/statusManager';
+import { DiscoveryLayout, discoveryLayouts } from '../pageLayouts';
+import { checkIfUrlIsVideo, extractAllHrefs } from '../utils';
 
 const MAX_VIDEOS_TO_FIND = 100
 
-// Explores the tiktok videos grid page via a specifc search term
-// And extracts the urls for the videos whcih are then opened in difrent tabs in the next step
 
-export const discoverBySearch = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
-    const timestamp = Date.now();
-    const url = `https://www.tiktok.com/search?q=${encodeURIComponent(identifier)}&t=${timestamp}`;
+/**
+ * Discovers TikTok video URLs by hashtag using a headless browser page.
+ *
+ * Navigates to the TikTok hashtag page, detects the discovery layout, scrolls to load video cards,
+ * and extracts unique video URLs up to the specified limit.
+ *
+ * @param identifier - The hashtag identifier (without the '#' symbol) to search for.
+ * @param limit - The maximum number of unique video URLs to retrieve.
+ * @param page - The Puppeteer Page instance used for navigation and scraping.
+ * @returns A promise that resolves to an array of unique TikTok video URLs as strings.
+ * @throws Will throw an error if the discovery page layout cannot be detected.
+ */
+export const discoverByHashtag = async (
+    identifier: string, 
+    limit: number, 
+    page: Page
+): Promise<string[]> => {
+    const url = `https://www.tiktok.com/tag/${identifier}`;
 
     statusManager
-        .updateStep('navigation', 'active', `Navigating to search for "${identifier}"`)
+        .updateStep('navigation', 'active', `Navigating to "tiktok.com/tag/${identifier}"`)
         .log.info(`Navigating to ${url}`);
 
     try {
@@ -62,7 +75,7 @@ export const discoverBySearch = async (identifier: string, limit: number, page: 
             await page.mouse.wheel(0, 8000);
             await page.waitForTimeout(1500 + Math.random() * 1000) // Randomness to appear more human like
             
-            // Extracts hrefs from all the videoCards on the disover grid
+            // Extracts hrefs from all the videoCards on the discover grid
             const allHrefs = await extractAllHrefs(page, `${activeLayout.videoCardSelector} a`)
             allHrefs.forEach(href => {
                 if(checkIfUrlIsVideo(href) && !videoUrls.has(href)){

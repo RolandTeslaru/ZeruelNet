@@ -28,7 +28,7 @@ export const useActiveJobFeed = create<State & Actions>()(
     }))
 )
 
-function handleSocketMessage(payload: ScraperAPI.Paylaod.Type) {
+function handleSocketMessage(payload: ScraperAPI.Payload.Type) {
     switch (payload.action) {
         case "ADD_SIDE_MISSION":
             const key = payload.sideMission.url
@@ -42,7 +42,7 @@ function handleSocketMessage(payload: ScraperAPI.Paylaod.Type) {
                 state.videoMetadata[payload.metadata.video_url] = payload.metadata
             })    
         break;
-        case "FINALISE_SIDE_MISSION":
+        case "FINALIZE_SIDE_MISSION":
             let status = payload.error ? "ERROR" : "SUCCESS" as "SCRAPING" | "SUCCESS" | "ERROR"
 
             useActiveJobFeed.setState(state => {

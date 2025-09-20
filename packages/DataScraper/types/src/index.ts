@@ -21,11 +21,10 @@ export namespace ScraperAPI {
         })
         export type SideMission = z.infer<typeof SideMission>
 
-
         export const Schema = z.object({
             sideMissions:      z.array(SideMission),
             limit:             z.coerce.number().int().min(1).default(10),
-            batchSize:         z.int().max(10).min(1).default(4),
+            batchSize:         z.int().max(4).min(1).default(4),
             identifier:        z.string(),
             source:            Sources,
             scrapeCommentsLen: z.int().min(0).max(200).default(10),
@@ -36,7 +35,7 @@ export namespace ScraperAPI {
             const Scrape = z.object({
                 sideMissions:      z.array(SideMission),
                 limit:             z.coerce.number().int().min(1).default(10),
-                batchSize:         z.int().max(10).min(1).default(4),
+                batchSize:         z.int().max(4).min(1).default(4), // Tiktok restricts access when more than 4 tabs are opened at the same time
                 identifier:        z.string(),
                 source:            Sources,
                 scrapeCommentsLen: z.int().min(0).max(200).default(10),
@@ -119,11 +118,11 @@ export namespace ScraperAPI {
 
 
 
-    export namespace Paylaod {
+    export namespace Payload {
         export const Action = z.enum([
             "SET_CURRENT_BATCH",
             "ADD_SIDE_MISSION",
-            "FINALISE_SIDE_MISSION",
+            "FINALIZE_SIDE_MISSION",
             "ADD_VIDEO_METADATA"
         ]) 
         
@@ -144,8 +143,8 @@ export namespace ScraperAPI {
                 metadata: ScraperAPI.Data.Video.Metadata.omit({ searched_hashtag: true }),
             }),
             z.object({
-                action:      z.literal("FINALISE_SIDE_MISSION"),
-                type:        z.enum(["succes", "error"]), 
+                action:      z.literal("FINALIZE_SIDE_MISSION"),
+                type:        z.enum(["success", "error"]), 
                 sideMission: ScraperAPI.Mission.SideMission,
                 error:       z.any().optional(),
             }),
@@ -168,8 +167,8 @@ export namespace ScraperAPI {
         //         metadata: ScraperAPI.Data.Video.Metadata.omit({ searched_hashtag: true }),
         //     }),
         //     z.object({
-        //         action: z.literal("FINALISE_SIDE_MISSION"),
-        //         type: z.enum(["succes", "error"]), 
+        //         action: z.literal("FINALIZE_SIDE_MISSION"),
+        //         type: z.enum(["success", "error"]), 
         //         sideMission: ScraperAPI.Mission.SideMission,
         //         error: z.any().optional(),
         //     }),

@@ -1,15 +1,29 @@
 import { Page } from 'playwright';
-import { Logger } from '../../lib/logger';
-import { statusManager } from '../../lib/statusManager';
-import { DiscoveryLayout, discoveryLayouts } from './pageLayouts';
-import { checkIfUrlIsVideo, extractAllHrefs } from './utils';
+import { Logger } from '../../../lib/logger';
+import { statusManager } from '../../../lib/statusManager';
+import { DiscoveryLayout, discoveryLayouts } from '../pageLayouts';
+import { checkIfUrlIsVideo, extractAllHrefs } from '../utils';
 
 const MAX_VIDEOS_TO_FIND = 100
 
-// Explores the tiktok videos grid page for a specifc hastag
-// And extracts the urls for the videos whcih are then opened in difrent tabs in the next step
 
-export const discoverByHashtag = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
+/**
+ * Discovers TikTok video URLs by hashtag using a Puppeteer Page instance.
+ * 
+ * Navigates to the TikTok hashtag page, detects the discovery layout, and scrolls
+ * through the page to collect unique video URLs up to the specified limit.
+ * 
+ * @param identifier - The hashtag identifier (without the '#' symbol) to search for.
+ * @param limit - The maximum number of unique video URLs to collect.
+ * @param page - The Puppeteer Page instance used for navigation and scraping.
+ * @returns A promise that resolves to an array of unique TikTok video URLs as strings.
+ * @throws Will throw an error if the discovery page layout cannot be detected.
+ */
+export const discoverByHashtag = async (
+    identifier: string, 
+    limit: number, 
+    page: Page
+): Promise<string[]> => {
     const url = `https://www.tiktok.com/tag/${identifier}`;
 
     statusManager

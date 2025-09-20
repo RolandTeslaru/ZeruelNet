@@ -1,3 +1,6 @@
-2025/09/15-19:59:50.908 17fef88 Reusing MANIFEST /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Session Storage/MANIFEST-000001
-2025/09/15-19:59:50.909 17fef88 Recovering log #4
-2025/09/15-19:59:50.911 17fef88 Reusing old log /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Session Storage/000004.log 
+2025/09/15-20:01:51.670 1800de8 Reusing MANIFEST /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Session Storage/MANIFEST-000001
+2025/09/15-20:01:51.671 1800de8 Recovering log #4
+2025/09/15-20:01:51.672 1800de8 Reusing old log /Users/rolandteslaru/Desktop/ZeruelNet/packages/DataScraper/service/tiktok_user_data/Default/Session Storage/000004.log 
+2025/09/15-20:02:00.188 1800de8 Level-0 table #8: started
+2025/09/15-20:02:00.196 1800de8 Level-0 table #8: 24083 bytes OK
+2025/09/15-20:02:00.208 1800de8 Delete type=0 #4

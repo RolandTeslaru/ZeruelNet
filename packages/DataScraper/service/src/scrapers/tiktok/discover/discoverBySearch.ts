@@ -1,19 +1,33 @@
 import { Page } from 'playwright';
-import { Logger } from '../../lib/logger';
-import { statusManager } from '../../lib/statusManager';
-import { DiscoveryLayout, discoveryLayouts } from './pageLayouts';
-import { checkIfUrlIsVideo, extractAllHrefs } from './utils';
+import { Logger } from '../../../lib/logger';
+import { statusManager } from '../../../lib/statusManager';
+import { DiscoveryLayout, discoveryLayouts } from '../pageLayouts';
+import { checkIfUrlIsVideo, extractAllHrefs } from '../utils';
 
 const MAX_VIDEOS_TO_FIND = 100
 
-// Explores the tiktok videos grid page for a specifc hastag
-// And extracts the urls for the videos whcih are then opened in difrent tabs in the next step
 
-export const discoverByHashtag = async (identifier: string, limit: number, page: Page): Promise<string[]> => {
-    const url = `https://www.tiktok.com/tag/${identifier}`;
+/**
+ * Discovers TikTok video URLs by performing a search for the given identifier.
+ * Navigates to the TikTok search page, detects the discovery layout, and scrolls
+ * through the results to collect unique video URLs up to the specified limit.
+ *
+ * @param identifier - The search query or keyword to use for discovering videos.
+ * @param limit - The maximum number of unique video URLs to retrieve.
+ * @param page - The Puppeteer Page instance used for browser automation.
+ * @returns A promise that resolves to an array of unique TikTok video URLs.
+ * @throws Will throw an error if a known discovery page layout cannot be detected.
+ */
+export const discoverBySearch = async (
+    identifier: string, 
+    limit: number, 
+    page: Page
+): Promise<string[]> => {
+    const timestamp = Date.now();
+    const url = `https://www.tiktok.com/search?q=${encodeURIComponent(identifier)}&t=${timestamp}`;
 
     statusManager
-        .updateStep('navigation', 'active', `Navigating to "tiktok.com/tag/${identifier}"`)
+        .updateStep('navigation', 'active', `Navigating to search for "${identifier}"`)
         .log.info(`Navigating to ${url}`);
 
     try {

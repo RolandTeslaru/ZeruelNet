@@ -54,7 +54,7 @@ const DEFAULT_STEPS: Record<string, Record<string, WorkflowStatusAPI.Step.Type>>
         },
         rate_limit_delays: {
             label: 'RATE_LIMIT_DELAY',
-            description: 'Applying human-like delays',
+            description: 'Applying delays to avoid rate limits',
             variant: 'pending'
         },
         data_persistence: {
